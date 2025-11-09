@@ -344,7 +344,7 @@ Clear between phases:
 
 ```bash
 make test    # Run smoke tests
-make check   # Shellcheck + smoke tests
+make check   # Run shellcheck on all bash scripts
 ```
 
 Tests validate all bash scripts (thoughts-init, thoughts-sync, thoughts-metadata, install.sh). No dependencies needed, runs in isolated temp directories.

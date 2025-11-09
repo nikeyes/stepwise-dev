@@ -62,7 +62,7 @@ make test
 # Verbose output with debug info
 make test-verbose
 
-# Shellcheck + smoke tests
+# Shellcheck on all bash scripts
 make check
 ```
 
