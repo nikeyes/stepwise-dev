@@ -51,7 +51,6 @@ Never exceed 60% context. Split work into phases. Clear context between each. Sa
 ### Quick Install
 
 ```bash
-cd new-workflow
 ./install.sh
 ```
 
