@@ -48,10 +48,10 @@ skipped=0
 
 info "Synchronizing thoughts/searchable/ hardlinks..."
 
+# Temporarily disable exit-on-error for while loop (read returns non-zero when done)
+set +e
 # Find all .md files in thoughts/ (excluding searchable/ itself)
-while IFS= read -r -d '' file || [[ -n "$file" ]]; do
-  # Break if empty (handles case with no files)
-  [[ -z "$file" ]] && break
+while IFS= read -r -d '' file; do
   # Get relative path from thoughts/ root
   rel_path="${file#"$THOUGHTS_DIR"/}"
 
@@ -103,13 +103,15 @@ while IFS= read -r -d '' file || [[ -n "$file" ]]; do
     ((added++))
   fi
 done < <(find "$THOUGHTS_DIR" -type f -name "*.md" -print0 2>/dev/null || true)
+# Re-enable exit-on-error
+set -e
 
 # Clean up orphaned links in searchable/
 info "Cleaning up orphaned links..."
 orphaned=0
-while IFS= read -r -d '' link || [[ -n "$link" ]]; do
-  # Break if empty (handles case with no files)
-  [[ -z "$link" ]] && break
+# Temporarily disable exit-on-error for while loop
+set +e
+while IFS= read -r -d '' link; do
   # Get relative path from searchable/
   rel_path="${link#"$SEARCHABLE_DIR"/}"
   source_file="$THOUGHTS_DIR/$rel_path"
@@ -121,6 +123,8 @@ while IFS= read -r -d '' link || [[ -n "$link" ]]; do
     ((orphaned++))
   fi
 done < <(find "$SEARCHABLE_DIR" -type f -name "*.md" -print0 2>/dev/null || true)
+# Re-enable exit-on-error
+set -e
 
 # Remove empty directories in searchable/
 find "$SEARCHABLE_DIR" -type d -empty -delete 2>/dev/null || true
