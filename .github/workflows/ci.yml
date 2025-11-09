@@ -33,5 +33,5 @@ jobs:
     - name: Run shellcheck
       run: make check
 
-    - name: Run tests
-      run: make test
+    - name: Run tests (verbose mode)
+      run: make test-verbose
