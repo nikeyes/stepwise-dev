@@ -9,6 +9,7 @@ SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 
 # Source test helpers
+# shellcheck source=test/test-helpers.sh
 source "$SCRIPT_DIR/test-helpers.sh"
 
 # Create temporary test directory
