@@ -328,130 +328,40 @@ Clear between phases:
 
 ## 🎓 Best Practices
 
-### 1. Always Research First
-
-Even if you "know" the codebase, run research. You'll discover:
-- Patterns you forgot
-- Edge cases
-- Related code
-- Historical decisions
-
-### 2. Iterate the Plan 5+ Times
-
-First draft is never complete. Ask:
-- Are phases properly scoped?
-- Are success criteria specific?
-- Missing edge cases?
-- Can automated tests verify this?
-
-### 3. One Phase at a Time
-
-**Don't skip phases!** If Phase 1 has bugs, Phase 2 will inherit them.
-
-### 4. Separate Automated vs Manual
-
-Always split success criteria:
-
-```markdown
-### Success Criteria:
-
-#### Automated Verification:
-- [ ] Tests pass: `make test`
-- [ ] Linting clean: `make lint`
-
-#### Manual Verification:
-- [ ] UI looks correct on mobile
-- [ ] Performance is acceptable
-```
-
-### 5. Sync Regularly
-
-After creating research or plans:
-```bash
-thoughts-sync
-```
-
-This makes them searchable for future sessions.
+1. **Always Research First** - Even if you "know" the code, patterns and edge cases emerge
+2. **Iterate Plans 5+ Times** - First draft is never complete
+3. **One Phase at a Time** - Don't skip phases; bugs cascade
+4. **Separate Automated vs Manual** - Split verification criteria clearly
+5. **Sync Regularly** - Run `thoughts-sync` to make docs searchable
 
 ## 🔧 Customization
 
-### Change Username
+**Change Username**: Set `export THOUGHTS_USER=your_name` or edit `bin/thoughts-init:8`
 
-Default is `nikey_es`. To change:
+**Add Commands**: Create `.md` files in `~/.claude/commands/` with frontmatter. Claude auto-detects on restart.
 
-1. Edit in `thoughts-init`:
-   ```bash
-   # Line 8
-   USERNAME="${THOUGHTS_USER:-your_name}"
-   ```
+## 🧪 Testing
 
-2. Or set environment variable:
-   ```bash
-   export THOUGHTS_USER=your_name
-   ```
-
-### Add More Commands
-
-Create new `.md` files in `~/.claude/commands/`:
-
-```markdown
----
-description: Your custom command
----
-
-# My Custom Command
-
-Instructions for Claude...
+```bash
+make test    # Run smoke tests
+make check   # Shellcheck + smoke tests
 ```
 
-Claude will auto-detect them on next start.
+Tests validate all bash scripts (thoughts-init, thoughts-sync, thoughts-metadata, install.sh). No dependencies needed, runs in isolated temp directories.
 
 ## 🐛 Troubleshooting
 
-### Commands not showing up
+**Commands not showing**: Check `ls ~/.claude/commands/`, restart Claude Code
 
-```bash
-# Check if files exist
-ls ~/.claude/commands/
+**Scripts not in PATH**: Add `export PATH="$HOME/.local/bin:$PATH"` to `~/.zshrc`
 
-# Restart Claude Code
-```
+**Hardlinks failing**: Script auto-falls back to symlinks (slower but works)
 
-### Scripts not in PATH
-
-```bash
-# Check PATH
-echo $PATH | grep -q ".local/bin" && echo "OK" || echo "Add to PATH"
-
-# Add to shell config
-echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.zshrc
-source ~/.zshrc
-```
-
-### Hardlinks failing (cross-filesystem)
-
-If you see warnings about hardlinks failing:
-
-```bash
-# The script falls back to symlinks automatically
-# This happens when thoughts/ is on a different filesystem
-# It's fine - symlinks work just slower for grep
-```
-
-### thoughts-sync shows 0 files
-
-```bash
-# Check if thoughts/ has .md files
-find thoughts -name "*.md" -type f
-
-# Re-run sync with debug
-THOUGHTS_DEBUG=1 thoughts-sync
-```
+**No files synced**: Run `THOUGHTS_DEBUG=1 thoughts-sync` to debug
 
 ## 📚 Learn More
 
 - **Original Article**: [I mastered the Claude Code workflow](https://medium.com/@ashleybcha/i-mastered-the-claude-code-workflow-d7ea726b38fd) by Ashley Ha
-- **Planning Document**: See `thoughts/planning/2025-11-09-claude-workflow-setup.md` for detailed implementation notes
 - **HumanLayer**: Original inspiration from [HumanLayer's .claude directory](https://github.com/humanlayer/humanlayer)
 
 ## 🤝 Contributing
