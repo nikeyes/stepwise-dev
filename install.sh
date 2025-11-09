@@ -76,7 +76,7 @@ fi
 # Backup function
 backup_file() {
   local src="$1"
-  local rel_path="${src#$HOME/}"
+  local rel_path="${src#"$HOME"/}"
   local backup_path="$BACKUP_DIR/$rel_path"
 
   if [ -f "$src" ] || [ -d "$src" ]; then

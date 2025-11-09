@@ -61,8 +61,7 @@ assert_file_exists "thoughts/searchable/shared/research/test.md" "hardlink creat
 assert_hardlink "thoughts/shared/research/test.md" "thoughts/searchable/shared/research/test.md" "files are hardlinked (same inode)"
 
 # Verify content is identical
-diff thoughts/shared/research/test.md thoughts/searchable/shared/research/test.md > /dev/null 2>&1
-if [ $? -eq 0 ]; then
+if diff thoughts/shared/research/test.md thoughts/searchable/shared/research/test.md > /dev/null 2>&1; then
   echo -e "${GREEN}✓${NC} hardlink content is identical"
   TESTS_PASSED=$((TESTS_PASSED + 1))
 else
@@ -170,7 +169,7 @@ cd "$PROJECT_ROOT"
 HOME="$FAKE_HOME2" bash -c "echo 'y' | ./install.sh > /dev/null 2>&1"
 
 # Check backup directory was created (it will have a timestamp)
-backup_dir=$(ls -d "$FAKE_HOME2"/.claude-workflow-backup-* 2>/dev/null | head -1)
+backup_dir=$(find "$FAKE_HOME2" -maxdepth 1 -type d -name ".claude-workflow-backup-*" 2>/dev/null | head -1)
 if [ -n "$backup_dir" ] && [ -d "$backup_dir" ]; then
   echo -e "${GREEN}✓${NC} backup directory created"
   TESTS_PASSED=$((TESTS_PASSED + 1))
@@ -209,7 +208,7 @@ TESTS_RUN=$((TESTS_RUN + 1))
 
 print_summary
 
-if [ $TESTS_FAILED -eq 0 ]; then
+if [ "$TESTS_FAILED" -eq 0 ]; then
   echo ""
   echo "✅ All smoke tests passed! Safe to deploy."
   exit 0

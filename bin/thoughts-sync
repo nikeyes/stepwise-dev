@@ -51,7 +51,7 @@ info "Synchronizing thoughts/searchable/ hardlinks..."
 # Find all .md files in thoughts/ (excluding searchable/ itself)
 while IFS= read -r -d '' file; do
   # Get relative path from thoughts/ root
-  rel_path="${file#$THOUGHTS_DIR/}"
+  rel_path="${file#"$THOUGHTS_DIR"/}"
 
   # Skip if already in searchable/
   if [[ "$rel_path" == searchable/* ]]; then
@@ -101,7 +101,7 @@ info "Cleaning up orphaned links..."
 orphaned=0
 while IFS= read -r -d '' link; do
   # Get relative path from searchable/
-  rel_path="${link#$SEARCHABLE_DIR/}"
+  rel_path="${link#"$SEARCHABLE_DIR"/}"
   source_file="$THOUGHTS_DIR/$rel_path"
 
   # Check if source file still exists
