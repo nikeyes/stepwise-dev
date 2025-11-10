@@ -1,4 +1,4 @@
-.PHONY: test check test-verbose install help validate-setup validate-clean validate-manual validate-automated validate-artifacts
+.PHONY: test check test-verbose install help validate-setup validate-clean validate-manual validate-artifacts
 
 # Default target
 help:
@@ -12,7 +12,6 @@ help:
 	@echo "Validation project targets:"
 	@echo "  make validate-setup     - Setup validation project environment"
 	@echo "  make validate-manual    - Show manual workflow test instructions"
-	@echo "  make validate-automated - Run automated workflow with claude -p"
 	@echo "  make validate-artifacts - Validate workflow artifacts"
 	@echo "  make validate-clean     - Clean validation project artifacts"
 	@echo ""
@@ -51,10 +50,6 @@ validate-setup:
 validate-manual:
 	@echo "Manual workflow test instructions:"
 	@cd test/validation-project && chmod +x e2e-workflow-test.sh && ./e2e-workflow-test.sh manual
-
-validate-automated:
-	@echo "Running automated workflow..."
-	@cd test/validation-project && chmod +x e2e-workflow-test.sh run-automated-workflow.sh && ./e2e-workflow-test.sh automated
 
 validate-artifacts:
 	@echo "Validating workflow artifacts..."

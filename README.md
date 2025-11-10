@@ -89,10 +89,10 @@ After running `thoughts-init` in a project:
 ```
 <your-project>/
 ├── thoughts/
-│   ├── nikey_es/          # Your personal notes
+│   ├── nikey_es/          # Your personal notes (you write)
 │   │   ├── tickets/       # Ticket documentation
 │   │   └── notes/         # Personal notes
-│   ├── shared/            # Team-shared documents
+│   ├── shared/            # Team-shared documents (Claude writes)
 │   │   ├── research/      # Research documents
 │   │   ├── plans/         # Implementation plans
 │   │   └── prs/           # PR descriptions
@@ -103,12 +103,43 @@ After running `thoughts-init` in a project:
 └── ...
 ```
 
+**Key distinction:**
+- **`nikey_es/`**: Personal tickets/notes you create manually
+- **`shared/`**: Formal docs Claude generates from commands
+- **Example**: `/create_plan thoughts/nikey_es/tickets/eng_1234.md` reads your ticket → writes `shared/plans/2025-11-09-ENG-1234-*.md`
+
 ### Why Hardlinks?
 
 - **Fast searching**: Grep one directory instead of many
 - **No duplication**: Same file, same inode, no extra disk space
 - **Auto-sync**: Changes in source are immediately visible
 - **Efficient**: Better than symlinks for grep operations
+
+## Thoughts Directory
+
+This directory contains research documents, implementation plans, and notes for this project.
+
+### Structure
+
+- `nikey_es/` - Personal notes and tickets
+  - `tickets/` - Ticket documentation and tracking
+  - `notes/` - Personal notes and observations
+- `shared/` - Team-shared documents
+  - `research/` - Research documents from /research_codebase
+  - `plans/` - Implementation plans from /create_plan
+  - `prs/` - PR descriptions and documentation
+- `searchable/` - Hardlinks for efficient grep searching (auto-generated)
+
+### Usage
+
+Use Claude Code slash commands:
+- `/research_codebase [topic]` - Research and document codebase
+- `/create_plan [description]` - Create implementation plan
+- `/implement_plan [plan-file]` - Execute a plan
+- `/validate_plan [plan-file]` - Validate implementation
+
+Run `thoughts-sync` after adding/modifying files to update searchable/ hardlinks.
+
 
 ## 🔄 The Four-Phase Workflow
 
