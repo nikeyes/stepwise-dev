@@ -56,8 +56,36 @@ COMMIT_HASH=$(cd "$SCRIPT_DIR" && git rev-parse HEAD 2>/dev/null || echo "unknow
 
 # Display banner
 header "Claude Code Workflow Installer"
-info "Version: $CURRENT_VERSION"
 echo ""
+
+# Check for existing installation
+if [ -f "$VERSION_FILE" ]; then
+  echo -e "${BOLD}Currently Installed:${NC}"
+
+  # Read installed version
+  INSTALLED_VERSION=""
+  INSTALLED_DATE=""
+  INSTALLED_COMMIT=""
+
+  while IFS='=' read -r key value; do
+    case "$key" in
+      version) INSTALLED_VERSION="$value" ;;
+      installed) INSTALLED_DATE="$value" ;;
+      commit) INSTALLED_COMMIT="$value" ;;
+    esac
+  done < "$VERSION_FILE"
+
+  echo "  Version:   $INSTALLED_VERSION"
+  echo "  Installed: $INSTALLED_DATE"
+  echo "  Commit:    $INSTALLED_COMMIT"
+  echo ""
+fi
+
+echo -e "${BOLD}To Be Installed:${NC}"
+echo "  Version:   $CURRENT_VERSION"
+echo "  Commit:    $COMMIT_HASH"
+echo ""
+
 echo "This will install:"
 echo "  • 6 slash commands to $COMMANDS_DIR"
 echo "  • 5 specialized agents to $AGENTS_DIR"
