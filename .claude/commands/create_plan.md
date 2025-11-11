@@ -307,6 +307,18 @@ After structure approval:
 
 4. **Continue refining** until the user is satisfied
 
+5. **When plan is finalized**, inform the user:
+   ```
+   ✓ Implementation plan complete: `thoughts/shared/plans/[filename].md`
+
+   Next steps in the workflow:
+   - Review and approve the plan
+   - Use `/implement_plan thoughts/shared/plans/[filename].md` to execute it
+   - Or use `/iterate_plan thoughts/shared/plans/[filename].md [changes]` to refine further
+
+   💡 Tip: Use `/clear` to free up context before starting implementation
+   ```
+
 ## Important Guidelines
 
 1. **Be Skeptical**:

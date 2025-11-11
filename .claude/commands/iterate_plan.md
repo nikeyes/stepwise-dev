@@ -167,6 +167,18 @@ Get user confirmation before proceeding.
 
 3. **Be ready to iterate further** based on feedback
 
+4. **When iteration is complete**, inform the user:
+   ```
+   ✓ Plan updated: `thoughts/shared/plans/[filename].md`
+
+   Next steps in the workflow:
+   - Review the updated plan
+   - Use `/implement_plan thoughts/shared/plans/[filename].md` to execute it
+   - Or use `/iterate_plan thoughts/shared/plans/[filename].md [more changes]` for further refinement
+
+   💡 Tip: Use `/clear` to free up context before starting implementation
+   ```
+
 ## Important Guidelines
 
 1. **Be Skeptical**:

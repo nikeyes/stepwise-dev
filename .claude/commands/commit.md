@@ -51,3 +51,28 @@ You are tasked with creating git commits for the changes made during this sessio
 - Group related changes together
 - Keep commits focused and atomic when possible
 - The user trusts your judgment - they asked you to commit
+
+## Completion
+
+After commits are created:
+
+1. **Show commit summary**:
+   ```bash
+   git log --oneline -n [N]  # Show the commits you just created
+   ```
+
+2. **Inform the user**:
+   ```
+   ✓ Commits created successfully
+
+   Created [N] commit(s):
+   - [commit hash] [commit message]
+   - [commit hash] [commit message]
+
+   Next steps in the workflow:
+   - Review commits with `git show [hash]`
+   - Push to remote when ready
+   - Create PR if applicable
+
+   💡 Tip: Use `/clear` to free up context for your next task
+   ```

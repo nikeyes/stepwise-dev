@@ -178,7 +178,21 @@ Then wait for the user's research query.
    - Run `thoughts-sync` to sync the thoughts directory
    - Present a concise summary of findings to the user
    - Include key file references for easy navigation
-   - Ask if they have follow-up questions or need clarification
+   - Inform the user of completion:
+   ```
+   ✓ Research complete: `thoughts/shared/research/[filename].md`
+
+   Key findings:
+   - [Brief summary of main discoveries]
+   - [File references for navigation]
+
+   Next steps in the workflow:
+   - Review the research document for details
+   - Use `/create_plan [task description]` to plan implementation based on findings
+   - Ask follow-up questions if needed
+
+   💡 Tip: Use `/clear` to free up context before planning or implementation
+   ```
 
 9. **Handle follow-up questions:**
    - If the user has follow-up questions, append to the same research document

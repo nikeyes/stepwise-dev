@@ -174,3 +174,28 @@ Recommended workflow:
 The validation works best after commits are made, as it can analyze the git history to understand what was implemented.
 
 Remember: Good validation catches issues before they reach production. Be constructive but thorough in identifying gaps or improvements.
+
+## Completion
+
+After validation is complete:
+
+1. **Sync validation results** (if documented):
+   ```bash
+   thoughts-sync
+   ```
+
+2. **Inform the user**:
+   ```
+   ✓ Validation complete for: [Plan Name]
+
+   Status: [Summary of validation results]
+   - ✓ [Items that passed]
+   - ⚠️ [Items needing attention]
+
+   Next steps in the workflow:
+   - Address any identified issues
+   - Use `/commit` to create git commits if changes were made
+   - Plan is ready for PR or further iteration
+
+   💡 Tip: Use `/clear` to free up context before committing
+   ```

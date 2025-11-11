@@ -95,3 +95,34 @@ If the plan has existing checkmarks:
 - Verify previous work only if something seems off
 
 Remember: You're implementing a solution, not just checking boxes. Keep the end goal in mind and maintain forward momentum.
+
+## Completion
+
+When all phases are complete:
+1. **Run final verification**:
+   ```bash
+   make check test  # Or project-specific command
+   ```
+
+2. **Update the plan file**:
+   - Ensure all checkboxes are marked
+   - Note any deviations from the original plan
+
+3. **Sync the plan**:
+   ```bash
+   thoughts-sync
+   ```
+
+4. **Inform the user**:
+   ```
+   ✓ Implementation complete for: [Plan Name]
+
+   All phases implemented and verified:
+   - [List key accomplishments]
+
+   Next steps in the workflow:
+   - Use `/validate_plan thoughts/shared/plans/[filename].md` to verify completeness
+   - Use `/commit` to create git commits for the changes
+
+   💡 Tip: Use `/clear` to free up context before validation
+   ```
