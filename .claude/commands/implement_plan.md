@@ -53,26 +53,29 @@ If you encounter a mismatch:
 ## Verification Approach
 
 After implementing a phase:
-- Run the success criteria checks (usually `make check test` covers everything)
+- Run all automated success criteria checks (usually `make check test` covers everything)
 - Fix any issues before proceeding
 - Update your progress in both the plan and your todos
 - Check off completed items in the plan file itself using Edit
-- **Pause for human verification**: After completing all automated verification for a phase, pause and inform the human that the phase is ready for manual testing. Use this format:
+
+**Pause for manual verification ONLY if the plan has a "Manual Verification" section:**
+- If no manual verification → Continue to next phase immediately
+- If manual verification exists → Pause and inform the human:
   ```
   Phase [N] Complete - Ready for Manual Verification
 
   Automated verification passed:
   - [List automated checks that passed]
 
-  Please perform the manual verification steps listed in the plan:
+  Please perform manual verification:
   - [List manual verification items from the plan]
 
-  Let me know when manual testing is complete so I can proceed to Phase [N+1].
+  Let me know when complete so I can proceed to Phase [N+1].
   ```
 
-If instructed to execute multiple phases consecutively, skip the pause until the last phase. Otherwise, assume you are just doing one phase.
+If instructed to execute multiple phases consecutively, skip pauses until the last phase.
 
-do not check off items in the manual testing steps until confirmed by the user.
+Do not check off manual verification items until the user confirms completion.
 
 
 ## If You Get Stuck

@@ -235,21 +235,13 @@ After structure approval:
 ```
 
 ### Success Criteria:
-
-#### Automated Verification:
 - [ ] Migration applies cleanly: `make migrate`
 - [ ] Unit tests pass: `make test-component`
 - [ ] Type checking passes: `npm run typecheck`
 - [ ] Linting passes: `make lint`
 - [ ] Integration tests pass: `make test-integration`
 
-#### Manual Verification:
-- [ ] Feature works as expected when tested via UI
-- [ ] Performance is acceptable under load
-- [ ] Edge case handling verified manually
-- [ ] No regressions in related features
-
-**Implementation Note**: After completing this phase and all automated verification passes, pause here for manual confirmation from the human that the manual testing was successful before proceeding to the next phase.
+**Note**: Add "Manual Verification" section ONLY if truly needed (UI aesthetics, subjective UX). For TDD projects with automated tests, this section should be absent.
 
 ---
 
@@ -356,97 +348,49 @@ After structure approval:
 
 ## Success Criteria Guidelines
 
+**CRITICAL RULE FOR TDD PROJECTS:**
+- If a phase writes/runs automated tests → NO "Manual Verification" section needed
+- If it can be tested with code (`assert X == Y`) → It MUST be an automated test
+- Manual verification is ONLY for subjective qualities (aesthetics, "feel", human judgment)
+
 **Always separate success criteria into two categories:**
 
 1. **Automated Verification** (can be run by execution agents):
-   - Commands that can be run: `make test`, `npm run lint`, etc.
-   - Specific files that should exist
-   - Code compilation/type checking
-   - Automated test suites
-   - **IMPORTANT**: If a verification can be expressed as a unit test, it MUST be in automated verification (or better yet, part of the test phase)
+   - Commands: `make test`, `pytest -v`, `npm run lint`, etc.
+   - Files should exist, code compiles, tests pass
 
-2. **Manual Verification** (requires human testing):
-   - UI/UX functionality that requires human judgment
-   - Performance under real-world conditions
-   - Subjective quality assessments (readability, usability)
-   - User acceptance criteria that cannot be automated
-   - **IMPORTANT**: Do NOT include verifications that could be unit tests here
+2. **Manual Verification** (RARELY needed in TDD):
+   - Visual appearance requiring aesthetic judgment
+   - Subjective UX ("does it feel responsive?")
+   - Real assistive technology testing (screen readers)
+   - Cross-browser visual compatibility
 
-**TDD Compliance (CRITICAL FOR TDD PROJECTS):**
-
-For projects following Test-Driven Development:
-
-1. **Manual Verification should be RARE or ABSENT**:
-   - TDD projects test behavior through automated tests, not manual checks
-   - If you're writing "Manual Verification" items that test business logic, STOP - those should be automated tests
-   - Manual verification is ONLY for subjective qualities that cannot be automated
-
-2. **Valid Manual Verification (only these types)**:
-   - Visual appearance/styling that requires human aesthetic judgment
-   - Subjective UX qualities (does it "feel" responsive?)
-   - Cross-browser compatibility visual checks
-   - Accessibility with real assistive technologies
-
-3. **INVALID Manual Verification (write tests instead)**:
-   - ❌ "Verify function returns correct value"
-   - ❌ "Test with input X produces output Y"
-   - ❌ "Confirm calculation is correct"
-   - ❌ "Check API response structure"
-   - ❌ "Verify CLI output format"
-   - ❌ "Review test output to confirm tests pass" (this is redundant!)
-
-4. **When in doubt**: If it can be asserted in code (`assert X == Y`), it must be an automated test, not manual verification
+**INVALID Manual Verification (write tests instead):**
+- ❌ "Review test output" → Redundant, covered by automated
+- ❌ "Verify function returns correct value" → Should be unit test
+- ❌ "Test with input X produces output Y" → Should be test
+- ❌ "Confirm calculation is correct" → Should be unit test
 
 **Format examples:**
 
-Example 1 - TDD Backend Project (NO manual verification):
+Example 1 - TDD Test Phase (NO manual verification):
 ```markdown
 ### Success Criteria:
-
-#### Automated Verification:
-- [ ] All unit tests pass: `pytest tests/test_calculator.py -v`
-- [ ] Integration tests pass: `pytest tests/integration/ -v`
+- [ ] All tests pass: `pytest tests/ -v`
 - [ ] No linting errors: `pylint src/`
-- [ ] Type checking passes: `mypy src/`
-- [ ] Code coverage ≥ 90%: `pytest --cov=src tests/`
 ```
 
-Example 2 - TDD CLI Tool (minimal manual verification):
+Example 2 - Web UI Feature (justified manual verification):
 ```markdown
 ### Success Criteria:
 
 #### Automated Verification:
-- [ ] All unit tests pass: `go test ./...`
-- [ ] CLI integration tests pass: `make test-cli`
-- [ ] Help text includes new flag: `./app --help | grep --kelvin`
-- [ ] Output format test passes: Test verifies exact output format
-
-#### Manual Verification (ONLY if truly needed):
-- [ ] Terminal color output looks correct (visual check on different terminals)
-```
-
-Example 3 - Web UI Feature (justified manual verification):
-```markdown
-### Success Criteria:
-
-#### Automated Verification:
-- [ ] Component unit tests pass: `npm test components/Button`
+- [ ] Component tests pass: `npm test components/Button`
 - [ ] E2E tests pass: `playwright test button.spec.ts`
-- [ ] No linting errors: `eslint src/`
-- [ ] Accessibility tests pass: `axe-core` automated checks
 
-#### Manual Verification (UI-specific):
-- [ ] Button animation feels smooth (subjective timing)
-- [ ] Visual appearance matches design mockup (aesthetic judgment)
-- [ ] Works with screen reader (NVDA/JAWS manual test)
-```
-
-#### Anti-pattern Examples (DO NOT DO THIS):
-❌ Manual: "Verify function(5) returns 10" → Should be a unit test
-❌ Manual: "Check that API returns correct JSON structure" → Should be integration test
-❌ Manual: "Confirm calculation produces expected result" → Should be unit test
-❌ Manual: "Review test output to confirm all tests pass" → Redundant, covered by automated
-❌ Manual: "Test CLI with input X produces output Y" → Should be CLI integration test
+#### Manual Verification:
+- [ ] Button animation feels smooth (subjective)
+- [ ] Visual appearance matches mockup (aesthetic judgment)
 ```
 
 ## Common Patterns

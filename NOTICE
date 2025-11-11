@@ -25,6 +25,9 @@ Licensed under the Apache License, Version 2.0
   - thoughts-locator.md (modified)
   - thoughts-analyzer.md (modified)
 
+- Metadata generation script
+  - bin/thoughts-metadata (derived from hack/spec_metadata.sh, modified)
+
 All modifications include:
 - Adaptation for local-only operation (removed HumanLayer Cloud dependencies)
 - Integration with local thoughts/ directory system
