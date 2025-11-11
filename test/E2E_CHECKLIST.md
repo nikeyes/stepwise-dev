@@ -5,31 +5,32 @@
 Run before every commit:
 
 ```bash
-make test            # 61 automated tests (~3 sec)
+make test-functional # 33 functional tests for thoughts scripts (~3 sec)
+make test-structure  # 91 plugin structure validation tests (~1 sec)
 make check           # Shellcheck validation
 make validate-plugin # Plugin manifest validation
+
+# Or run all at once:
+make test-plugin     # Runs all automated tests above (124 total assertions)
 ```
 
 ## Manual Plugin Tests
 
-Cannot be automated (require Claude Code):
+**These tests require Claude Code runtime and cannot be automated:**
 
-### Installation
-- [ ] `/plugin marketplace add nikey-es/claude-code-dev-workflow`
+### Installation & Setup
 - [ ] `/plugin install workflow-dev@workflow-dev-marketplace`
 - [ ] Restart Claude Code
-- [ ] `/help` shows 6 commands
-- [ ] `./install-scripts.sh` installs scripts
-- [ ] `which thoughts-init` finds scripts
+- [ ] `/help` shows 6 commands (automated test verifies files exist)
+- [ ] `./install-scripts.sh` installs scripts (automated test verifies script works)
 
-### Workflow
-- [ ] `thoughts-init` creates directory structure
-- [ ] `/research_codebase test` generates document
-- [ ] `/create_plan test` generates plan
-- [ ] Agents spawn correctly
-- [ ] `thoughts-sync` creates hardlinks
+### Workflow Quality (LLM behavior)
+- [ ] `/research_codebase [real topic]` - Verify research document quality
+- [ ] `/create_plan [from ticket]` - Verify plan is actionable and thorough
+- [ ] Agents spawn correctly and run in parallel
+- [ ] Context management warnings appear appropriately
 
-### Lifecycle
+### Plugin Lifecycle
 - [ ] `/plugin disable workflow-dev@workflow-dev-marketplace`
 - [ ] Commands disappear from `/help`
 - [ ] `/plugin enable workflow-dev@workflow-dev-marketplace`

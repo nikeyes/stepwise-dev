@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# smoke-test.sh - Integration smoke tests for Claude Code Dev Workflow
+# thoughts-functional-test.sh - Functional tests for thoughts/ bash scripts
+# Tests thoughts-init, thoughts-sync, thoughts-metadata, and install-scripts.sh
 # Creates temporary directory, tests core functionality, auto-cleans
 
 # Get script directory
@@ -16,9 +17,9 @@ source "$SCRIPT_DIR/test-helpers.sh"
 TEST_DIR=$(mktemp -d)
 trap 'rm -rf "$TEST_DIR"' EXIT
 
-echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-echo "🧪 Claude Code Dev Workflow - Smoke Tests"
-echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo "⚙️  Thoughts Scripts - Functional Tests"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo "Test directory: $TEST_DIR"
 echo ""
 
@@ -189,111 +190,6 @@ fi
 TESTS_RUN=$((TESTS_RUN + 1))
 
 # ============================================================================
-# Test 7: Plugin manifest validates correctly
-# ============================================================================
-section "Test 7: Plugin manifest validation"
-
-cd "$PROJECT_ROOT"
-
-# Check .claude-plugin directory exists
-assert_dir_exists ".claude-plugin" ".claude-plugin/ directory exists"
-
-# Check plugin.json exists
-assert_file_exists ".claude-plugin/plugin.json" "plugin.json exists"
-
-# Validate JSON syntax (if jq available)
-if command -v jq >/dev/null 2>&1; then
-  if jq empty .claude-plugin/plugin.json 2>/dev/null; then
-    echo -e "${GREEN}✓${NC} plugin.json has valid JSON syntax"
-    TESTS_PASSED=$((TESTS_PASSED + 1))
-  else
-    echo -e "${RED}✗${NC} plugin.json has invalid JSON syntax"
-    TESTS_FAILED=$((TESTS_FAILED + 1))
-  fi
-  TESTS_RUN=$((TESTS_RUN + 1))
-fi
-
-# Check required fields
-plugin_content=$(cat .claude-plugin/plugin.json)
-assert_output_contains "$plugin_content" '"name"' "manifest contains name field"
-assert_output_contains "$plugin_content" '"version"' "manifest contains version field"
-assert_output_contains "$plugin_content" '"description"' "manifest contains description field"
-
-# Check marketplace.json exists and is valid
-assert_file_exists ".claude-plugin/marketplace.json" "marketplace.json exists"
-
-if command -v jq >/dev/null 2>&1; then
-  if jq empty .claude-plugin/marketplace.json 2>/dev/null; then
-    echo -e "${GREEN}✓${NC} marketplace.json has valid JSON syntax"
-    TESTS_PASSED=$((TESTS_PASSED + 1))
-  else
-    echo -e "${RED}✗${NC} marketplace.json has invalid JSON syntax"
-    TESTS_FAILED=$((TESTS_FAILED + 1))
-  fi
-  TESTS_RUN=$((TESTS_RUN + 1))
-fi
-
-# Check commands directory at root
-assert_dir_exists "commands" "commands/ directory at root"
-
-# Check agents directory at root
-assert_dir_exists "agents" "agents/ directory at root"
-
-# Check bin directory at root
-assert_dir_exists "bin" "bin/ directory at root"
-
-# Verify no old .claude/commands or .claude/agents directories
-if [ ! -d ".claude/commands" ]; then
-  echo -e "${GREEN}✓${NC} old .claude/commands/ removed"
-  TESTS_PASSED=$((TESTS_PASSED + 1))
-else
-  echo -e "${RED}✗${NC} old .claude/commands/ still exists"
-  TESTS_FAILED=$((TESTS_FAILED + 1))
-fi
-TESTS_RUN=$((TESTS_RUN + 1))
-
-if [ ! -d ".claude/agents" ]; then
-  echo -e "${GREEN}✓${NC} old .claude/agents/ removed"
-  TESTS_PASSED=$((TESTS_PASSED + 1))
-else
-  echo -e "${RED}✗${NC} old .claude/agents/ still exists"
-  TESTS_FAILED=$((TESTS_FAILED + 1))
-fi
-TESTS_RUN=$((TESTS_RUN + 1))
-
-# Verify component counts (expected: 6 commands, 5 agents, 3 scripts)
-COMMANDS=$(find commands -name "*.md" 2>/dev/null | wc -l | tr -d ' ')
-AGENTS=$(find agents -name "*.md" 2>/dev/null | wc -l | tr -d ' ')
-SCRIPTS=$(find bin -type f 2>/dev/null | wc -l | tr -d ' ')
-
-if [ "$COMMANDS" -eq 6 ]; then
-  echo -e "${GREEN}✓${NC} correct number of commands (6)"
-  TESTS_PASSED=$((TESTS_PASSED + 1))
-else
-  echo -e "${RED}✗${NC} expected 6 commands, found $COMMANDS"
-  TESTS_FAILED=$((TESTS_FAILED + 1))
-fi
-TESTS_RUN=$((TESTS_RUN + 1))
-
-if [ "$AGENTS" -eq 5 ]; then
-  echo -e "${GREEN}✓${NC} correct number of agents (5)"
-  TESTS_PASSED=$((TESTS_PASSED + 1))
-else
-  echo -e "${RED}✗${NC} expected 5 agents, found $AGENTS"
-  TESTS_FAILED=$((TESTS_FAILED + 1))
-fi
-TESTS_RUN=$((TESTS_RUN + 1))
-
-if [ "$SCRIPTS" -eq 3 ]; then
-  echo -e "${GREEN}✓${NC} correct number of scripts (3)"
-  TESTS_PASSED=$((TESTS_PASSED + 1))
-else
-  echo -e "${RED}✗${NC} expected 3 scripts, found $SCRIPTS"
-  TESTS_FAILED=$((TESTS_FAILED + 1))
-fi
-TESTS_RUN=$((TESTS_RUN + 1))
-
-# ============================================================================
 # Summary
 # ============================================================================
 
@@ -301,7 +197,7 @@ print_summary
 
 if [ "$TESTS_FAILED" -eq 0 ]; then
   echo ""
-  echo "✅ All smoke tests passed! Safe to deploy."
+  echo "✅ All functional tests passed!"
   exit 0
 else
   echo ""
