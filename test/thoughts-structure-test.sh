@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# smoke-test.sh - Integration smoke tests for Claude Code Dev Workflow
+# thoughts-functional-test.sh - Functional tests for thoughts/ bash scripts
+# Tests thoughts-init, thoughts-sync, thoughts-metadata, and install-scripts.sh
 # Creates temporary directory, tests core functionality, auto-cleans
 
 # Get script directory
@@ -16,9 +17,9 @@ source "$SCRIPT_DIR/test-helpers.sh"
 TEST_DIR=$(mktemp -d)
 trap 'rm -rf "$TEST_DIR"' EXIT
 
-echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-echo "🧪 Claude Code Dev Workflow - Smoke Tests"
-echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo "⚙️  Thoughts Scripts - Functional Tests"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo "Test directory: $TEST_DIR"
 echo ""
 
@@ -118,89 +119,44 @@ fi
 TESTS_RUN=$((TESTS_RUN + 1))
 
 # ============================================================================
-# Test 5: install.sh copies files correctly
+# Test 5: install-scripts.sh installs scripts correctly
 # ============================================================================
-section "Test 5: install.sh installs files correctly"
+section "Test 5: install-scripts.sh installs scripts correctly"
 
 # Create fake HOME for installation test
 FAKE_HOME="$TEST_DIR/fake-home"
 mkdir -p "$FAKE_HOME"
 
-# Run installer with auto-yes and fake HOME
+# Run script installer with auto-yes and fake HOME
 cd "$PROJECT_ROOT"
-HOME="$FAKE_HOME" bash -c "echo 'y' | ./install.sh > /dev/null 2>&1"
-
-# Check commands installed
-assert_file_exists "$FAKE_HOME/.claude/commands/research_codebase.md" "research_codebase.md installed"
-assert_file_exists "$FAKE_HOME/.claude/commands/create_plan.md" "create_plan.md installed"
-assert_file_exists "$FAKE_HOME/.claude/commands/iterate_plan.md" "iterate_plan.md installed"
-assert_file_exists "$FAKE_HOME/.claude/commands/implement_plan.md" "implement_plan.md installed"
-assert_file_exists "$FAKE_HOME/.claude/commands/validate_plan.md" "validate_plan.md installed"
-assert_file_exists "$FAKE_HOME/.claude/commands/commit.md" "commit.md installed"
-
-# Check agents installed
-assert_file_exists "$FAKE_HOME/.claude/agents/codebase-locator.md" "codebase-locator.md installed"
-assert_file_exists "$FAKE_HOME/.claude/agents/codebase-analyzer.md" "codebase-analyzer.md installed"
-assert_file_exists "$FAKE_HOME/.claude/agents/codebase-pattern-finder.md" "codebase-pattern-finder.md installed"
-assert_file_exists "$FAKE_HOME/.claude/agents/thoughts-locator.md" "thoughts-locator.md installed"
-assert_file_exists "$FAKE_HOME/.claude/agents/thoughts-analyzer.md" "thoughts-analyzer.md installed"
+HOME="$FAKE_HOME" bash -c "echo 'y' | ./install-scripts.sh > /dev/null 2>&1"
 
 # Check scripts installed
 assert_file_exists "$FAKE_HOME/.local/bin/thoughts-init" "thoughts-init installed"
 assert_file_exists "$FAKE_HOME/.local/bin/thoughts-sync" "thoughts-sync installed"
 assert_file_exists "$FAKE_HOME/.local/bin/thoughts-metadata" "thoughts-metadata installed"
-assert_file_exists "$FAKE_HOME/.local/bin/thoughts-version" "thoughts-version installed"
 
 # Check scripts are executable
 assert_executable "$FAKE_HOME/.local/bin/thoughts-init" "thoughts-init is executable"
 assert_executable "$FAKE_HOME/.local/bin/thoughts-sync" "thoughts-sync is executable"
 assert_executable "$FAKE_HOME/.local/bin/thoughts-metadata" "thoughts-metadata is executable"
-assert_executable "$FAKE_HOME/.local/bin/thoughts-version" "thoughts-version is executable"
-
-# Check VERSION file installed
-assert_file_exists "$FAKE_HOME/.claude/claude-code-dev-workflow-version" "VERSION file installed"
 
 # ============================================================================
-# Test 6: VERSION file format and thoughts-version script
+# Test 6: install-scripts.sh creates backup when scripts exist
 # ============================================================================
-section "Test 6: VERSION file format and thoughts-version"
+section "Test 6: install-scripts.sh creates backup of existing scripts"
 
-# Check VERSION file format
-version_content=$(cat "$FAKE_HOME/.claude/claude-code-dev-workflow-version")
-assert_output_contains "$version_content" "version=" "VERSION contains version field"
-assert_output_contains "$version_content" "installed=" "VERSION contains installed field"
-assert_output_contains "$version_content" "commit=" "VERSION contains commit field"
-
-# Test thoughts-version with matching versions (up-to-date scenario)
-cd "$PROJECT_ROOT"
-HOME="$FAKE_HOME" bash -c "PATH=\"$FAKE_HOME/.local/bin:\$PATH\" thoughts-version > /dev/null 2>&1"
-version_exit=$?
-
-if [ $version_exit -eq 0 ] || [ $version_exit -eq 1 ]; then
-  echo -e "${GREEN}✓${NC} thoughts-version executes without errors"
-  TESTS_PASSED=$((TESTS_PASSED + 1))
-else
-  echo -e "${RED}✗${NC} thoughts-version returned unexpected exit code: $version_exit"
-  TESTS_FAILED=$((TESTS_FAILED + 1))
-fi
-TESTS_RUN=$((TESTS_RUN + 1))
-
-# ============================================================================
-# Test 7: install.sh creates backup when files exist
-# ============================================================================
-section "Test 7: install.sh creates backup of existing files"
-
-# Create another fake HOME with pre-existing file
+# Create another fake HOME with pre-existing script
 FAKE_HOME2="$TEST_DIR/fake-home2"
-mkdir -p "$FAKE_HOME2/.claude/commands"
-echo "OLD CONTENT" > "$FAKE_HOME2/.claude/commands/research_codebase.md"
+mkdir -p "$FAKE_HOME2/.local/bin"
+echo "OLD SCRIPT" > "$FAKE_HOME2/.local/bin/thoughts-init"
 
 # Run installer again
 cd "$PROJECT_ROOT"
-HOME="$FAKE_HOME2" bash -c "echo 'y' | ./install.sh > /dev/null 2>&1"
+HOME="$FAKE_HOME2" bash -c "echo 'y' | ./install-scripts.sh > /dev/null 2>&1"
 
-# Check backup directory was created (it will have a timestamp)
-backup_dir=$(find "$FAKE_HOME2" -maxdepth 1 -type d -name ".claude-workflow-backup-*" 2>/dev/null | head -1)
+# Check backup directory was created
+backup_dir=$(find "$FAKE_HOME2/.local/bin" -maxdepth 1 -type d -name "backup-*" 2>/dev/null | head -1)
 if [ -n "$backup_dir" ] && [ -d "$backup_dir" ]; then
   echo -e "${GREEN}✓${NC} backup directory created"
   TESTS_PASSED=$((TESTS_PASSED + 1))
@@ -210,25 +166,25 @@ else
 fi
 TESTS_RUN=$((TESTS_RUN + 1))
 
-# Check old file is in backup
-if [ -n "$backup_dir" ] && [ -f "$backup_dir/.claude/commands/research_codebase.md" ]; then
-  echo -e "${GREEN}✓${NC} old file backed up"
+# Check old script is in backup
+if [ -n "$backup_dir" ] && [ -f "$backup_dir/thoughts-init" ]; then
+  echo -e "${GREEN}✓${NC} old script backed up"
   TESTS_PASSED=$((TESTS_PASSED + 1))
 else
-  echo -e "${RED}✗${NC} old file not backed up"
+  echo -e "${RED}✗${NC} old script not backed up"
   TESTS_FAILED=$((TESTS_FAILED + 1))
 fi
 TESTS_RUN=$((TESTS_RUN + 1))
 
-# Check new file is installed
-assert_file_exists "$FAKE_HOME2/.claude/commands/research_codebase.md" "new file installed"
+# Check new script is installed
+assert_file_exists "$FAKE_HOME2/.local/bin/thoughts-init" "new script installed"
 
-# Verify new content (should not be "OLD CONTENT")
-if ! grep -q "OLD CONTENT" "$FAKE_HOME2/.claude/commands/research_codebase.md" 2>/dev/null; then
-  echo -e "${GREEN}✓${NC} new file has updated content"
+# Verify new content (should not be "OLD SCRIPT")
+if ! grep -q "OLD SCRIPT" "$FAKE_HOME2/.local/bin/thoughts-init" 2>/dev/null; then
+  echo -e "${GREEN}✓${NC} new script has updated content"
   TESTS_PASSED=$((TESTS_PASSED + 1))
 else
-  echo -e "${RED}✗${NC} new file still has old content"
+  echo -e "${RED}✗${NC} new script still has old content"
   TESTS_FAILED=$((TESTS_FAILED + 1))
 fi
 TESTS_RUN=$((TESTS_RUN + 1))
@@ -241,7 +197,7 @@ print_summary
 
 if [ "$TESTS_FAILED" -eq 0 ]; then
   echo ""
-  echo "✅ All smoke tests passed! Safe to deploy."
+  echo "✅ All functional tests passed!"
   exit 0
 else
   echo ""
