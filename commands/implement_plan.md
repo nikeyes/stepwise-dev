@@ -1,7 +1,6 @@
 ---
 description: Implement technical plans from thoughts/shared/plans with verification
 argument-hint: [plan-file-path]
-model: sonnet
 ---
 
 <!--

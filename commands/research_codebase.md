@@ -1,7 +1,6 @@
 ---
 description: Document codebase as-is with thoughts directory for historical context
 argument-hint: [research question or topic]
-model: sonnet
 ---
 
 <!--

@@ -1,7 +1,6 @@
 ---
 description: Validate implementation against plan, verify success criteria, identify issues
 argument-hint: [plan-file-path]
-model: sonnet
 ---
 
 <!--
