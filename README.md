@@ -1,4 +1,4 @@
-# Claude Code Stepwise Dev Workflow
+# Claude Code Stepwise Dev Plugin
 
 [![Plugin Available](https://img.shields.io/badge/Claude_Code-Plugin_Available-blue)](https://github.com/nikeyes/stepwise-dev)
 [![License](https://img.shields.io/badge/License-Apache_2.0-green.svg)](LICENSE)
