@@ -2,13 +2,9 @@
 description: Create git commits with user approval and no Claude attribution
 ---
 
-<!--
-Based on HumanLayer project
-Copyright (c) 2024, humanlayer Authors
-Licensed under Apache License 2.0
-Modified by: Jorge Castro
-Modifications: Adapted for local-only operation
--->
+<!-- SPDX-License-Identifier: Apache-2.0
+     SPDX-FileCopyrightText: 2024 humanlayer Authors (original)
+     SPDX-FileCopyrightText: 2025 Jorge Castro (modifications) -->
 
 # Commit Changes
 

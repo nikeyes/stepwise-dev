@@ -3,13 +3,9 @@ description: Iterate on existing implementation plans with thorough research and
 argument-hint: [plan-file-path] [changes to make]
 ---
 
-<!--
-Based on HumanLayer project
-Copyright (c) 2024, humanlayer Authors
-Licensed under Apache License 2.0
-Modified by: Jorge Castro
-Modifications: Adapted for local-only operation with thoughts/ directory integration
--->
+<!-- SPDX-License-Identifier: Apache-2.0
+     SPDX-FileCopyrightText: 2024 humanlayer Authors (original)
+     SPDX-FileCopyrightText: 2025 Jorge Castro (modifications) -->
 
 # Iterate Implementation Plan
 

@@ -436,11 +436,16 @@ Apache License 2.0 - See LICENSE file for details.
 
 ## 🔖 Attribution
 
-This project contains code derived from [HumanLayer](https://github.com/humanlayer/humanlayer)
-Copyright (c) 2024, humanlayer Authors
-Licensed under the Apache License, Version 2.0
+This project is derived from [HumanLayer's Claude Code workflow](https://github.com/humanlayer/humanlayer/tree/main/.claude) under Apache License 2.0.
 
-All slash commands and specialized agents are modified versions of the original HumanLayer implementations, adapted for local-only operation without cloud dependencies.
+See [NOTICE](NOTICE) for detailed attribution.
+
+**Major enhancements and modifications**:
+- Specialized agent system for efficient codebase exploration (5 custom agents)
+- Local-only thoughts/ management with Agent Skill (no cloud dependencies)
+- Automated testing infrastructure for bash scripts
+- Standalone plugin distribution system
+- Enhanced TDD-focused success criteria guidelines
 
 ## 🙏 Credits
 

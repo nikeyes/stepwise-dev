@@ -10,7 +10,7 @@ The following components are derived from HumanLayer:
 Copyright (c) 2024, humanlayer Authors
 Licensed under the Apache License, Version 2.0
 
-- Claude Code slash commands in .claude/commands/
+- Claude Code slash commands in commands/
   - create_plan.md (modified)
   - iterate_plan.md (modified)
   - implement_plan.md (modified)
@@ -18,7 +18,7 @@ Licensed under the Apache License, Version 2.0
   - research_codebase.md (modified)
   - commit.md (modified)
 
-- Claude Code agents in .claude/agents/
+- Claude Code agents in agents/
   - codebase-locator.md (modified)
   - codebase-analyzer.md (modified)
   - codebase-pattern-finder.md (modified)
@@ -26,7 +26,7 @@ Licensed under the Apache License, Version 2.0
   - thoughts-analyzer.md (modified)
 
 - Metadata generation script
-  - bin/thoughts-metadata (derived from hack/spec_metadata.sh, modified)
+  - skills/thoughts-management/scripts/thoughts-metadata (derived from hack/spec_metadata.sh, modified)
 
 All modifications include:
 - Adaptation for local-only operation (removed HumanLayer Cloud dependencies)
