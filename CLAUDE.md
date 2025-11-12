@@ -174,7 +174,6 @@ thoughts/
 ## Configuration
 
 **Username**: Set `export THOUGHTS_USER=your_name` (default: `nikey_es`)
-**PATH**: Add `export PATH="$HOME/.local/bin:$PATH"` to shell config
 
 ### Version Management
 
@@ -184,16 +183,16 @@ thoughts/
 - Update with `/plugin update stepwise-dev@stepwise-dev`
 
 **Scripts:**
-- Updated independently via `./install-scripts.sh`
-- No built-in version checking (scripts are simple utilities)
+- Updated automatically when plugin updates
+- Part of the plugin package, no separate installation
 
 ## Development Workflow
 
 For **scripts**:
-1. Edit file in `bin/`
-2. Run `./install-scripts.sh` or `make test`
-3. Test changes
-4. Iterate
+1. Edit file in `skills/thoughts-management/scripts/`
+2. Test using `make test` (runs automated tests)
+3. Test manually by triggering the Skill in Claude Code
+4. Iterate based on results
 
 For **commands/agents**:
 1. Edit file in `commands/` or `agents/`

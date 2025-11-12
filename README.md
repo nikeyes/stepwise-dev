@@ -12,7 +12,7 @@ This workflow implements the **Research → Plan → Implement → Validate** cy
 
 - **6 Slash Commands** for structured development
 - **5 Specialized Agents** for parallel research
-- **4 Bash Scripts** for local thoughts/ management
+- **3 Bash Scripts** for local thoughts/ management
 - **Built-in version tracking** for team synchronization
 - **Local-only operation** - no cloud dependencies
 
@@ -46,7 +46,7 @@ This workflow implements the **Research → Plan → Implement → Validate** cy
 | `thoughts-locator` | Discover documents in thoughts/ |
 | `thoughts-analyzer` | Extract insights from thoughts docs |
 
-### Thoughts Scripts (`~/.local/bin/`)
+### Thoughts Scripts (Included in Plugin)
 
 | Script | Purpose |
 |--------|---------|
@@ -54,9 +54,9 @@ This workflow implements the **Research → Plan → Implement → Validate** cy
 | `thoughts-sync` | Sync hardlinks in searchable/ directory |
 | `thoughts-metadata` | Generate git metadata for documents |
 
-## 🚀 Installation
+**Note**: These scripts are executed automatically by the `thoughts-management` Skill. You don't need to install them separately or configure PATH.
 
-### Step 1: Install Plugin
+## 🚀 Installation
 
 ```bash
 # Add marketplace from GitHub
@@ -66,32 +66,15 @@ This workflow implements the **Research → Plan → Implement → Validate** cy
 /plugin install stepwise-dev@stepwise-dev
 ```
 
-Restart Claude Code after installation.
+**Restart Claude Code after installation.**
 
-### Step 2: Install Helper Scripts
+That's it! The plugin includes:
+- 6 slash commands
+- 5 specialized agents
+- 1 thoughts-management Skill (with 3 bash scripts)
 
-The plugin installs commands and agents automatically. You also need to install helper scripts to your PATH:
+All components are ready to use immediately after installation.
 
-```bash
-git clone https://github.com/nikeyes/stepwise-dev.git
-cd stepwise-dev
-./install-scripts.sh
-```
-
-**Why two steps?** Plugin installs commands/agents automatically. Scripts need manual install to your PATH.
-
-### Verify Installation
-
-```bash
-# Check scripts are in PATH
-which thoughts-init thoughts-sync thoughts-metadata
-```
-
-If not found, add to your shell config (`~/.zshrc` or `~/.bashrc`):
-
-```bash
-export PATH="$HOME/.local/bin:$PATH"
-```
 
 ## 📁 Directory Structure
 
@@ -360,14 +343,11 @@ Used internally by commands to populate frontmatter.
 ### Updating
 
 ```bash
-# Update plugin
+# Update plugin (includes scripts and all components)
 /plugin update stepwise-dev@stepwise-dev
-
-# Update scripts
-cd /path/to/stepwise-dev
-git pull
-./install-scripts.sh
 ```
+
+**Note**: Plugin updates include commands, agents, and scripts automatically. No separate script installation needed.
 
 ## 📝 Context Management
 
@@ -402,7 +382,7 @@ Clear between phases:
 
 ## 🔧 Customization
 
-**Change Username**: Set `export THOUGHTS_USER=your_name` or edit `bin/thoughts-init:8`
+**Change Username**: Set `export THOUGHTS_USER=your_name` or edit `skills/thoughts-management/scripts/thoughts-init:8`
 
 **Add Commands**: Create `.md` files in `~/.claude/commands/` with frontmatter. Claude auto-detects on restart.
 
@@ -424,12 +404,6 @@ Tests validate all bash scripts (thoughts-init, thoughts-sync, thoughts-metadata
 - Check plugin is enabled: `/plugin list`
 - Try reinstalling: `/plugin uninstall stepwise-dev@stepwise-dev` then `/plugin install stepwise-dev@stepwise-dev`
 
-**Scripts not found in PATH**:
-- Check installation: `which thoughts-init`
-- Add to shell config: `export PATH="$HOME/.local/bin:$PATH"`
-- Source your shell config: `source ~/.zshrc` (or `~/.bashrc`)
-- Run `./install-scripts.sh` again if needed
-
 **Plugin installation fails**:
 - Verify marketplace added: `/plugin marketplace list`
 - Check network connection (for GitHub marketplaces)
@@ -441,7 +415,7 @@ Tests validate all bash scripts (thoughts-init, thoughts-sync, thoughts-metadata
 
 **No files synced**: Run `THOUGHTS_DEBUG=1 thoughts-sync` to debug
 
-**Plugin version mismatch**: Update plugin with `/plugin update stepwise-dev@stepwise-dev`, update scripts with `cd /path/to/repo && git pull && ./install-scripts.sh`
+**Plugin version mismatch**: Update plugin with `/plugin update stepwise-dev@stepwise-dev`. All components (commands, agents, scripts) update together.
 
 ## 📚 Learn More
 
