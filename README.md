@@ -14,7 +14,6 @@ This workflow implements the **Research → Plan → Implement → Validate** cy
 - **5 Specialized Agents** for parallel research
 - **3 Bash Scripts** for local thoughts/ management
 - **Built-in version tracking** for team synchronization
-- **Local-only operation** - no cloud dependencies
 
 ### Philosophy
 
