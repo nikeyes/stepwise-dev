@@ -1,18 +1,12 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+# SPDX-License-Identifier: Apache-2.0
+# SPDX-FileCopyrightText: 2024 humanlayer Authors (original)
+# SPDX-FileCopyrightText: 2025 Jorge Castro (modifications)
+#
 # thoughts-metadata - Generate git/project metadata for thoughts documents
-#
-# Based on HumanLayer project (https://github.com/humanlayer/humanlayer)
-# Original file: hack/spec_metadata.sh
-# Copyright (c) 2024, humanlayer Authors
-# Licensed under Apache License 2.0
-#
-# Modified by: Jorge Castro
-# Modifications:
-# - Removed HumanLayer Cloud dependencies
-# - Added local git-only metadata collection
-# - Enhanced error handling and version checking
+# Based on HumanLayer project hack/spec_metadata.sh
 
 # Colors for output
 YELLOW='\033[1;33m'
