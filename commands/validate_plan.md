@@ -1,5 +1,5 @@
 ---
-description: Validate implementation against plan, verify success criteria, identify issues
+description: Validate that plan was correctly implemented, verify all success criteria
 argument-hint: [plan-file-path]
 ---
 
