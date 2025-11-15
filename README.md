@@ -449,4 +449,4 @@ See [NOTICE](NOTICE) for detailed attribution.
 
 **Happy Coding! 🚀**
 
-Questions? Issues? Check the planning doc or open a discussion.
+Questions? Issues? [Open an issue](https://github.com/nikeyes/stepwise-dev/issues) on GitHub.
