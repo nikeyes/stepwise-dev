@@ -4,11 +4,11 @@
 [![License](https://img.shields.io/badge/License-Apache_2.0-green.svg)](LICENSE)
 [![Tests](https://img.shields.io/badge/Tests-Passing-brightgreen)](test/)
 
-A complete workflow system for Claude Code inspired by [Ashley Ha's workflow](https://medium.com/@ashleyha/i-mastered-the-claude-code-workflow-145d25e502cf), adapted to work 100% locally without HumanLayer Cloud dependencies.
+A development workflow for Claude Code inspired by [Ashley Ha's workflow](https://medium.com/@ashleyha/i-mastered-the-claude-code-workflow-145d25e502cf), adapted to work 100% locally with thoughts.
 
 ## 🎯 What This Is
 
-This workflow implements the **Research → Plan → Implement → Validate** cycle with:
+This workflow implements the **Research -> Plan -> Implement -> Validate** cycle with:
 
 - **6 Slash Commands** for structured development
 - **5 Specialized Agents** for parallel research
