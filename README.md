@@ -6,6 +6,8 @@
 
 A development workflow for Claude Code inspired by [Ashley Ha's workflow](https://medium.com/@ashleyha/i-mastered-the-claude-code-workflow-145d25e502cf), adapted to work 100% locally with thoughts.
 
+**📖 Read more**: [Tu CLAUDE.md no funciona sin Context Engineering](https://nikeyes.github.io/tu-claude-md-no-funciona-sin-context-engineering-es/) (Spanish article about Stepwise-dev)
+
 ## 🎯 What This Is
 
 Solves the context management problem: LLMs lose attention after 60% context usage.
