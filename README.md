@@ -78,6 +78,9 @@ That's it! The plugin includes:
 
 All components are ready to use immediately after installation.
 
+## 🧪 Try It Out
+
+Don't have a project to test with? Use [stepwise-todo-api-test](https://github.com/nikeyes/stepwise-todo-api-test) — a sample repository with small and large tasks designed for testing this plugin in an isolated environment.
 
 ## 📁 Directory Structure
 
