@@ -339,18 +339,15 @@ Used internally by commands to populate frontmatter.
 ### Checking Plugin Version
 
 ```bash
-# List installed plugins
-/plugin list
-
-# Show detailed plugin info
-/plugin show stepwise-dev@stepwise-dev
+/plugin
+# Check on Installed tab
 ```
 
 ### Updating
 
 ```bash
-# Update plugin (includes scripts and all components)
-/plugin update stepwise-dev@stepwise-dev
+/plugin -> Marketplaces tab -> stepwise-dev -> Update marketplace
+/plugin -> Installed -> stepwise-dev -> Update now
 ```
 
 **Note**: Plugin updates include commands, agents, and scripts automatically. No separate script installation needed.
