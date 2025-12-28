@@ -63,6 +63,10 @@ Then wait for the user's research query.
    - Use the **stepwise-dev:thoughts-locator** agent to discover what documents exist about the topic
    - Use the **stepwise-dev:thoughts-analyzer** agent to extract key insights from specific documents (only the most relevant ones)
 
+   **For web research (only if user explicitly asks):**
+   - Use the **web-search-researcher** agent for external documentation and resources
+   - IF you use web-research agents, instruct them to return LINKS with their findings, and please INCLUDE those links in your final report
+
    The key is to use these agents intelligently:
    - Start with locator agents to find what exists
    - Then use analyzer agents on the most promising findings to document how they work
