@@ -28,6 +28,17 @@ Implements **Research -> Plan -> Implement -> Validate** with frequent `/clear` 
 
 ## 📦 What's Included
 
+### Enhanced Planning with Vertical Slicing
+
+The `create_plan` command guides you through creating implementation plans that emphasize:
+- **Small safe steps** using the Hamburger Method for vertical slicing
+- **Progressive delivery** patterns (dummy → dynamic, backend-only → full stack, etc.)
+- **Learning vs Earning** phases to separate research from value delivery
+- **Complexity assessment** to guide implementation decisions
+- **Reversibility** and rollback strategies for each phase
+
+Plans are created interactively, with vertical slicing analysis before committing to detailed phases.
+
 ### Slash Commands
 
 | Command | Description |
