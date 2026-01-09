@@ -171,59 +171,6 @@ thoughts/
 4. **Parallel research:** Commands spawn multiple agents concurrently
 5. **Local persistence:** All documents saved to `thoughts/` for future reference
 
-## Planning Philosophy
-
-The `create_plan` command emphasizes **vertical slicing** and **small safe steps** based on Eduardo Ferro's lean delivery philosophy.
-
-### Key Principles:
-
-1. **Vertical Slicing** (Hamburger Method):
-   - Identify technical layers (input → processing → storage → delivery)
-   - Define quality attributes (simplest → most robust) for each layer
-   - Compose minimal vertical slices that deliver real user value
-   - Iterate to enhance quality and scope
-
-2. **Small Safe Steps**:
-   - Each phase delivers working functionality
-   - Favor reversible changes (feature flags, parallel writes, gradual rollouts)
-   - Postpone irreversible decisions until more information is available
-   - Separate learning (time-boxed research) from earning (value delivery)
-
-3. **Progressive Delivery Patterns**:
-   - Dummy → Dynamic (hardcoded → real data)
-   - Backend-only → Full Stack (API → UI)
-   - Limited Scope → Full Feature (one segment/format → many)
-   - Manual → Automated (prove value → automate)
-   - Feature Flagged Rollout (team → beta → all)
-
-4. **Eduardo Ferro's Leadership Philosophy**:
-   - "Can we avoid doing it?" - Challenge necessity
-   - "Can we achieve the same impact with fewer resources?" - Maximize impact, minimize effort
-   - "What if we only had half the time?" - Force prioritization
-   - "If you had to ship by tomorrow, what would you build?" - Identify minimum viable deliverable
-   - "What's the worst that could happen?" - Evaluate risk realistically for safe experiments
-
-### Planning Process:
-
-The enhanced planning flow includes:
-1. Context gathering (read files, spawn research agents)
-2. **Vertical slicing analysis** (new - Hamburger Method, complexity assessment)
-3. Plan structure development (based on vertical slices)
-4. Detailed plan writing (with Learning/Earning phases, reversibility notes)
-5. Review and iteration
-
-### Plan Structure:
-
-Plans now include:
-- **Vertical Slicing Analysis**: Layers, quality attributes, slice options, complexity assessment
-- **Progressive Delivery Pattern**: Specific pattern chosen and rollout strategy
-- **Decisions and Postponements**: What's decided now vs later
-- **Phases with Learning/Earning tags**: Each phase classified by type
-- **Reversibility notes**: How to undo or compensate for each phase
-- **Success criteria**: Still separated into automated vs manual
-
-This approach ensures plans are incremental, testable, and aligned with TDD and lean delivery principles.
-
 ## Configuration
 
 **Username**: Set `export THOUGHTS_USER=your_name` (default: `nikey_es`)
