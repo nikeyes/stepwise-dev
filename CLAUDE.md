@@ -8,52 +8,79 @@ This is a **workflow tooling project for Claude Code itself**, not a traditional
 
 The workflow operates entirely locally without cloud dependencies and uses a `thoughts/` directory system with hardlinks for efficient searching.
 
-## Plugin Structure
+## Multi-Plugin Architecture
 
-This project is distributed as a Claude Code plugin:
+This project is distributed as **3 independent Claude Code plugins** in a single marketplace:
 
-**Plugin Name**: `stepwise-dev`
-
+### Plugin 1: stepwise-core
+**Location**: `core/`
 **Components**:
-- 6 slash commands in `commands/` (at plugin root)
-- 5 specialized agents in `agents/` (at plugin root)
-- 1 Agent Skill in `skills/` (for thoughts/ management)
+- 5 slash commands (research_codebase, create_plan, iterate_plan, implement_plan, validate_plan)
+- 5 specialized agents (codebase-locator, codebase-analyzer, codebase-pattern-finder, thoughts-locator, thoughts-analyzer)
+- 1 Agent Skill (thoughts-management with 3 bash scripts)
+
+### Plugin 2: stepwise-git
+**Location**: `git/`
+**Components**:
+- 1 slash command (commit)
+
+### Plugin 3: stepwise-web
+**Location**: `web/`
+**Components**:
+- 1 specialized agent (web-search-researcher)
 
 **Installation**:
-- Plugin: Via `/plugin install stepwise-dev@stepwise-dev`
-- No additional steps required - the Skill is included in the plugin
+```bash
+# Add marketplace
+/plugin marketplace add nikeyes/stepwise-dev
 
-**Note**: Commands and agents are at the plugin root, NOT in a `.claude/` subdirectory.
-This follows Claude Code plugin conventions and prevents confusion with the actual
-`~/.claude/` installation directory.
+# Install all three (or pick individual ones)
+/plugin install stepwise-core@stepwise-dev
+/plugin install stepwise-git@stepwise-dev
+/plugin install stepwise-web@stepwise-dev
+```
 
 See README.md for detailed installation instructions.
 
 ## Project Structure
 
 ```
-commands/              # 6 slash commands (markdown files)
-├── research_codebase.md
-├── create_plan.md
-├── iterate_plan.md
-├── implement_plan.md
-├── validate_plan.md
-└── commit.md
+marketplace.json       # Marketplace listing all 3 plugins
 
-agents/                # 5 specialized agents (markdown files)
-├── codebase-locator.md
-├── codebase-analyzer.md
-├── codebase-pattern-finder.md
-├── thoughts-locator.md
-└── thoughts-analyzer.md
+core/                  # stepwise-core plugin
+├── .claude-plugin/
+│   └── plugin.json
+├── commands/          # 5 slash commands (markdown files)
+│   ├── research_codebase.md
+│   ├── create_plan.md
+│   ├── iterate_plan.md
+│   ├── implement_plan.md
+│   └── validate_plan.md
+├── agents/            # 5 specialized agents (markdown files)
+│   ├── codebase-locator.md
+│   ├── codebase-analyzer.md
+│   ├── codebase-pattern-finder.md
+│   ├── thoughts-locator.md
+│   └── thoughts-analyzer.md
+└── skills/            # 1 Agent Skill
+    └── thoughts-management/
+        ├── SKILL.md
+        └── scripts/
+            ├── thoughts-init
+            ├── thoughts-sync
+            └── thoughts-metadata
 
-skills/                # 1 Agent Skill
-└── thoughts-management/
-    ├── SKILL.md       # Skill instructions
-    └── scripts/       # Bash scripts for thoughts/ operations
-        ├── thoughts-init
-        ├── thoughts-sync
-        └── thoughts-metadata
+git/                   # stepwise-git plugin
+├── .claude-plugin/
+│   └── plugin.json
+└── commands/          # 1 slash command
+    └── commit.md
+
+web/                   # stepwise-web plugin
+├── .claude-plugin/
+│   └── plugin.json
+└── agents/            # 1 specialized agent
+    └── web-search-researcher.md
 
 test/                  # Automated bash tests (for development)
 ```
@@ -62,12 +89,14 @@ test/                  # Automated bash tests (for development)
 
 ### Installation
 ```bash
-# Install plugin in Claude Code
+# Install plugins in Claude Code
 /plugin marketplace add nikeyes/stepwise-dev
-/plugin install stepwise-dev@stepwise-dev
+/plugin install stepwise-core@stepwise-dev
+/plugin install stepwise-git@stepwise-dev
+/plugin install stepwise-web@stepwise-dev
 # Restart Claude Code
 
-# That's it! The thoughts-management Skill is included in the plugin
+# That's it! All components are included in the respective plugins
 # No additional installation steps required
 ```
 
@@ -91,9 +120,9 @@ make check
 ```
 
 **What's covered:**
-- ✅ `skills/thoughts-management/scripts/thoughts-init` - Directory creation, gitignore, README generation
-- ✅ `skills/thoughts-management/scripts/thoughts-sync` - Hardlink creation, orphan cleanup
-- ✅ `skills/thoughts-management/scripts/thoughts-metadata` - Metadata generation
+- ✅ `core/skills/thoughts-management/scripts/thoughts-init` - Directory creation, gitignore, README generation
+- ✅ `core/skills/thoughts-management/scripts/thoughts-sync` - Hardlink creation, orphan cleanup
+- ✅ `core/skills/thoughts-management/scripts/thoughts-metadata` - Metadata generation
 
 **Test files:**
 - `test/smoke-test.sh` - Main integration tests (7 test groups)
@@ -105,31 +134,31 @@ make check
 Commands, agents, and skills require manual validation in Claude Code:
 
 1. **Test slash commands in Claude Code:**
-   - Commands are loaded via the plugin
+   - Commands are loaded via the plugins
    - After modifying a command file, restart Claude Code or use `/plugin reload`
-   - Test by invoking: `/stepwise-dev:research_codebase`, `/stepwise-dev:create_plan`, etc.
+   - Test by invoking: `/stepwise-core:research_codebase`, `/stepwise-git:commit`, etc.
 
 2. **Validate agents:**
    - Agents spawn as sub-tasks when commands execute
-   - Test by running commands that use them (e.g., `/stepwise-dev:research_codebase` spawns `codebase-locator`)
+   - Test by running commands that use them (e.g., `/stepwise-core:research_codebase` spawns `codebase-locator`)
    - Check agent behavior in Claude Code's task output
 
 3. **Test the thoughts-management Skill:**
    - The Skill activates automatically when Claude needs to manage thoughts/
-   - Test by creating research documents or plans
+   - Test by creating research documents or plans with stepwise-core
    - Verify Claude calls the Skill to sync and gather metadata
 
 ### Iterative Development Cycle
 
 When modifying **commands/agents/skills**:
-1. **Edit** the file in `commands/`, `agents/`, or `skills/`
-2. **Test locally** via plugin development mode or by reinstalling the plugin
+1. **Edit** the file in `core/commands/`, `core/agents/`, `git/commands/`, `web/agents/`, etc.
+2. **Test locally** via plugin development mode or by reinstalling the specific plugin
 3. **Validate** in a sample project
 4. **Iterate** based on results
 
 When modifying **scripts in the Skill**:
-1. **Edit** the file in `skills/thoughts-management/scripts/`
-2. **Reinstall** the plugin or test in development mode
+1. **Edit** the file in `core/skills/thoughts-management/scripts/`
+2. **Reinstall** stepwise-core plugin or test in development mode
 3. **Test** by triggering the Skill (create research docs, plans, etc.)
 4. **Iterate** based on results
 
@@ -177,25 +206,28 @@ thoughts/
 
 ### Version Management
 
-**Plugin version:**
+**Plugin versions:**
 - Managed by Claude Code plugin system
-- Check with `/plugin list` or `/plugin show stepwise-dev@stepwise-dev`
-- Update with `/plugin update stepwise-dev@stepwise-dev`
+- Check with `/plugin list`
+- Update individual plugins:
+  - `/plugin update stepwise-core@stepwise-dev`
+  - `/plugin update stepwise-git@stepwise-dev`
+  - `/plugin update stepwise-web@stepwise-dev`
 
 **Scripts:**
-- Updated automatically when plugin updates
-- Part of the plugin package, no separate installation
+- Updated automatically when stepwise-core plugin updates
+- Part of the stepwise-core plugin package, no separate installation
 
 ## Development Workflow
 
 For **scripts**:
-1. Edit file in `skills/thoughts-management/scripts/`
+1. Edit file in `core/skills/thoughts-management/scripts/`
 2. Test using `make test` (runs automated tests)
 3. Test manually by triggering the Skill in Claude Code
 4. Iterate based on results
 
 For **commands/agents**:
-1. Edit file in `commands/` or `agents/`
+1. Edit file in the specific plugin directory (`core/commands/`, `git/commands/`, `web/agents/`, etc.)
 2. Test via plugin reload or development mode
 3. Validate in Claude Code
 4. Iterate

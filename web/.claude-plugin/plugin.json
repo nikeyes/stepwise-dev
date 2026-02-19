@@ -1,19 +1,18 @@
 {
-  "name": "stepwise-dev",
+  "name": "stepwise-web",
   "version": "0.0.7",
-  "description": "Research → Plan → Implement → Validate workflow for Claude Code with local thoughts/ management",
+  "description": "Web search and research capabilities for external context",
   "author": {
     "name": "Jorge Castro",
-    "email": "nikey_es@yahoo.es"
+    "url": "https://github.com/nikeyes"
   },
   "homepage": "https://github.com/nikeyes/stepwise-dev",
   "repository": "https://github.com/nikeyes/stepwise-dev",
   "license": "Apache-2.0",
   "keywords": [
-    "workflow",
-    "development",
-    "planning",
+    "web",
+    "search",
     "research",
-    "tdd"
+    "external"
   ]
 }

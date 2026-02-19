@@ -1,0 +1,25 @@
+{
+  "plugins": [
+    {
+      "name": "stepwise-core",
+      "source": "./core",
+      "version": "0.0.7",
+      "description": "Core workflow for structured development: Research → Plan → Implement → Validate with thoughts/ management",
+      "keywords": ["workflow", "research", "planning", "implementation", "validation", "thoughts"]
+    },
+    {
+      "name": "stepwise-git",
+      "source": "./git",
+      "version": "0.0.7",
+      "description": "Git commit workflow without Claude attribution",
+      "keywords": ["git", "commit", "version-control"]
+    },
+    {
+      "name": "stepwise-web",
+      "source": "./web",
+      "version": "0.0.7",
+      "description": "Web search and research capabilities for external context",
+      "keywords": ["web", "search", "research", "external"]
+    }
+  ]
+}
