@@ -23,8 +23,8 @@ echo "━━━━━━━━━━━━━━━━━━━━━━━━�
 echo "Test directory: $TEST_DIR"
 echo ""
 
-# Use scripts from the Skill directory
-SCRIPTS_DIR="$PROJECT_ROOT/skills/thoughts-management/scripts"
+# Use scripts from the Skill directory (in core plugin)
+SCRIPTS_DIR="$PROJECT_ROOT/core/skills/thoughts-management/scripts"
 export PATH="$SCRIPTS_DIR:$PATH"
 
 # ============================================================================
