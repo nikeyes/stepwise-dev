@@ -1,0 +1,17 @@
+{
+  "name": "stepwise-git",
+  "version": "0.0.7",
+  "description": "Git commit workflow without Claude attribution",
+  "author": {
+    "name": "Jorge Castro",
+    "url": "https://github.com/nikeyes"
+  },
+  "homepage": "https://github.com/nikeyes/stepwise-dev",
+  "repository": "https://github.com/nikeyes/stepwise-dev",
+  "license": "Apache-2.0",
+  "keywords": [
+    "git",
+    "commit",
+    "version-control"
+  ]
+}

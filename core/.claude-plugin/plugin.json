@@ -1,0 +1,21 @@
+{
+  "name": "stepwise-core",
+  "version": "0.0.7",
+  "description": "Core workflow for structured development: Research → Plan → Implement → Validate with thoughts/ management",
+  "author": {
+    "name": "Jorge Castro",
+    "url": "https://github.com/nikeyes"
+  },
+  "homepage": "https://github.com/nikeyes/stepwise-dev",
+  "repository": "https://github.com/nikeyes/stepwise-dev",
+  "license": "Apache-2.0",
+  "keywords": [
+    "workflow",
+    "research",
+    "planning",
+    "implementation",
+    "validation",
+    "thoughts",
+    "tdd"
+  ]
+}

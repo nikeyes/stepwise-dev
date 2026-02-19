@@ -4,6 +4,7 @@
       "Bash(make test:*)",
       "Bash(make check:*)",
       "Bash(make ci:*)",
-      "Skill(stepwise-dev:thoughts-management)"
+      "Skill(stepwise-dev:thoughts-management)",
+      "Bash(ls:*)"
     ]}
 }
