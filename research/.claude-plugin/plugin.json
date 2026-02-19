@@ -2,40 +2,19 @@
   "name": "stepwise-research",
   "version": "0.0.1",
   "description": "Multi-agent deep research plugin with parallel web searches and synthesis",
-  "author": "nikeyes",
+  "author": {
+    "name": "Jorge Castro",
+    "url": "https://github.com/nikeyes"
+  },
   "homepage": "https://github.com/nikeyes/stepwise-dev",
-  "keywords": ["research", "multi-agent", "web", "synthesis", "orchestration"],
-  "components": {
-    "commands": [
-      {
-        "name": "deep_research",
-        "description": "Conduct multi-agent deep research on a topic with parallel web searches and synthesis",
-        "path": "commands/deep_research.md"
-      }
-    ],
-    "agents": [
-      {
-        "name": "research-lead",
-        "description": "Lead researcher that orchestrates multi-agent research workflows",
-        "path": "agents/research-lead.md"
-      },
-      {
-        "name": "research-worker",
-        "description": "Worker agent that executes focused research tasks with web searches",
-        "path": "agents/research-worker.md"
-      },
-      {
-        "name": "citation-analyst",
-        "description": "Citation verification agent that ensures accuracy and completeness",
-        "path": "agents/citation-analyst.md"
-      }
-    ],
-    "skills": [
-      {
-        "name": "research-reports",
-        "description": "Format and structure research reports with citations and metadata",
-        "path": "skills/research-reports/SKILL.md"
-      }
-    ]
-  }
+  "repository": "https://github.com/nikeyes/stepwise-dev",
+  "license": "Apache-2.0",
+  "keywords": [
+    "research",
+    "multi-agent",
+    "web",
+    "synthesis",
+    "orchestration",
+    "citations"
+  ]
 }
