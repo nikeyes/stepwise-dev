@@ -23,7 +23,7 @@ Implements **Research → Plan → Implement → Validate** with frequent `/clea
 
 ## 📦 Available Plugins
 
-This repository contains **3 independent plugins** that can be installed separately based on your needs:
+This repository contains **4 independent plugins** that can be installed separately based on your needs:
 
 ### 1. **stepwise-core** (Core Workflow)
 The foundation plugin with the complete Research → Plan → Implement → Validate cycle.
@@ -53,6 +53,17 @@ Web search and research capabilities for external context.
 
 [→ Read more](./web/README.md)
 
+### 4. **stepwise-research** (Multi-Agent Deep Research)
+Advanced multi-agent research system with parallel web searches and synthesis.
+
+**Includes:**
+- 1 slash command (`deep_research`)
+- 3 specialized agents (research-lead, research-worker, citation-analyst)
+- 1 research-reports skill (with report generation script)
+- Comprehensive research reports with citations and metadata
+
+[→ Read more](./research/README.md)
+
 ## 🚀 Installation
 
 ### Option 1: Install All Plugins (Recommended for first-time users)
@@ -61,10 +72,11 @@ Web search and research capabilities for external context.
 # Add marketplace from GitHub
 /plugin marketplace add nikeyes/stepwise-dev
 
-# Install all three plugins
+# Install all plugins
 /plugin install stepwise-core@stepwise-dev
 /plugin install stepwise-git@stepwise-dev
 /plugin install stepwise-web@stepwise-dev
+/plugin install stepwise-research@stepwise-dev
 ```
 
 ### Option 2: Install Only What You Need
@@ -81,6 +93,9 @@ Web search and research capabilities for external context.
 
 # Optionally add web research
 /plugin install stepwise-web@stepwise-dev
+
+# Optionally add multi-agent deep research
+/plugin install stepwise-research@stepwise-dev
 ```
 
 **Restart Claude Code after installation.**

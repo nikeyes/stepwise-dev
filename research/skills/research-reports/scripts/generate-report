@@ -1,0 +1,180 @@
+#!/usr/bin/env bash
+#
+# generate-report - Generate structured research report with YAML frontmatter
+#
+# Usage:
+#   generate-report --title "..." --query "..." --keywords "..." \
+#                   --agent-count N --source-count M \
+#                   --output-file "path/to/report.md" \
+#                   [--executive-summary "..."] [--findings "..."] \
+#                   [--conclusions "..."] [--bibliography "..."]
+
+set -euo pipefail
+
+# Default values
+TITLE=""
+QUERY=""
+KEYWORDS=""
+AGENT_COUNT=""
+SOURCE_COUNT=""
+OUTPUT_FILE=""
+EXECUTIVE_SUMMARY=""
+FINDINGS=""
+CONCLUSIONS=""
+BIBLIOGRAPHY=""
+
+# Parse arguments
+while [[ $# -gt 0 ]]; do
+  case $1 in
+    --title)
+      TITLE="$2"
+      shift 2
+      ;;
+    --query)
+      QUERY="$2"
+      shift 2
+      ;;
+    --keywords)
+      KEYWORDS="$2"
+      shift 2
+      ;;
+    --agent-count)
+      AGENT_COUNT="$2"
+      shift 2
+      ;;
+    --source-count)
+      SOURCE_COUNT="$2"
+      shift 2
+      ;;
+    --output-file)
+      OUTPUT_FILE="$2"
+      shift 2
+      ;;
+    --executive-summary)
+      EXECUTIVE_SUMMARY="$2"
+      shift 2
+      ;;
+    --findings)
+      FINDINGS="$2"
+      shift 2
+      ;;
+    --conclusions)
+      CONCLUSIONS="$2"
+      shift 2
+      ;;
+    --bibliography)
+      BIBLIOGRAPHY="$2"
+      shift 2
+      ;;
+    *)
+      echo "Error: Unknown parameter: $1" >&2
+      exit 1
+      ;;
+  esac
+done
+
+# Validate required parameters
+if [[ -z "$TITLE" ]]; then
+  echo "Error: --title is required" >&2
+  exit 1
+fi
+
+if [[ -z "$QUERY" ]]; then
+  echo "Error: --query is required" >&2
+  exit 1
+fi
+
+if [[ -z "$KEYWORDS" ]]; then
+  echo "Error: --keywords is required" >&2
+  exit 1
+fi
+
+if [[ -z "$AGENT_COUNT" ]]; then
+  echo "Error: --agent-count is required" >&2
+  exit 1
+fi
+
+if [[ -z "$SOURCE_COUNT" ]]; then
+  echo "Error: --source-count is required" >&2
+  exit 1
+fi
+
+if [[ -z "$OUTPUT_FILE" ]]; then
+  echo "Error: --output-file is required" >&2
+  exit 1
+fi
+
+# Get current date and timestamp
+CURRENT_DATE=$(date +%Y-%m-%d)
+TIMESTAMP=$(date "+%Y-%m-%d %H:%M:%S %Z")
+
+# Create parent directory if it doesn't exist
+OUTPUT_DIR=$(dirname "$OUTPUT_FILE")
+mkdir -p "$OUTPUT_DIR"
+
+# Generate report
+cat > "$OUTPUT_FILE" << EOF
+---
+title: ${TITLE}
+date: ${CURRENT_DATE}
+query: ${QUERY}
+keywords: ${KEYWORDS}
+status: complete
+agent_count: ${AGENT_COUNT}
+source_count: ${SOURCE_COUNT}
+---
+
+# ${TITLE}
+
+EOF
+
+# Add Executive Summary if provided
+if [[ -n "$EXECUTIVE_SUMMARY" ]]; then
+  cat >> "$OUTPUT_FILE" << EOF
+## Executive Summary
+
+EOF
+  echo -e "${EXECUTIVE_SUMMARY}" >> "$OUTPUT_FILE"
+  echo "" >> "$OUTPUT_FILE"
+fi
+
+# Add Detailed Findings if provided
+if [[ -n "$FINDINGS" ]]; then
+  cat >> "$OUTPUT_FILE" << EOF
+## Detailed Findings
+
+EOF
+  echo -e "${FINDINGS}" >> "$OUTPUT_FILE"
+  echo "" >> "$OUTPUT_FILE"
+fi
+
+# Add Conclusions if provided
+if [[ -n "$CONCLUSIONS" ]]; then
+  cat >> "$OUTPUT_FILE" << EOF
+## Conclusions
+
+EOF
+  echo -e "${CONCLUSIONS}" >> "$OUTPUT_FILE"
+  echo "" >> "$OUTPUT_FILE"
+fi
+
+# Add Bibliography if provided
+if [[ -n "$BIBLIOGRAPHY" ]]; then
+  cat >> "$OUTPUT_FILE" << EOF
+## Bibliography
+
+EOF
+  echo -e "${BIBLIOGRAPHY}" >> "$OUTPUT_FILE"
+  echo "" >> "$OUTPUT_FILE"
+fi
+
+# Add generation footer
+cat >> "$OUTPUT_FILE" << EOF
+
+---
+*Research conducted by stepwise-research multi-agent system*
+*Generated: ${TIMESTAMP}*
+EOF
+
+echo "Report generated successfully: $OUTPUT_FILE"
+exit 0
