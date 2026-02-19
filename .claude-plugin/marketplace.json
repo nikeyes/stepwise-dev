@@ -1,4 +1,13 @@
 {
+  "name": "stepwise-dev",
+  "owner": {
+    "name": "Jorge Castro",
+    "email": "nikeyes@gmail.com"
+  },
+  "metadata": {
+    "description": "Structured development workflow plugins for Claude Code",
+    "version": "0.0.7"
+  },
   "plugins": [
     {
       "name": "stepwise-core",
