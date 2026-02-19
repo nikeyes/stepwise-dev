@@ -45,7 +45,8 @@ See README.md for detailed installation instructions.
 ## Project Structure
 
 ```
-marketplace.json       # Marketplace listing all 3 plugins
+.claude-plugin/        # Marketplace configuration
+└── marketplace.json   # Marketplace listing all 3 plugins
 
 core/                  # stepwise-core plugin
 ├── .claude-plugin/
