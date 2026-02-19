@@ -26,7 +26,7 @@ jobs:
 
     - name: Make scripts executable
       run: |
-        chmod +x skills/thoughts-management/scripts/*
+        chmod +x core/skills/thoughts-management/scripts/*
         chmod +x test/*.sh
 
     - name: Run CI validation
