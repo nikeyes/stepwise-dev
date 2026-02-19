@@ -24,42 +24,221 @@ If the research topic is **ambiguous or unclear**, ask 1-2 clarifying questions 
 - User has provided clear context
 - Query is self-contained
 
-### 2. Spawn Research Lead Agent
+### 2. Analyze Query Complexity
 
-Use the `Task` tool to spawn the `stepwise-research:research-lead` agent:
+Determine the complexity level of the research query to decide how many workers to spawn:
+
+**Query Types:**
+- **Simple definition** (e.g., "What is Docker?"): 1 worker
+- **How-to guide** (e.g., "How does JWT work?"): 1-2 workers
+- **Comparison (2 items)** (e.g., "React vs Vue"): 2-3 workers
+- **Comparison (3+ items)** (e.g., "Compare top 5 databases"): 3-5 workers
+- **State-of-the-art** (e.g., "Current state of WebAssembly"): 4-6 workers
+- **Multi-faceted analysis** (e.g., "Analyze enterprise AI adoption"): 5-8 workers
+- **Controversial topic** (e.g., "Pros and cons of microservices"): 4-6 workers (ensure balanced perspectives)
+
+### 3. Generate Sub-Questions
+
+Break the research query into 2-6 focused sub-questions based on complexity:
+
+**Example for simple query** ("What is Docker?"):
+- Sub-question 1: What is Docker and what problem does it solve?
+
+**Example for comparison** ("PostgreSQL vs MySQL"):
+- Sub-question 1: PostgreSQL architecture and performance characteristics
+- Sub-question 2: MySQL architecture and performance characteristics
+- Sub-question 3: Real-world benchmarks and case studies comparing both
+
+**Example for complex research** ("State of WebAssembly adoption"):
+- Sub-question 1: WebAssembly capabilities and features in 2026
+- Sub-question 2: Major frameworks and tools supporting WebAssembly
+- Sub-question 3: Enterprise adoption case studies and success stories
+- Sub-question 4: Performance benchmarks and limitations
+- Sub-question 5: Security considerations and best practices
+- Sub-question 6: Future roadmap and emerging use cases
+
+**Guidelines:**
+- Each sub-question should be independently researchable
+- Together they should provide comprehensive coverage
+- Avoid overlapping questions
+- Focus on different aspects or perspectives
+
+### 4. Spawn Research Workers in Parallel
+
+Use the `Task` tool to spawn multiple `stepwise-research:research-worker` agents **in a single message** to enable parallel execution.
+
+**Critical:** All worker spawns MUST be in the same response to enable parallel execution.
+
+For each sub-question, spawn a worker:
 
 ```
 Task:
-  subagent_type: "stepwise-research:research-lead"
-  description: "Research [topic]"
-  prompt: "Conduct comprehensive research on: [full user query with context]
+  subagent_type: "stepwise-research:research-worker"
+  description: "Research [sub-question summary]"
+  prompt: "Research the following focused question:
 
-  Research requirements:
-  - Original query: [user's exact words]
-  - Context: [any clarifications from step 1]
-  - Expected deliverable: Structured research report with 10-15+ citations
+  Question: [sub-question]
+  Context: [relevant context from main query]
+
+  Instructions:
+  - Execute 3-5 web searches with progressively refined queries
+  - Start broad (1-6 word queries) then narrow based on results
+  - Fetch full content from 5-10 promising sources
+  - Prioritize .gov, .edu, peer-reviewed, and official documentation
+  - Return compressed findings with citations in this format:
+
+  ## Findings: [Sub-Question]
+
+  ### Key Insight 1: [Title]
+  [2-4 sentence summary]
+  **Sources:** [1] [2]
+
+  ### Key Insight 2: [Title]
+  [2-4 sentence summary]
+  **Sources:** [3] [4]
+
+  [Continue for 3-6 key insights]
+
+  ## Bibliography
+  [1] Source Title - URL
+  [2] Source Title - URL
+  ...
+
+  ## Research Metadata
+  - Queries executed: [N]
+  - Sources fetched: [M]
+  - Coverage assessment: [Complete | Partial | Limited]
+  - Gaps identified: [Any areas needing follow-up]
   "
 ```
 
-**Important:**
-- Pass the **full research query** with all context
-- The lead agent will handle orchestration internally (spawning workers, synthesis, gap detection)
-- Wait for lead agent completion before proceeding
+Repeat this Task call for each sub-question in the same message.
 
-### 3. Monitor Lead Agent Progress
+### 5. Monitor Worker Progress
 
-The lead agent will:
-- Parse the query into sub-questions
-- Spawn 1-6+ research-worker agents in parallel based on complexity
-- Synthesize findings from all workers
-- Detect research gaps and spawn additional workers if needed
-- Generate a draft research report
+Wait for all workers to complete. Each worker will:
+- Execute 3-5 web searches with progressively refined queries
+- Fetch full content from 5-10 sources
+- Compress findings into 3-6 key insights
+- Return structured findings with citations
 
-**Do not interrupt this process.** Let the lead agent complete its work.
+**Do not proceed to synthesis until all workers have completed.**
 
-### 4. Citation Verification
+### 6. Synthesize Findings
 
-After the lead agent completes, spawn the `stepwise-research:citation-analyst` agent:
+After all workers complete, synthesize their findings into a coherent research report:
+
+**Synthesis Process:**
+1. **Read all worker outputs** from the task results
+2. **Identify themes** across worker findings:
+   - What patterns emerge?
+   - What do multiple sources agree on?
+   - What contradictions exist?
+3. **Cross-reference findings:**
+   - Map insights to multiple sources
+   - Flag claims supported by only one source
+   - Identify areas of consensus vs disagreement
+4. **Detect gaps:**
+   - Are there important aspects not covered?
+   - Are some claims weakly supported?
+   - Do we need additional research?
+
+**If critical gaps exist:**
+- Spawn 1-2 additional workers with targeted questions
+- Wait for their findings
+- Incorporate into synthesis
+
+**Don't over-research:** If you have 10-15+ quality sources and coverage of main themes, proceed to report generation.
+
+### 7. Generate Research Report
+
+Create a structured markdown report and save to:
+```
+thoughts/shared/research/[sanitized-topic]-[YYYY-MM-DD].md
+```
+
+**Report Structure:**
+
+```markdown
+---
+title: Research on [Topic]
+date: YYYY-MM-DD
+query: [Original research question]
+keywords: [5-8 extracted key terms]
+status: complete
+agent_count: [number of workers spawned]
+source_count: [total unique sources]
+---
+
+# Research on [Topic]
+
+## Executive Summary
+
+[3-5 sentence overview of main findings. Answer the research question directly.]
+
+## Detailed Findings
+
+### [Theme 1]
+
+[Synthesized findings from multiple sources. 2-4 paragraphs.]
+
+Key points:
+- [Point 1] [1] [2]
+- [Point 2] [3] [4]
+- [Point 3] [5]
+
+[Continue with more detail as needed.]
+
+### [Theme 2]
+
+[More synthesized findings...]
+
+### [Theme 3]
+
+[Continue for all major themes...]
+
+## Cross-References and Contradictions
+
+[2-3 paragraphs discussing:]
+- Areas of strong consensus across sources
+- Contradictions or disagreements between sources
+- Evolution of thinking on the topic
+- Gaps in current knowledge
+
+## Conclusions
+
+[3-5 bullet points summarizing key takeaways]
+
+- [Takeaway 1]
+- [Takeaway 2]
+- [Takeaway 3]
+- [Takeaway 4]
+- [Takeaway 5]
+
+## Bibliography
+
+[1] Source Title - URL
+[2] Source Title - URL
+[3] Source Title - URL
+...
+[N] Source Title - URL
+
+---
+*Research conducted by stepwise-research multi-agent system*
+*Generated: [timestamp]*
+```
+
+**Quality Guidelines:**
+- **Synthesis, not concatenation:** Don't just copy-paste worker findings. Weave them into a coherent narrative.
+- **Multiple citations per claim:** Aim for 2-3 sources per major claim.
+- **Balanced perspectives:** Include contrarian views if they exist.
+- **Source diversity:** Mix .gov, .edu, industry blogs, official docs.
+- **Clarity:** Write for a technical audience but explain jargon.
+- **No fluff:** Every sentence should provide value.
+
+### 8. Citation Verification
+
+After generating the report, spawn the `stepwise-research:citation-analyst` agent:
 
 ```
 Task:
@@ -76,13 +255,13 @@ Task:
   Output a citation quality report."
 ```
 
-### 5. Citation Improvement (If Needed)
+### 9. Citation Improvement (If Needed)
 
 Review the citation-analyst's feedback:
-- If **major issues** found (unsupported claims, broken URLs): Re-spawn the lead agent with instructions to address specific issues
+- If **major issues** found (unsupported claims, broken URLs): Revise the report to address specific issues
 - If **minor issues** or no issues: Proceed to finalization
 
-### 6. Finalization
+### 10. Finalization
 
 1. **Verify report location:** Confirm the report is saved to `thoughts/shared/research/[topic]-[date].md`
 
@@ -105,21 +284,29 @@ Review the citation-analyst's feedback:
 ## Behavioral Guidelines
 
 - **Stay concise:** This is a CLI tool. Keep communication brief.
-- **Trust the agents:** The research-lead and research-worker agents are specialized. Don't micromanage.
-- **Context management:** The lead agent handles worker orchestration. You only orchestrate the high-level workflow.
+- **Trust the workers:** The research-worker agents are specialized. Don't micromanage.
+- **Parallel spawning is critical:** Spawn ALL workers in a single message with multiple Task calls. This enables true parallel execution.
+- **Wait for completion:** Don't synthesize until ALL workers have returned results.
 - **No time estimates:** Never promise how long research will take.
-- **Parallel execution:** Agents spawn workers in parallel automatically.
+- **Quality over speed:** Take time to properly synthesize findings. Cross-reference thoroughly.
 
 ## Error Handling
 
-If the lead agent fails:
-- Check if the query is too broad (suggest narrowing scope)
-- Check if web search tools are available (they should be built-in)
-- Check if `thoughts/shared/research/` directory exists (create if missing)
+If a worker fails:
+- Note the failure in your synthesis
+- Spawn a replacement worker if the sub-question is critical
+- Continue with remaining workers if coverage is sufficient
+
+If web search fails:
+- Workers will handle retries (they're instructed to be resilient)
+- If systematic failures occur, note this in the report limitations section
 
 If citation-analyst fails:
 - Continue anyway (citation verification is nice-to-have)
 - Warn user that citations should be manually verified
+
+If `thoughts/shared/research/` directory doesn't exist:
+- Create it before saving the report
 
 ## Example Usage
 
@@ -177,6 +364,7 @@ A successful research session produces:
 ## Notes
 
 - **No external configuration required:** WebSearch and WebFetch are built-in Claude Code tools
-- **Multi-agent architecture:** Lead agent spawns workers internally for parallel execution
-- **Automatic context management:** Each agent operates in its own context window
-- **Cost optimization:** Workers use Sonnet model (efficiency), lead uses Opus (synthesis quality)
+- **Multi-agent architecture:** Command spawns workers directly for parallel execution
+- **Automatic context management:** Each worker operates in its own context window (200K tokens each)
+- **Cost optimization:** Workers use Sonnet model (efficiency), command uses Opus (orchestration and synthesis quality)
+- **Context scaling:** Since workers execute in parallel with independent contexts, complex research can use significantly more tokens than a single-agent approach (e.g., 6 workers = up to 1.2M tokens total). This is intentional - token usage correlates strongly with research quality.
