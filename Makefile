@@ -1,7 +1,8 @@
 # Variables
 FUNCTIONAL_TEST := test/thoughts-structure-test.sh
 STRUCTURE_TEST := test/plugin-structure-test.sh
-PLUGIN_MANIFEST := .claude-plugin/plugin.json
+MARKETPLACE_MANIFEST := .claude-plugin/marketplace.json
+PLUGIN_MANIFESTS := core/.claude-plugin/plugin.json git/.claude-plugin/plugin.json web/.claude-plugin/plugin.json research/.claude-plugin/plugin.json
 
 # Phony targets
 .PHONY: help test test-verbose check ci
@@ -48,9 +49,19 @@ check:
 
 # Full CI validation (test + check + plugin manifest validation)
 ci: test check
-	@echo "Validating plugin manifest..."
+	@echo "Validating marketplace manifest..."
 	@if command -v jq >/dev/null 2>&1; then \
-		jq empty $(PLUGIN_MANIFEST) && echo "✓ Plugin manifest valid"; \
+		jq empty $(MARKETPLACE_MANIFEST) && echo "✓ Marketplace manifest valid"; \
+	else \
+		echo "⚠ jq not installed, skipping validation"; \
+	fi
+	@echo "Validating plugin manifests..."
+	@if command -v jq >/dev/null 2>&1; then \
+		for manifest in $(PLUGIN_MANIFESTS); do \
+			echo "  Checking $$manifest..."; \
+			jq empty $$manifest || exit 1; \
+		done; \
+		echo "✓ All plugin manifests valid"; \
 	else \
 		echo "⚠ jq not installed, skipping validation"; \
 	fi

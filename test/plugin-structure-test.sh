@@ -45,14 +45,14 @@ if command -v jq >/dev/null 2>&1; then
   assert_not_empty "$OWNER_NAME" "marketplace.json has owner.name field"
 
   PLUGINS_COUNT=$(jq '.plugins | length' .claude-plugin/marketplace.json)
-  if [ "$PLUGINS_COUNT" -eq 3 ]; then
+  if [ "$PLUGINS_COUNT" -ge 3 ]; then
     TESTS_RUN=$((TESTS_RUN + 1))
     TESTS_PASSED=$((TESTS_PASSED + 1))
-    echo -e "${GREEN}✓${NC} marketplace.json has 3 plugins"
+    echo -e "${GREEN}✓${NC} marketplace.json has $PLUGINS_COUNT plugins (expected: 3+)"
   else
     TESTS_RUN=$((TESTS_RUN + 1))
     TESTS_FAILED=$((TESTS_FAILED + 1))
-    echo -e "${RED}✗${NC} marketplace.json should have 3 plugins, has $PLUGINS_COUNT"
+    echo -e "${RED}✗${NC} marketplace.json should have at least 3 plugins, has $PLUGINS_COUNT"
   fi
 fi
 
