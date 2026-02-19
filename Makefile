@@ -40,7 +40,7 @@ test-verbose:
 check:
 	@echo "Running shellcheck..."
 	@if command -v shellcheck >/dev/null 2>&1; then \
-		shellcheck skills/thoughts-management/scripts/* test/*.sh && echo "✓ Shellcheck passed"; \
+		shellcheck core/skills/thoughts-management/scripts/* test/*.sh && echo "✓ Shellcheck passed"; \
 	else \
 		echo "⚠ shellcheck not installed, skipping..."; \
 		echo "  Install with: brew install shellcheck (macOS) or apt install shellcheck (Linux)"; \
