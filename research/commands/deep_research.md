@@ -127,19 +127,19 @@ If citation-analyst fails:
 ```
 /stepwise-research:deep_research What is Kubernetes and how does it work?
 ```
-Expected: 1 worker, 10-15 sources, 15-minute research time
+Expected: 1 worker, 10-15 sources
 
 **Comparison query:**
 ```
 /stepwise-research:deep_research Compare PostgreSQL vs MySQL for high-traffic applications
 ```
-Expected: 2-3 workers, 15-20 sources, 20-25 minute research time
+Expected: 2-3 workers, 15-20 sources
 
 **Complex research:**
 ```
 /stepwise-research:deep_research Analyze the current state of WebAssembly adoption in enterprise applications
 ```
-Expected: 4-6+ workers, 25+ sources, 30-40 minute research time
+Expected: 4-6+ workers, 25+ sources
 
 ## Integration with Thoughts System
 
