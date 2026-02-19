@@ -26,11 +26,11 @@ If the research topic is **ambiguous or unclear**, ask 1-2 clarifying questions 
 
 ### 2. Spawn Research Lead Agent
 
-Use the `Task` tool to spawn the `research-lead` agent:
+Use the `Task` tool to spawn the `stepwise-research:research-lead` agent:
 
 ```
 Task:
-  subagent_type: "research-lead"
+  subagent_type: "stepwise-research:research-lead"
   description: "Research [topic]"
   prompt: "Conduct comprehensive research on: [full user query with context]
 
@@ -59,11 +59,11 @@ The lead agent will:
 
 ### 4. Citation Verification
 
-After the lead agent completes, spawn the `citation-analyst` agent:
+After the lead agent completes, spawn the `stepwise-research:citation-analyst` agent:
 
 ```
 Task:
-  subagent_type: "citation-analyst"
+  subagent_type: "stepwise-research:citation-analyst"
   description: "Verify citations"
   prompt: "Analyze the research report at [report_path] for citation accuracy and completeness.
 

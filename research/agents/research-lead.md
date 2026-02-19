@@ -79,7 +79,7 @@ Spawn research-worker agents in **parallel** using the `Task` tool:
 
 ```
 Task (spawn all workers in parallel):
-  subagent_type: "research-worker"
+  subagent_type: "stepwise-research:research-worker"
   description: "Research [sub-question]"
   prompt: "Research the following focused question:
 
