@@ -225,6 +225,7 @@ Creates clean commits without Claude attribution.
 /plugin update stepwise-core@stepwise-dev
 /plugin update stepwise-git@stepwise-dev
 /plugin update stepwise-web@stepwise-dev
+/plugin update stepwise-research@stepwise-dev
 ```
 
 ## 📝 Context Management
@@ -289,7 +290,7 @@ See [NOTICE](NOTICE) for detailed attribution.
 
 **Major enhancements**:
 - Multi-plugin architecture for modular installation
-- Specialized agent system (6 custom agents)
+- Specialized agent system
 - Local-only thoughts/ management with Agent Skill
 - Automated testing infrastructure
 - Enhanced TDD-focused success criteria
