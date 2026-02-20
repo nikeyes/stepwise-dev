@@ -1,6 +1,7 @@
 ---
 description: Validate that plan was correctly implemented, verify all success criteria
 argument-hint: [plan-file-path]
+model: sonnet
 ---
 
 <!-- SPDX-License-Identifier: Apache-2.0

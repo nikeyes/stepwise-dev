@@ -1,6 +1,7 @@
 ---
 description: Iterate on existing implementation plans with thorough research and updates
 argument-hint: [plan-file-path] [changes to make]
+model: opus
 ---
 
 <!-- SPDX-License-Identifier: Apache-2.0

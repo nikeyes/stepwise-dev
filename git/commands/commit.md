@@ -1,5 +1,6 @@
 ---
 description: Create git commits with user approval and no Claude attribution
+model: haiku
 ---
 
 <!-- SPDX-License-Identifier: Apache-2.0

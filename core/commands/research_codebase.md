@@ -1,6 +1,7 @@
 ---
 description: Document codebase as-is with thoughts directory for historical context
 argument-hint: [research question or topic]
+model: opus
 ---
 
 <!-- SPDX-License-Identifier: Apache-2.0

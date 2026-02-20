@@ -1,6 +1,7 @@
 ---
 description: Implement technical plans from thoughts/shared/plans with verification
 argument-hint: [plan-file-path]
+model: sonnet
 ---
 
 <!-- SPDX-License-Identifier: Apache-2.0
