@@ -221,17 +221,23 @@ for agent in codebase-locator codebase-analyzer codebase-pattern-finder \
   assert_contains "codex/agents/$agent.toml" "^developer_instructions" "$agent.toml has instructions"
 done
 
-# Every skill Claude Code opts out of implicit invocation must carry the Codex
-# equivalent. The list is derived from the frontmatter rather than hardcoded, so
-# a new opt-out skill that forgets its openai.yaml fails here.
-OPT_OUT_SKILLS="$(grep -rl '^disable-model-invocation: *true' --include="SKILL.md" core git research web | sort)"
-assert_not_empty "$OPT_OUT_SKILLS" "found skills that opt out of implicit invocation"
+# Every skill that declares an implicit-invocation policy for Claude Code must
+# carry the same policy for Codex, so both harnesses behave alike. The list is
+# derived from the frontmatter rather than hardcoded, so a skill whose
+# openai.yaml is missing or disagrees with its SKILL.md fails here.
+POLICY_SKILLS="$(grep -rl '^disable-model-invocation:' --include="SKILL.md" core git research web | sort)"
+assert_not_empty "$POLICY_SKILLS" "found skills that declare an implicit-invocation policy"
 
 while IFS= read -r skill_md; do
   skill="$(dirname "$skill_md")"
-  assert_contains "$skill/agents/openai.yaml" "allow_implicit_invocation: false" \
-    "$(basename "$skill") opts out of implicit invocation"
-done <<< "$OPT_OUT_SKILLS"
+  if grep -q '^disable-model-invocation: *true' "$skill_md"; then
+    codex_policy="allow_implicit_invocation: false"
+  else
+    codex_policy="allow_implicit_invocation: true"
+  fi
+  assert_contains "$skill/agents/openai.yaml" "$codex_policy" \
+    "$(basename "$skill") declares the same invocation policy for Codex"
+done <<< "$POLICY_SKILLS"
 
 # ============================================================================
 # Test 9: Root documentation

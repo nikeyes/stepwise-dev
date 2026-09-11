@@ -3,7 +3,7 @@ name: implement-plan
 description: Implement technical plans from thoughts/shared/plans with verification
 argument-hint: [plan-file-path]
 model: inherit
-disable-model-invocation: true
+disable-model-invocation: false
 ---
 
 <!-- SPDX-License-Identifier: Apache-2.0

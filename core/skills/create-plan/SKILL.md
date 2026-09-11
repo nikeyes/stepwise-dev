@@ -3,7 +3,7 @@ name: create-plan
 description: Create detailed implementation plans through interactive research and iteration
 argument-hint: [ticket-file-path or task description]
 model: inherit
-disable-model-invocation: true
+disable-model-invocation: false
 ---
 
 <!-- SPDX-License-Identifier: Apache-2.0

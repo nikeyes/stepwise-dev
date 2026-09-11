@@ -3,7 +3,7 @@ name: iterate-plan
 description: Iterate on existing implementation plans with thorough research and updates
 argument-hint: [plan-file-path] [changes to make]
 model: inherit
-disable-model-invocation: true
+disable-model-invocation: false
 ---
 
 <!-- SPDX-License-Identifier: Apache-2.0

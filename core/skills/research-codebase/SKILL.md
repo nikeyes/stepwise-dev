@@ -3,7 +3,7 @@ name: research-codebase
 description: Document codebase as-is with thoughts directory for historical context
 argument-hint: [research question or topic]
 model: inherit
-disable-model-invocation: true
+disable-model-invocation: false
 ---
 
 <!-- SPDX-License-Identifier: Apache-2.0

@@ -167,7 +167,7 @@ Regenerate the agents after editing any `*/agents/*.md` with `make transpile-cod
 
 - `research-codebase`, `create-plan` and `iterate-plan` use `$ARGUMENTS`, which Codex does not expand. You'll see the literal string — pass your input in the message itself instead.
 - Codex only delegates to subagents on an explicit instruction, so the skills spell out the parallel spawns. If a skill investigates in its main context instead of spawning agents, say so explicitly in your prompt.
-- Skills that are user-invoked only carry an `agents/openai.yaml` opting out of implicit invocation. This is documented for the ChatGPT desktop app; whether the Codex CLI honors it is unverified.
+- Skills that declare `disable-model-invocation` carry an `agents/openai.yaml` with the matching `allow_implicit_invocation` policy. This is documented for the ChatGPT desktop app; whether the Codex CLI honors it is unverified.
 
 ## 🧪 Try It Out
 

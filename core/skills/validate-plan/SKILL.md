@@ -3,7 +3,7 @@ name: validate-plan
 description: Validate that plan was correctly implemented, verify all success criteria
 argument-hint: [plan-file-path]
 model: inherit
-disable-model-invocation: true
+disable-model-invocation: false
 ---
 
 # Validate Plan
