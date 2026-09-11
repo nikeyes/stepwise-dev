@@ -2,7 +2,7 @@
 name: review-pr-comments
 description: Review PR comments rigorously, present a justified summary, then post agreed responses individually
 model: inherit
-disable-model-invocation: true
+disable-model-invocation: false
 allowed-tools: Bash(gh:*) Read Glob Grep
 argument-hint: "[PR number (optional — auto-detected from current branch)]"
 ---

@@ -322,9 +322,10 @@ and agents are copied into `~/.codex/agents/`.
   default so the same line resolves under both harnesses. This *codifies* `$HOME/.agents/skills/`
   as the Codex install location; it is a convention, not a detection, and `install.sh`
   must keep honoring it.
-- **`agents/openai.yaml`** in a skill preserves `disable-model-invocation: true` for Codex.
-  The test suite derives the list of skills needing one from the frontmatter, so a new
-  opt-out skill without its `openai.yaml` fails `make test`.
+- **`agents/openai.yaml`** in a skill mirrors its `disable-model-invocation` for Codex:
+  `true` becomes `allow_implicit_invocation: false`, and `false` becomes `true`.
+  The test suite derives the list of skills needing one from the frontmatter, so a
+  skill that declares the key without a matching `openai.yaml` fails `make test`.
 - **`model: inherit`** transpiles to *no* `model` key in the TOML: a Codex agent without
   one runs on the session's configured model, which is what `inherit` means. The
   `haiku`/`sonnet`/`opus` mappings remain for an agent that deliberately pins a model.
