@@ -6,13 +6,20 @@ on:
   pull_request:
     branches: [ main ]
 
+permissions:
+  contents: read
+
 jobs:
   check-and-test:
     runs-on: ubuntu-latest
+    env:
+      # Not tracked by Dependabot: update both together (see scripts/install-claude-code.sh).
+      CLAUDE_CODE_VERSION: "2.1.295"
+      CLAUDE_INSTALLER_SHA256: "3a68d3406cf674e17bed1733a4dcf37805e2e47d87417700007d7e1aa766a944"
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v4
+      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
 
     - name: Configure git
       run: |
@@ -24,9 +31,15 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y shellcheck
 
+    - name: Install Claude Code (pinned + SHA256-verified)
+      run: |
+        scripts/install-claude-code.sh
+        echo "${HOME}/.local/bin" >> "${GITHUB_PATH}"
+
     - name: Make scripts executable
       run: |
         chmod +x core/skills/thoughts-management/scripts/*
+        chmod +x scripts/*.sh
         chmod +x test/*.sh
 
     - name: Run CI validation

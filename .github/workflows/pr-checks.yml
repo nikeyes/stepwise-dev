@@ -1,0 +1,37 @@
+name: PR checks
+
+on:
+  pull_request:
+    branches: [ main ]
+    # edited: the title changed; labeled/unlabeled: skip-version-bump toggled
+    types: [ opened, edited, synchronize, reopened, labeled, unlabeled ]
+
+permissions:
+  contents: read
+
+jobs:
+  semantic-title:
+    name: Conventional Commits PR title
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: read
+    steps:
+    # PRs are squash-merged, so the title becomes the commit message on main.
+    - uses: amannn/action-semantic-pull-request@48f256284bd46cdaab1048c3721360e808335d50  # v6.1.1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  version-bump:
+    name: Version bump
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+      with:
+        fetch-depth: 0
+
+    - name: Check version bumps
+      env:
+        BASE_REF: origin/${{ github.event.pull_request.base.ref }}
+        PR_LABELS: ${{ toJson(github.event.pull_request.labels.*.name) }}
+      run: make version-bump

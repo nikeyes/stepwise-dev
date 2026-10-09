@@ -1,6 +1,6 @@
 {
   "name": "stepwise-dev",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "owner": {
     "name": "Jorge Castro",
     "email": "nikeyes@gmail.com"
@@ -33,7 +33,7 @@
     {
       "name": "stepwise-slides",
       "source": "./slides/plugins/frontend-slides",
-      "version": "1.0.0",
+      "version": "2.1.0",
       "description": "Create beautiful HTML slides from a coding agent — vendored from zarazhangrui/frontend-slides (MIT)",
       "author": {
         "name": "Zara Zhang",
@@ -44,7 +44,7 @@
     {
       "name": "stepwise-diagrams",
       "source": "./diagrams",
-      "version": "1.0.0",
+      "version": "2.6.17",
       "description": "Editorial diagrams (architecture, flowchart, sequence, ER, sankey, and more) as self-contained HTML/SVG — vendored from cathrynlavery/diagram-design (MIT)",
       "author": {
         "name": "Cathryn Lavery",
