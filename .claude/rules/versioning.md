@@ -4,12 +4,12 @@ Every change in this repo must bump a version. Claude Code uses the version
 field as the **cache key** that decides whether a user receives an update, so
 skipping a bump means users stay on the old copy forever.
 
-This repo ships **four independent plugins** through a single marketplace, so
+This repo ships **independent plugins** through a single marketplace, so
 there are two layers of versions and they are bumped **independently**:
 
 1. **Plugin version**: the `version` field in each plugin's `plugin.json`
    (`core/.claude-plugin/plugin.json`, `git/.claude-plugin/plugin.json`,
-   `web/.claude-plugin/plugin.json`, `research/.claude-plugin/plugin.json`).
+   `web/.claude-plugin/plugin.json`).
 2. **Marketplace version**: the top-level `version` field in
    `.claude-plugin/marketplace.json`.
 
@@ -23,7 +23,7 @@ to the same value. Never let them drift.
 ## When to bump a plugin version
 
 Bump the `version` in that plugin's `plugin.json` whenever anything inside its
-directory changes (`core/`, `git/`, `web/`, or `research/`). Use semver:
+directory changes (`core/`, `git/`, or `web/`). Use semver:
 
 | Change                                                          | Bump          | Example        |
 |-----------------------------------------------------------------|---------------|----------------|
@@ -37,8 +37,8 @@ If it's unclear which applies, **ask the user before bumping**.
 
 When a change touches **more than one plugin dir**, bump each affected
 plugin independently. Example: migrating `model:` frontmatter to `inherit`
-across `core/`, `git/`, `web/`, and `research/` is a **patch bump on all
-four** — they are independent packages, each with its own cache key.
+across `core/`, `git/`, and `web/` is a **patch bump on all
+three** — they are independent packages, each with its own cache key.
 
 ## When to bump the marketplace version
 
@@ -61,7 +61,7 @@ top-level marketplace version.
 
 ## Rule of thumb
 
-- Changed files inside `core/`, `git/`, `web/`, or `research/`:
+- Changed files inside `core/`, `git/`, or `web/`:
   1. Bump that plugin's `plugin.json.version`.
   2. Mirror the new value into the matching entry in `marketplace.json.plugins[]`.
   3. Bump the top-level `marketplace.json.version` (patch).
@@ -73,12 +73,11 @@ top-level marketplace version.
 ## Worked example
 
 Migrating `model:` frontmatter to `inherit` across every skill/agent in the
-four plugins:
+three plugins:
 
 - `core/.claude-plugin/plugin.json`: patch bump (e.g. `1.4.0` → `1.4.1`).
 - `git/.claude-plugin/plugin.json`: patch bump (e.g. `1.5.0` → `1.5.1`).
 - `web/.claude-plugin/plugin.json`: patch bump (e.g. `1.0.0` → `1.0.1`).
-- `research/.claude-plugin/plugin.json`: patch bump (e.g. `1.1.0` → `1.1.1`).
 - `.claude-plugin/marketplace.json`: mirror each new version into its
   `plugins[]` entry, and patch-bump the top-level `version`.
 

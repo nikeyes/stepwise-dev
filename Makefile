@@ -3,7 +3,7 @@ FUNCTIONAL_TEST := test/thoughts-structure-test.sh
 STRUCTURE_TEST := test/plugin-structure-test.sh
 CODEX_TEST := test/codex-test.sh
 MARKETPLACE_MANIFEST := .claude-plugin/marketplace.json
-PLUGIN_MANIFESTS := core/.claude-plugin/plugin.json git/.claude-plugin/plugin.json web/.claude-plugin/plugin.json research/.claude-plugin/plugin.json
+PLUGIN_MANIFESTS := core/.claude-plugin/plugin.json git/.claude-plugin/plugin.json web/.claude-plugin/plugin.json
 
 # Eval viewer
 SKILL_CREATOR_PATH ?= $(HOME)/.claude/plugins/marketplaces/claude-plugins-official/plugins/skill-creator/skills/skill-creator

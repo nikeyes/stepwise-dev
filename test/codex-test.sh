@@ -35,18 +35,18 @@ section "Test 1: Clean install"
 HOME_1="$(fresh_home)"
 INSTALL_OUT="$(HOME="$HOME_1" ./codex/install.sh 2>&1)"
 
-assert_output_contains "$INSTALL_OUT" "Installed 18 skills" "installs exactly 18 skills"
-assert_output_contains "$INSTALL_OUT" "Installed 9 agents" "installs exactly 9 agents"
+assert_output_contains "$INSTALL_OUT" "Installed 17 skills" "installs exactly 17 skills"
+assert_output_contains "$INSTALL_OUT" "Installed 6 agents" "installs exactly 6 agents"
 
 SKILL_COUNT="$(find "$HOME_1/.agents/skills" -maxdepth 1 -mindepth 1 | wc -l | tr -d ' ')"
-assert_equals "18" "$SKILL_COUNT" "18 entries land in ~/.agents/skills"
+assert_equals "17" "$SKILL_COUNT" "17 entries land in ~/.agents/skills"
 
 AGENT_COUNT="$(find "$HOME_1/.codex/agents" -name '*.toml' | wc -l | tr -d ' ')"
-assert_equals "9" "$AGENT_COUNT" "9 agent TOMLs land in ~/.codex/agents"
+assert_equals "6" "$AGENT_COUNT" "6 agent TOMLs land in ~/.codex/agents"
 
 # Codex scans for SKILL.md through the symlink, so the link must resolve.
 assert_file_exists "$HOME_1/.agents/skills/commit/SKILL.md" "SKILL.md resolves through the symlink"
-assert_file_exists "$HOME_1/.agents/skills/deep-research/scripts/generate-report" \
+assert_file_exists "$HOME_1/.agents/skills/thoughts-management/scripts/thoughts-init" \
   "skill scripts resolve through the symlink"
 
 # ============================================================================
@@ -75,7 +75,7 @@ else
 fi
 
 SKILL_COUNT_2="$(find "$HOME_1/.agents/skills" -maxdepth 1 -mindepth 1 | wc -l | tr -d ' ')"
-assert_equals "18" "$SKILL_COUNT_2" "re-install does not duplicate skills"
+assert_equals "17" "$SKILL_COUNT_2" "re-install does not duplicate skills"
 
 # ============================================================================
 # Test 4: REGRESSION - install refuses to clobber a real directory
@@ -128,10 +128,10 @@ touch "$OUT_1/removed-agent.toml"
 TRANSPILE_OUT="$(./codex/transpile-agents.sh "$OUT_1" 2>&1)"
 
 assert_file_not_exists "$OUT_1/removed-agent.toml" "stale .toml is removed on regeneration"
-assert_output_contains "$TRANSPILE_OUT" "Transpiled 9 agents" "count reflects agents actually written"
+assert_output_contains "$TRANSPILE_OUT" "Transpiled 6 agents" "count reflects agents actually written"
 
 GENERATED="$(find "$OUT_1" -name '*.toml' | wc -l | tr -d ' ')"
-assert_equals "9" "$GENERATED" "exactly 9 agents are generated"
+assert_equals "6" "$GENERATED" "exactly 6 agents are generated"
 
 # ============================================================================
 # Test 7: Generated agents carry real content, not just a filename
@@ -140,20 +140,15 @@ section "Test 7: Generated agent content"
 
 for agent in codebase-locator codebase-analyzer codebase-pattern-finder \
              thoughts-locator thoughts-analyzer \
-             research-lead research-worker citation-analyst web-search-researcher; do
+             web-search-researcher; do
   assert_contains "$OUT_1/$agent.toml" "^name = \"$agent\"$" "$agent.toml declares its name"
   assert_contains "$OUT_1/$agent.toml" "^developer_instructions = '''" \
     "$agent.toml carries developer_instructions"
 done
 
-# Only research-lead has Write in its tools, so only it may write to the workspace.
-assert_contains "$OUT_1/research-lead.toml" 'sandbox_mode = "workspace-write"' \
-  "research-lead is workspace-write"
-assert_contains "$OUT_1/codebase-locator.toml" 'sandbox_mode = "read-only"' \
-  "codebase-locator is read-only"
-
+# No agent has Write or Edit in its tools, so none may write to the workspace.
 READONLY_COUNT="$(grep -l 'sandbox_mode = "read-only"' "$OUT_1"/*.toml | wc -l | tr -d ' ')"
-assert_equals "8" "$READONLY_COUNT" "8 of 9 agents are read-only"
+assert_equals "6" "$READONLY_COUNT" "all 6 agents are read-only"
 
 # Every agent declares `model: inherit`, which maps to pinning no model at all:
 # a Codex agent without a model key runs on whatever the session config says.
