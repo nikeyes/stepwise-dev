@@ -120,6 +120,10 @@ codex/                 # OpenAI Codex compatibility layer
 ├── install.sh
 └── uninstall.sh
 
+scripts/               # Repo tooling used by CI
+├── check-version-bumps.sh   # Enforces .claude/rules/versioning.md
+└── install-claude-code.sh   # Pinned, SHA256-verified Claude Code install
+
 test/                  # Automated bash tests (for development)
 ```
 
@@ -157,11 +161,28 @@ make test-verbose
 
 # Shellcheck on all bash scripts
 make check
+
+# claude plugin validate --strict on the marketplace and every plugin
+make validate
+
+# Version bumps required by .claude/rules/versioning.md (compares against origin/main)
+make version-bump
 ```
 
 **What's covered:**
 - `core/skills/thoughts-management/scripts/thoughts-init` - Directory creation, README generation
 - `core/skills/thoughts-management/scripts/thoughts-metadata` - Metadata generation
+- `scripts/check-version-bumps.sh` - Version bump rules
+
+**CI** (`.github/workflows/`):
+- `ci.yml` runs `make ci` on every push and PR. Under CI a missing tool
+  (shellcheck, claude, jq) fails the build instead of being skipped.
+- `pr-checks.yml` checks that the PR title follows Conventional Commits (it becomes
+  the squash commit) and runs `make version-bump`. The `skip-version-bump` label
+  lets a missing bump pass; downgrades always fail.
+- Actions are pinned by SHA and kept current by Dependabot. Claude Code is pinned by
+  `CLAUDE_CODE_VERSION` + `CLAUDE_INSTALLER_SHA256` in `ci.yml`, which Dependabot
+  does not track: update both together.
 
 **Test files:**
 - `test/smoke-test.sh` - Main integration tests
@@ -342,8 +363,10 @@ git subtree pull \
   main --squash
 ```
 
-If the pull brings meaningful changes, patch-bump `stepwise-slides` in both
-`plugin.json`-mirroring entries per `.claude/rules/versioning.md`.
+If the pull changes upstream's `plugin.json` version, mirror it into the
+`stepwise-slides` entry of `.claude-plugin/marketplace.json` and patch-bump the
+top-level marketplace `version` per `.claude/rules/versioning.md`
+(`make validate` fails until the entry matches).
 
 `stepwise-diagrams` is imported verbatim from
 [`cathrynlavery/diagram-design`](https://github.com/cathrynlavery/diagram-design)
@@ -362,9 +385,10 @@ git subtree pull \
   main --squash
 ```
 
-If the pull brings meaningful changes, patch-bump `stepwise-diagrams` in
-`.claude-plugin/marketplace.json` and the top-level marketplace `version` per
-`.claude/rules/versioning.md`.
+If the pull changes upstream's `plugin.json` version, mirror it into the
+`stepwise-diagrams` entry of `.claude-plugin/marketplace.json` and patch-bump the
+top-level marketplace `version` per `.claude/rules/versioning.md`
+(`make validate` fails until the entry matches).
 
 ## Attribution
 

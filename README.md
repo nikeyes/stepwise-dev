@@ -333,6 +333,8 @@ Do **not** edit files under `slides/` or `diagrams/` — every future sync must 
 make test          # Run all automated tests
 make test-verbose  # Run tests with debug output
 make check         # Run shellcheck on bash scripts
+make validate      # Run claude plugin validate --strict
+make version-bump  # Check required version bumps against origin/main
 make ci            # Run full CI validation
 ```
 

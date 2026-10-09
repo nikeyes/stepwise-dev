@@ -81,6 +81,24 @@ three plugins:
 - `.claude-plugin/marketplace.json`: mirror each new version into its
   `plugins[]` entry, and patch-bump the top-level `version`.
 
+## Vendored plugins
+
+`stepwise-slides` and `stepwise-diagrams` ship upstream's `plugin.json`
+untouched, so their plugin version is whatever upstream says. Their
+marketplace entry still mirrors it, and changing the entry still requires a
+patch bump of the top-level marketplace `version`.
+
+## Enforcement
+
+- `make validate` (`claude plugin validate --strict`) fails when a
+  marketplace entry's `version` differs from its `plugin.json`.
+- `make version-bump` (`scripts/check-version-bumps.sh`, run on every PR)
+  fails when an owned plugin's directory changed without a higher
+  `plugin.json` version, or `marketplace.json` changed without a higher
+  top-level `version`. Vendored plugins (keyword `vendored`) are exempt from
+  the plugin rule. The `skip-version-bump` PR label lets a missing bump
+  pass; a downgrade fails even with the label.
+
 ## Reference
 
 - Plugin manifest & version management: https://code.claude.com/docs/en/plugins-reference#version-management
