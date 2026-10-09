@@ -46,18 +46,15 @@ RIGHT (vertical):
 
 When exploring the codebase, use the project's domain glossary so that test names and interface vocabulary match the project's language, and respect ADRs in the area you're touching.
 
+The plan phase you receive is the agreed design: take the interface changes and behaviors from it without asking for confirmation.
+
 Before writing any code:
 
-- [ ] Confirm with user what interface changes are needed
-- [ ] Confirm with user which behaviors to test (prioritize)
 - [ ] Identify opportunities for [deep modules](references/deep-modules.md) (small interface, deep implementation)
 - [ ] Design interfaces for [testability](references/interface-design.md)
 - [ ] List the behaviors to test using [ZOMBIES](references/zombies.md) (not implementation steps)
-- [ ] Get user approval on the plan
 
-Ask: "What should the public interface look like? Which behaviors are most important to test?"
-
-**You can't test everything.** Confirm with the user exactly which behaviors matter most. Focus testing effort on critical paths and complex logic, not every possible edge case.
+**You can't test everything.** Prioritize the behaviors the plan phase makes critical. Focus testing effort on critical paths and complex logic, not every possible edge case.
 
 ### 2. Tracer Bullet
 
