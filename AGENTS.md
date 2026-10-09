@@ -11,7 +11,7 @@ The workflow operates entirely locally without cloud dependencies and uses a `th
 
 ## Multi-Plugin Architecture
 
-This project is distributed as **6 independent Claude Code plugins** in a single marketplace:
+This project is distributed as **5 independent Claude Code plugins** in a single marketplace:
 
 ### Plugin 1: stepwise-core
 **Location**: `core/`
@@ -29,18 +29,12 @@ This project is distributed as **6 independent Claude Code plugins** in a single
 **Components**:
 - 1 specialized agent (web-search-researcher)
 
-### Plugin 4: stepwise-research
-**Location**: `research/`
-**Components**:
-- 1 skill (deep-research, includes generate-report script)
-- 3 specialized agents (research-lead, research-worker, citation-analyst)
-
-### Plugin 5: stepwise-slides
+### Plugin 4: stepwise-slides
 **Location**: `slides/plugins/frontend-slides/` (vendored from `zarazhangrui/frontend-slides`, MIT)
 **Components**:
 - 1 skill (frontend-slides) with a large template pack
 
-### Plugin 6: stepwise-diagrams
+### Plugin 5: stepwise-diagrams
 **Location**: `diagrams/` (vendored from `cathrynlavery/diagram-design`, MIT)
 **Components**:
 - 1 skill (diagram-design) with 38+ editorial diagram types (architecture, flowchart, sequence, ER, sankey, etc.) as self-contained HTML/SVG
@@ -54,7 +48,6 @@ claude plugin marketplace add git@github.com:nikeyes/stepwise-dev.git
 claude plugin install stepwise-core@stepwise-dev
 claude plugin install stepwise-git@stepwise-dev
 claude plugin install stepwise-web@stepwise-dev
-claude plugin install stepwise-research@stepwise-dev
 claude plugin install stepwise-slides@stepwise-dev
 claude plugin install stepwise-diagrams@stepwise-dev
 ```
@@ -106,19 +99,6 @@ web/                   # stepwise-web plugin
 └── agents/            # 1 specialized agent
     └── web-search-researcher.md
 
-research/              # stepwise-research plugin
-├── .claude-plugin/
-│   └── plugin.json
-├── agents/            # 3 specialized agents
-│   ├── research-lead.md
-│   ├── research-worker.md
-│   └── citation-analyst.md
-└── skills/            # 1 skill
-    └── deep-research/
-        ├── SKILL.md
-        └── scripts/
-            └── generate-report
-
 slides/                # stepwise-slides plugin (vendored via git subtree)
 ├── LICENSE            # Upstream MIT — preserved for attribution
 └── plugins/frontend-slides/
@@ -135,7 +115,7 @@ diagrams/              # stepwise-diagrams plugin (vendored via git subtree)
     └── ...            # references, assets, diagram type packs
 
 codex/                 # OpenAI Codex compatibility layer
-├── agents/*.toml      # 9 generated agent definitions
+├── agents/*.toml      # 6 generated agent definitions
 ├── transpile-agents.sh
 ├── install.sh
 └── uninstall.sh
@@ -152,7 +132,6 @@ claude plugin marketplace add git@github.com:nikeyes/stepwise-dev.git
 claude plugin install stepwise-core@stepwise-dev
 claude plugin install stepwise-git@stepwise-dev
 claude plugin install stepwise-web@stepwise-dev
-claude plugin install stepwise-research@stepwise-dev
 claude plugin install stepwise-slides@stepwise-dev
 claude plugin install stepwise-diagrams@stepwise-dev
 # Restart Claude Code
@@ -211,7 +190,7 @@ Skills and agents require manual validation in Claude Code:
 ### Iterative Development Cycle
 
 When modifying **skills/agents**:
-1. **Edit** the file in `core/skills/`, `core/agents/`, `git/skills/`, `web/agents/`, `research/skills/`, etc.
+1. **Edit** the file in `core/skills/`, `core/agents/`, `git/skills/`, `web/agents/`, etc.
 2. **Test locally** via plugin development mode or by reinstalling the specific plugin
 3. **Validate** in a sample project
 4. **Iterate** based on results
@@ -274,7 +253,6 @@ Use `grep -r thoughts/` to search across all documents.
   - `claude plugin update stepwise-core@stepwise-dev`
   - `claude plugin update stepwise-git@stepwise-dev`
   - `claude plugin update stepwise-web@stepwise-dev`
-  - `claude plugin update stepwise-research@stepwise-dev`
 
 **Scripts:**
 - Updated automatically when plugin updates
@@ -289,7 +267,7 @@ For **scripts**:
 4. Iterate based on results
 
 For **skills/agents**:
-1. Edit file in the specific plugin directory (`core/skills/`, `git/skills/`, `web/agents/`, `research/skills/`, etc.)
+1. Edit file in the specific plugin directory (`core/skills/`, `git/skills/`, `web/agents/`, etc.)
 2. Test via plugin reload or development mode
 3. Validate in Claude Code
 4. Iterate
@@ -297,12 +275,12 @@ For **skills/agents**:
 ## Codex compatibility
 
 The same `skills/` directories serve both Claude Code and Codex. The only generated
-artifacts are the nine agent `.toml` files.
+artifacts are the six agent `.toml` files.
 
 ```
 codex/
 ├── agents/*.toml          # GENERATED — do not edit by hand
-├── transpile-agents.sh    # core|research|web/agents/*.md -> codex/agents/*.toml
+├── transpile-agents.sh    # core|web/agents/*.md -> codex/agents/*.toml
 ├── install.sh             # symlinks skills + copies agents
 └── uninstall.sh           # removes only what install.sh created
 ```

@@ -64,23 +64,13 @@ Web search and research capabilities for external context.
 
 [→ Read more](./web/README.md)
 
-### 4. **stepwise-research** (Multi-Agent Deep Research)
-Advanced multi-agent research system with parallel web searches and synthesis.
-
-**Includes:**
-- 1 skill (`deep-research`, includes `generate-report` script for structured reports)
-- 3 specialized agents (research-lead, research-worker, citation-analyst)
-- Comprehensive research reports with citations and metadata
-
-[→ Read more](./research/README.md)
-
-### 5. **stepwise-slides** (HTML Slide Decks)
+### 4. **stepwise-slides** (HTML Slide Decks)
 Generate beautiful HTML presentations from a coding agent. **Vendored** from [zarazhangrui/frontend-slides](https://github.com/zarazhangrui/frontend-slides) (MIT, author Zara Zhang).
 
 **Includes:**
 - 1 skill (`frontend-slides`) with a large template pack
 
-### 6. **stepwise-diagrams** (Editorial Diagrams)
+### 5. **stepwise-diagrams** (Editorial Diagrams)
 Create 38+ editorial diagram types (architecture, flowchart, sequence, ER, sankey, quadrant, radar, and more) as self-contained HTML/SVG. **Vendored** from [cathrynlavery/diagram-design](https://github.com/cathrynlavery/diagram-design) (MIT, author Cathryn Lavery).
 
 **Includes:**
@@ -97,7 +87,6 @@ claude plugin marketplace add https://github.com/nikeyes/stepwise-dev.git
 claude plugin install stepwise-core@stepwise-dev
 claude plugin install stepwise-git@stepwise-dev
 claude plugin install stepwise-web@stepwise-dev
-claude plugin install stepwise-research@stepwise-dev
 claude plugin install stepwise-slides@stepwise-dev
 claude plugin install stepwise-diagrams@stepwise-dev
 ```
@@ -117,9 +106,6 @@ claude plugin install stepwise-git@stepwise-dev
 # Optionally add web research
 claude plugin install stepwise-web@stepwise-dev
 
-# Optionally add multi-agent deep research
-claude plugin install stepwise-research@stepwise-dev
-
 # Optionally add HTML slide generation (vendored)
 claude plugin install stepwise-slides@stepwise-dev
 
@@ -137,8 +123,7 @@ Use `--bare` with `--plugin-dir` to load only your local plugin directories, ski
 claude --bare \
     --plugin-dir /path/to/stepwise-dev/core \
     --plugin-dir /path/to/stepwise-dev/git \
-    --plugin-dir /path/to/stepwise-dev/web \
-    --plugin-dir /path/to/stepwise-dev/research
+    --plugin-dir /path/to/stepwise-dev/web
 ```
 
 `--bare` disables plugin sync (so installed plugins are ignored) but still loads the directories you pass via `--plugin-dir`. This means your local changes are tested in isolation without needing to reinstall anything.
@@ -158,8 +143,8 @@ The same skills also run under OpenAI Codex.
 
 This installs:
 
-- **18 skills** symlinked into `~/.agents/skills/` (13 from core, 2 from git, 1 from research, 1 from vendored slides, 1 from vendored diagrams) — Codex follows symlinks when scanning that directory, so edits in the repo take effect immediately
-- **9 agents** copied into `~/.codex/agents/` as TOML, generated from the agent markdown by `codex/transpile-agents.sh`
+- **17 skills** symlinked into `~/.agents/skills/` (13 from core, 2 from git, 1 from vendored slides, 1 from vendored diagrams) — Codex follows symlinks when scanning that directory, so edits in the repo take effect immediately
+- **6 agents** copied into `~/.codex/agents/` as TOML, generated from the agent markdown by `codex/transpile-agents.sh`
 
 Regenerate the agents after editing any `*/agents/*.md` with `make transpile-codex`; `make check-codex` fails if they're out of sync.
 
@@ -206,7 +191,7 @@ Use `grep -r thoughts/` to search across all documents.
 |---|---|---|
 | Across all phases | `/clear` between phases | `thoughts-management`, `thoughts-locator`, `thoughts-analyzer` |
 | **Before** (product side) | `/story-splitting` | Applied to the PRD / ticket / use case — **not** the code |
-| 🔍 Research | `/research-codebase`, `/deep-research` | `codebase-locator`, `codebase-analyzer`, `codebase-pattern-finder`, `web-search-researcher`, `citation-analyst` |
+| 🔍 Research | `/research-codebase` | `codebase-locator`, `codebase-analyzer`, `codebase-pattern-finder`, `web-search-researcher` |
 | 🗺️ Plan | `/create-plan`, `/iterate-plan` | `/hamburger-method`, `/small-safe-steps`, `/grill-me` (stress-test the plan) |
 | 🛠️ Implement | `/implement-plan`, `/commit` | `/tdd` (test-first development), `/test-desiderata` (test quality), `/bugmagnet <file>` (edge-case & bug hunt) |
 | ✅ Validate | `/validate-plan` | — |
@@ -301,7 +286,6 @@ claude plugin marketplace update stepwise-dev
 claude plugin update stepwise-core@stepwise-dev
 claude plugin update stepwise-git@stepwise-dev
 claude plugin update stepwise-web@stepwise-dev
-claude plugin update stepwise-research@stepwise-dev
 claude plugin update stepwise-slides@stepwise-dev
 claude plugin update stepwise-diagrams@stepwise-dev
 ```

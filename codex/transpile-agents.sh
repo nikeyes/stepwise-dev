@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Transpiles Claude Code agent definitions (*.md) into Codex agent definitions (*.toml).
-# Source of truth stays in core/agents/, research/agents/ and web/agents/.
+# Source of truth stays in core/agents/ and web/agents/.
 set -euo pipefail
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -29,7 +29,7 @@ mkdir -p "$OUT_DIR"
 rm -f "$OUT_DIR"/*.toml
 
 count=0
-for src in "$REPO_ROOT"/core/agents/*.md "$REPO_ROOT"/research/agents/*.md "$REPO_ROOT"/web/agents/*.md; do
+for src in "$REPO_ROOT"/core/agents/*.md "$REPO_ROOT"/web/agents/*.md; do
   fm="$(frontmatter "$src")"
   bd="$(body "$src")"
 

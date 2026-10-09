@@ -61,7 +61,6 @@ Core workflow plugin for structured development following the Research → Plan 
 
 - **stepwise-git**: Git commit workflow without Claude attribution
 - **stepwise-web**: Web search and research capabilities
-- **stepwise-research**: Multi-agent deep research with parallel web searches
 
 ## License
 

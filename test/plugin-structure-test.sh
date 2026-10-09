@@ -2,7 +2,7 @@
 set -euo pipefail
 
 # plugin-structure-test.sh - Essential structural validation for multi-plugin marketplace
-# Tests marketplace manifest and all 4 plugins (stepwise-core, stepwise-git, stepwise-web, stepwise-research)
+# Tests marketplace manifest and all plugins (stepwise-core, stepwise-git, stepwise-web, stepwise-slides, stepwise-diagrams)
 
 # Get script directory
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
@@ -119,23 +119,9 @@ assert_file_exists "web/README.md" "web/README.md exists"
 assert_file_exists "web/agents/web-search-researcher.md" "web-search-researcher agent exists"
 
 # ============================================================================
-# Test 5: Research plugin structure (stepwise-research)
+# Test 5: Slides plugin structure (stepwise-slides, vendored)
 # ============================================================================
-section "Test 5: stepwise-research plugin"
-
-assert_file_exists "research/.claude-plugin/plugin.json" "research/plugin.json exists"
-assert_file_exists "research/README.md" "research/README.md exists"
-assert_file_exists "research/skills/deep-research/SKILL.md" "deep-research skill exists"
-assert_file_exists "research/skills/deep-research/scripts/generate-report" "generate-report exists"
-assert_executable "research/skills/deep-research/scripts/generate-report" "generate-report is executable"
-assert_file_exists "research/agents/research-lead.md" "research-lead agent exists"
-assert_file_exists "research/agents/research-worker.md" "research-worker agent exists"
-assert_file_exists "research/agents/citation-analyst.md" "citation-analyst agent exists"
-
-# ============================================================================
-# Test 6: Slides plugin structure (stepwise-slides, vendored)
-# ============================================================================
-section "Test 6: stepwise-slides plugin"
+section "Test 5: stepwise-slides plugin"
 
 assert_file_exists "slides/LICENSE" "slides/LICENSE exists"
 assert_contains "slides/LICENSE" "MIT License" "slides/LICENSE is MIT"
@@ -168,9 +154,9 @@ if command -v jq >/dev/null 2>&1; then
 fi
 
 # ============================================================================
-# Test 7: Diagrams plugin structure (stepwise-diagrams, vendored)
+# Test 6: Diagrams plugin structure (stepwise-diagrams, vendored)
 # ============================================================================
-section "Test 7: stepwise-diagrams plugin"
+section "Test 6: stepwise-diagrams plugin"
 
 assert_file_exists "diagrams/LICENSE" "diagrams/LICENSE exists"
 assert_contains "diagrams/LICENSE" "MIT License" "diagrams/LICENSE is MIT"
@@ -203,9 +189,9 @@ if command -v jq >/dev/null 2>&1; then
 fi
 
 # ============================================================================
-# Test 8: Codex compatibility layer
+# Test 7: Codex compatibility layer
 # ============================================================================
-section "Test 8: codex/"
+section "Test 7: codex/"
 
 assert_file_exists "codex/transpile-agents.sh" "transpile-agents.sh exists"
 assert_executable "codex/transpile-agents.sh" "transpile-agents.sh is executable"
@@ -214,7 +200,7 @@ assert_executable "codex/install.sh" "install.sh is executable"
 
 for agent in codebase-locator codebase-analyzer codebase-pattern-finder \
              thoughts-locator thoughts-analyzer \
-             research-lead research-worker citation-analyst web-search-researcher; do
+             web-search-researcher; do
   assert_file_exists "codex/agents/$agent.toml" "$agent.toml is generated"
   # An empty file would satisfy existence alone; require real generated content.
   assert_contains "codex/agents/$agent.toml" "^name = \"$agent\"$" "$agent.toml declares its name"
@@ -225,7 +211,7 @@ done
 # carry the same policy for Codex, so both harnesses behave alike. The list is
 # derived from the frontmatter rather than hardcoded, so a skill whose
 # openai.yaml is missing or disagrees with its SKILL.md fails here.
-POLICY_SKILLS="$(grep -rl '^disable-model-invocation:' --include="SKILL.md" core git research web | sort)"
+POLICY_SKILLS="$(grep -rl '^disable-model-invocation:' --include="SKILL.md" core git web | sort)"
 assert_not_empty "$POLICY_SKILLS" "found skills that declare an implicit-invocation policy"
 
 while IFS= read -r skill_md; do
@@ -240,9 +226,9 @@ while IFS= read -r skill_md; do
 done <<< "$POLICY_SKILLS"
 
 # ============================================================================
-# Test 9: Root documentation
+# Test 8: Root documentation
 # ============================================================================
-section "Test 9: Root documentation"
+section "Test 8: Root documentation"
 
 assert_file_exists "README.md" "README.md exists"
 assert_file_exists "AGENTS.md" "AGENTS.md exists"
