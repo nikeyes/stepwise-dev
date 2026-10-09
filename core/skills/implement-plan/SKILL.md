@@ -63,34 +63,15 @@ TDD will read the files, write failing tests, implement, and refactor. Wait for 
 
 ### Step 2 — Delegate to BugMagnet skill
 
-**Do not analyze bugs yourself.** Invoke `/stepwise-core:bugmagnet` using the `Skill` tool on each file modified in this phase. Wait for it to complete before presenting results to the user.
+**Do not analyze bugs yourself.** Invoke `/stepwise-core:bugmagnet` using the `Skill` tool on each file modified in this phase.
 
-After bugmagnet completes, **pause and ask the user**:
-```
-BugMagnet results for Phase [N]:
-
-[List findings from bugmagnet]
-
-Which of these would you like me to implement?
-(Reply with your selection, or "none" to skip — then say "continue" when ready to move to test quality analysis.)
-```
-
-Wait for the user to say "continue" before proceeding to Step 3.
+Then apply the findings you judge worthwhile, without asking the user, and move on to Step 3.
 
 ### Step 3 — Delegate to Test Desiderata skill
 
-**Do not analyze test quality yourself.** Invoke `/stepwise-core:test-desiderata` using the `Skill` tool on the test files for this phase. Wait for it to complete before presenting results to the user.
+**Do not analyze test quality yourself.** Invoke `/stepwise-core:test-desiderata` using the `Skill` tool on the test files for this phase.
 
-After test-desiderata completes, **pause and ask the user**:
-```
-Test Desiderata results for Phase [N]:
-
-[List improvement suggestions]
-
-Which of these would you like me to apply?
-```
-
-Wait for the user's selection before proceeding.
+Then apply the improvements you judge worthwhile, without asking the user, and move on to Step 4.
 
 ### Step 4 — Verify and Advance
 
@@ -99,24 +80,7 @@ Wait for the user's selection before proceeding.
 - Update your progress in both the plan and your todos
 - Check off completed items in the plan file itself using Edit
 
-**Pause for manual verification ONLY if the plan has a "Manual Verification" section:**
-- If no manual verification → Continue to next phase immediately
-- If manual verification exists → Pause and inform the human:
-  ```
-  Phase [N] Complete - Ready for Manual Verification
-
-  Automated verification passed:
-  - [List automated checks that passed]
-
-  Please perform manual verification:
-  - [List manual verification items from the plan]
-
-  Let me know when complete so I can proceed to Phase [N+1].
-  ```
-
-**If instructed to execute multiple phases consecutively**: skip only the Step 4 manual verification pauses. Always keep the Step 2 (bugmagnet) and Step 3 (test-desiderata) pauses. Those require user decisions that shape the implementation.
-
-Do not check off manual verification items until the user confirms completion.
+Do not pause for manual verification. Leave those items unchecked, continue to the next phase, and list them in the final summary.
 
 
 ## If You Get Stuck
@@ -155,6 +119,9 @@ When all phases are complete:
 
    All phases implemented and verified:
    - [List key accomplishments]
+
+   Pending manual verification:
+   - [Manual verification items from the plan, if any]
 
    Next steps in the workflow:
    - Use `/stepwise-core:validate-plan thoughts/shared/plans/[filename].md` to verify completeness
