@@ -511,6 +511,6 @@ if (bugsFixed.length > 0) sections.push(`### Bugs fixed\n${bulleted(unique(bugsF
 if (report.skippedBugTests.length > 0) sections.push(`### Bugs still documented as skipped tests\n${bulleted(report.skippedBugTests)}`)
 if (survivingMutants.length > 0) sections.push(`### Surviving mutants\n${bulleted(survivingMutants)}`)
 if (testImprovementsDeclined.length > 0) sections.push(`### Test improvements declined\n${bulleted(testImprovementsDeclined)}`)
-sections.push(`### Next steps\n- Review the changes: \`git diff\`\n- Commit them: \`/stepwise-git:commit\``)
+sections.push(`### Next steps\n- Review the changes: \`git diff\`\n- Ship them: \`/stepwise-git:ship-pr ${planPath}\` (or \`/stepwise-git:commit\` to only commit)`)
 
 return sections.join('\n\n')

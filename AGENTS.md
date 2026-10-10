@@ -24,7 +24,7 @@ This project is distributed as **independent Claude Code plugins** in a single m
 ### Plugin 2: stepwise-git
 **Location**: `git/`
 **Components**:
-- Skills for commits without Claude attribution and for PR comment review
+- Skills for unattended commits, pull requests with their CI checks, and PR comment review, plus the `ship-pr` skill that chains them
 
 ### Plugin 3: stepwise-web
 **Location**: `web/`

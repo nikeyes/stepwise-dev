@@ -125,6 +125,8 @@ assert_file_exists "git/.claude-plugin/plugin.json" "git/plugin.json exists"
 assert_file_exists "git/README.md" "git/README.md exists"
 assert_file_exists "git/skills/commit/SKILL.md" "commit skill exists"
 assert_file_exists "git/skills/review-pr-comments/SKILL.md" "review-pr-comments skill exists"
+assert_file_exists "git/skills/open-pr/SKILL.md" "open-pr skill exists"
+assert_file_exists "git/skills/ship-pr/SKILL.md" "ship-pr skill exists"
 
 # ============================================================================
 # Test 4: Web plugin structure (stepwise-web)
