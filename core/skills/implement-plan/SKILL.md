@@ -65,13 +65,13 @@ TDD will read the files, write failing tests, implement, and refactor. Wait for 
 
 **Do not analyze bugs yourself.** Invoke `/stepwise-core:bugmagnet` using the `Skill` tool on each file modified in this phase.
 
-Then apply the findings you judge worthwhile, without asking the user, and move on to Step 3.
+Then apply the findings you judge worthwhile, without asking the user. Keep the bugs it documents (skipped `- BUG` tests) for the final summary, then move on to Step 3.
 
 ### Step 3 — Delegate to Mutation Testing skill
 
 **Do not analyze mutants yourself.** Invoke `/stepwise-core:mutation-testing` using the `Skill` tool with `--changed` and the production files modified in this phase (e.g. `--changed src/todo_api/models.py`). It mutates only the changed hunks and hands any gaps to tdd itself.
 
-Include its "Still alive" and "Bugs found" sections in the final summary, then move on to Step 4.
+Keep its "Still alive" and "Bugs found" sections for the final summary, then move on to Step 4.
 
 ### Step 4 — Delegate to Test Desiderata skill
 
@@ -129,8 +129,11 @@ When all phases are complete:
    Pending manual verification:
    - [Manual verification items from the plan, if any]
 
-   Mutation testing:
-   - [Surviving mutants and bugs reported per phase, or "No surviving mutants"]
+   Bugs found:
+   - [Bugs from bugmagnet and mutation-testing, with file:line and how each was handled (skipped `- BUG` test or fixed), or "None"]
+
+   Surviving mutants:
+   - [Mutants still alive after mutation-testing, with the reason, or "None"]
 
    Next steps in the workflow:
    - Use `/stepwise-core:validate-plan thoughts/shared/plans/[filename].md` to verify completeness
