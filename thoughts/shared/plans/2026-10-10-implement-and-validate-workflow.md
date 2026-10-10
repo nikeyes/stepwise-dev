@@ -152,7 +152,5 @@ Ejecutar el workflow de verdad en [`nikeyes/stepwise-todo-api-test`](https://git
 
 ## References
 
-- Informe: `reports/Migrar implement plan a workflows 2.md`
-- Notas: `research_notes/Migrar implement plan a workflows 2/`
 - Ejemplo: https://github.com/nikeyes/540-ai-development-training/blob/harness/.claude/workflows/implement.mjs
 - Docs: https://code.claude.com/docs/en/workflows, https://code.claude.com/docs/en/sub-agents
