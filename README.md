@@ -117,7 +117,22 @@ claude plugin install stepwise-diagrams@stepwise-dev
 
 ### Local Development (Testing Without Installing)
 
-Disable the installed copies, then load your local plugin directories with `--plugin-dir`:
+There are two ways to test your local plugin directories without reinstalling anything.
+
+**Option 1: `--bare` (quickest).** Loads only the directories you pass via `--plugin-dir` and skips all installed/marketplace plugins:
+
+```bash
+claude --bare \
+    --plugin-dir /path/to/stepwise-dev/core \
+    --plugin-dir /path/to/stepwise-dev/git \
+    --plugin-dir /path/to/stepwise-dev/web
+```
+
+`--bare` disables plugin sync (so installed plugins are ignored) but still loads the directories you pass via `--plugin-dir`. Good for testing a single skill you invoke yourself.
+
+> **Limitation:** `--bare` runs in minimal mode, so the model only gets Bash, Read and Edit. Without the `Skill` tool, a skill can't invoke another one. A skill you type as `/skill-name` still runs, but its handoffs don't: `implement-plan` (delegates to tdd, bugmagnet, mutation-testing and test-desiderata), `create-plan` (calls `grill-me`) and `mutation-testing` (calls `tdd`). Use Option 2 for those.
+
+**Option 2: disable the installed copies.** A normal session with every tool, including `Skill`:
 
 ```bash
 claude plugin disable stepwise-core@stepwise-dev
@@ -131,10 +146,6 @@ claude --plugin-dir /path/to/stepwise-dev/core \
 # When you're done
 claude plugin enable stepwise-core@stepwise-dev   # and the same for git and web
 ```
-
-Your local changes are tested without reinstalling anything.
-
-> **Don't use `--bare` for this.** It also ignores installed plugins, but its minimal mode leaves the model with only Bash, Read and Edit. Without the `Skill` tool, a skill can't invoke another one, so `implement-plan`, `create-plan` (which calls `grill-me`) and `mutation-testing` (which calls `tdd`) stop working. A skill you type as `/skill-name` still runs, which hides the problem.
 
 ## 🤖 Using It with Codex
 
