@@ -47,11 +47,12 @@ The foundation plugin with the complete Research → Plan → Implement → Vali
 [→ Read more](./core/README.md)
 
 ### 2. **stepwise-git** (Git & GitHub Operations)
-Clean git commit workflow without Claude attribution, plus rigorous PR comment review.
+Unattended git and GitHub workflow: commits without Claude attribution, pull requests, CI checks and PR comment review.
 
 **Includes:**
 - Smart staging and commit message generation
-- PR comment negotiation with individual inline replies
+- Push, pull request and wait for its CI checks
+- Decision, fix and reply for each review comment, with `/ship-pr` as the single command that chains it all
 
 [→ Read more](./git/README.md)
 
@@ -211,7 +212,7 @@ Use `grep -r thoughts/` to search across all documents.
 | **Before** (product side) | `/story-splitting` | Applied to the PRD / ticket / use case — **not** the code |
 | 🔍 Research | `/research-codebase` | `codebase-locator`, `codebase-analyzer`, `codebase-pattern-finder`, `web-search-researcher` |
 | 🗺️ Plan | `/create-plan`, `/iterate-plan` | `/hamburger-method`, `/small-safe-steps`, `/grill-me` (stress-test the plan) |
-| 🛠️ Implement | `/implement-plan` (or `/implement-and-validate` to implement and validate unattended), `/commit` | `/tdd` (test-first development), `/test-desiderata` (test quality), `/bugmagnet <file>` (edge-case & bug hunt), `/mutation-testing` (would tests catch a bug?) |
+| 🛠️ Implement | `/implement-plan` (or `/implement-and-validate` to implement and validate unattended), `/ship-pr` (or `/commit` to only commit) | `/tdd` (test-first development), `/test-desiderata` (test quality), `/bugmagnet <file>` (edge-case & bug hunt), `/mutation-testing` (would tests catch a bug?) |
 | ✅ Validate | `/validate-plan` | — |
 | 🌐 Any web lookup | _"search the web for..."_ | `web-search-researcher` fires automatically |
 
@@ -247,13 +248,13 @@ Executes one phase at a time, validates before proceeding. Use `/tdd` to drive t
 
 Systematically verifies the entire implementation.
 
-### Commit (stepwise-git)
+### Ship (stepwise-git)
 
 ```bash
-/stepwise-git:commit
+/stepwise-git:ship-pr thoughts/shared/plans/<plan>.md
 ```
 
-Creates clean commits without Claude attribution.
+Commits, pushes, opens the PR, waits for its checks, fixes the failures and answers the review comments, unattended. Never merges. Its three pieces also work on their own: `/stepwise-git:commit`, `/stepwise-git:open-pr` and `/stepwise-git:review-pr-comments`.
 
 ## 💡 Usage Examples
 
@@ -275,8 +276,8 @@ Creates clean commits without Claude attribution.
 # Validate (core)
 /stepwise-core:validate-plan @thoughts/shared/plans/...md
 
-# Commit (git)
-/stepwise-git:commit
+# Ship (git)
+/stepwise-git:ship-pr @thoughts/shared/plans/...md
 ```
 
 ### Example 2: Using Web Research

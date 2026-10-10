@@ -137,7 +137,7 @@ When all phases are complete:
 
    Next steps in the workflow:
    - Use `/stepwise-core:validate-plan thoughts/shared/plans/[filename].md` to verify completeness
-   - Use `/stepwise-git:commit` to create git commits for the changes
+   - Use `/stepwise-git:ship-pr thoughts/shared/plans/[filename].md` to commit, open the PR and take it through its checks and review (or `/stepwise-git:commit` to only commit)
 
    Tip: Use `/clear` to free up context before validation
    ```
