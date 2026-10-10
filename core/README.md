@@ -29,7 +29,7 @@ Core workflow plugin for structured development following the Research → Plan 
 - `tdd-implementer`, `bug-hunter`, `mutation-hunter`, `test-reviewer`, `plan-validator` - The workflow's steps; each preloads the skill it applies (`tdd`, `bugmagnet`, `mutation-testing` with `tdd`, `test-desiderata`, `validate-plan`)
 
 ### Workflows
-- `/stepwise-core:implement-and-validate <plan>` - Implement a plan phase by phase (tdd, bugmagnet, mutation-testing, test-desiderata, the plan's verification commands, checkboxes), then validate it in up to 3 fix rounds. Runs unattended in the background; stops with an "Issue in Phase N" report on a plan mismatch or a verification that stays red, and resumes from the unchecked phases when relaunched. Does not touch git. Claude Code only (requires dynamic workflows).
+- `/stepwise-core:implement-and-validate <plan>` - Implement a plan phase by phase (tdd, bugmagnet, mutation-testing, test-desiderata, the plan's verification commands, checkboxes), then validate it in up to 3 fix rounds. Validation judges what the code does, not how the plan sketched it: accepted deviations are appended to the plan under "Implementation notes", never edited into it. Runs unattended in the background; stops with an "Issue in Phase N" report on a plan mismatch or a verification that stays red, and a new run resumes from the unchecked phases. Does not touch git. Claude Code only (requires dynamic workflows).
 
 ## Installation
 

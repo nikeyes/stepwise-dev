@@ -4,7 +4,6 @@ export const meta = {
   whenToUse: 'An approved plan in thoughts/shared/plans/ should be implemented and validated end to end without supervision',
   phases: [
     { title: 'Read plan', detail: 'Phases, success criteria and their checkboxes' },
-    { title: 'Validate', detail: 'Independent validation, up to 3 fix rounds' },
   ],
 }
 
@@ -201,7 +200,7 @@ const CHECKBOX_SCHEMA = {
 const VALIDATION_SCHEMA = {
   type: 'object',
   additionalProperties: false,
-  required: ['findings'],
+  required: ['findings', 'planDrift', 'skippedBugTests'],
   properties: {
     findings: {
       type: 'array',
@@ -218,7 +217,29 @@ const VALIDATION_SCHEMA = {
         },
       },
     },
+    planDrift: {
+      type: 'array',
+      items: {
+        type: 'object',
+        additionalProperties: false,
+        required: ['phase', 'planSaid', 'codeDoes', 'why'],
+        properties: {
+          phase: { type: 'string' },
+          planSaid: { type: 'string' },
+          codeDoes: { type: 'string' },
+          why: { type: 'string' },
+        },
+      },
+    },
+    skippedBugTests: strings,
   },
+}
+
+const APPEND_SCHEMA = {
+  type: 'object',
+  additionalProperties: false,
+  required: ['appendedOnly'],
+  properties: { appendedOnly: { type: 'boolean' } },
 }
 
 // A directly awaited agent() resolves to null when the user stops it; nothing after it can run.
@@ -234,13 +255,15 @@ Expected: ${mismatch.expected}
 Found: ${mismatch.found}
 Why this matters: ${mismatch.whyItMatters}
 
-Fix the plan or the code, then relaunch the workflow: completed phases are skipped.`)
+Fix the plan or the code, then start a new run of the workflow; completed phases are skipped.
+Do not resume the stopped run: resuming replays the saved results, including this failure.`)
 }
 
 const unique = (items) => [...new Set(items)]
 const commandsOf = (phase) => phase.automatedCriteria.filter((c) => c.command)
 const isDone = (phase) => commandsOf(phase).every((c) => c.checked)
 const bulleted = (items) => items.map((item) => `- ${item}`).join('\n')
+const fileName = (path) => path.split('/').pop()
 
 // ---------------------------------------------------------------------------
 phase('Read plan')
@@ -267,7 +290,7 @@ const pending = plan.phases.filter((p) => !isDone(p))
 log(`${plan.phases.length - pending.length} of ${plan.phases.length} phases already done; implementing ${pending.length}.`)
 
 // ---------------------------------------------------------------------------
-const bugsFound = []
+const bugsFixed = []
 const survivingMutants = []
 const testImprovementsDeclined = []
 
@@ -302,12 +325,11 @@ Report status "mismatch" (and fill "mismatch") if the plan does not match the co
 
 Hunt bugs in ${file}, implemented for ${label} of the plan.
 Read that section of the plan first: whether a bug is worth fixing depends on what it asks for.`,
-      { label: `bugmagnet ${file}`, phase: label, agentType: 'stepwise-core:bug-hunter', schema: BUG_HUNT_SCHEMA },
+      { label: `bugmagnet ${fileName(file)}`, phase: label, agentType: 'stepwise-core:bug-hunter', schema: BUG_HUNT_SCHEMA },
     )
     testFiles.push(...hunt.testFiles)
     for (const bug of hunt.bugs) {
       if (bug.worthFixing) bugsToFix.push(bug)
-      else bugsFound.push(`${bug.title} (${bug.location}): skipped test — ${bug.reason}`)
     }
   }
 
@@ -321,12 +343,8 @@ ${bulleted(bugsToFix.map((b) => `${b.title} — ${b.location}. Test: ${b.skipped
     )
     testFiles.push(...fix.testFiles)
     productionFiles.push(...fix.implementationFiles)
-    const notFixed = new Map(fix.notFixed.map((b) => [b.title, b.reason]))
-    for (const bug of bugsToFix) {
-      bugsFound.push(notFixed.has(bug.title)
-        ? `${bug.title} (${bug.location}): skipped test — ${notFixed.get(bug.title)}`
-        : `${bug.title} (${bug.location}): fixed`)
-    }
+    const notFixed = new Set(fix.notFixed.map((b) => b.title))
+    bugsFixed.push(...bugsToFix.filter((b) => !notFixed.has(b.title)).map((b) => `${b.title} (${b.location})`))
   }
 
   if (productionFiles.length > 0) {
@@ -345,7 +363,7 @@ Read that section of the plan first: when a pinned behavior fails, fix the code 
       })
     }
     testFiles.push(...mutation.testFiles)
-    bugsFound.push(...mutation.bugsFound.map((b) => `${b.location}: ${b.description} — ${b.handling}`))
+    bugsFixed.push(...mutation.bugsFound.filter((b) => b.handling === 'fixed').map((b) => `${b.location}: ${b.description}`))
     survivingMutants.push(...mutation.stillAlive.map((m) => `${m.location}: \`${m.mutant}\` — ${m.reason}`))
   }
 
@@ -391,6 +409,8 @@ ${bulleted(commandsOf(planPhase).map((c) => c.text))}`,
 // ---------------------------------------------------------------------------
 phase('Validate')
 
+const allCommands = unique(plan.phases.flatMap((p) => commandsOf(p).map((c) => c.command)))
+
 let report
 let unresolved = []
 let previousSignature = ''
@@ -419,10 +439,46 @@ Validate the implementation of the plan against the codebase.`,
   await run(
     `${SHARED}
 
-The validation of the plan found these problems. Fix them test-first:
-${bulleted(fixable.map((f) => `${f.title} (${f.phase}, ${f.file}): ${f.detail}`))}`,
+The validation of the plan found these problems. Fix them test-first, and change nothing else:
+${bulleted(fixable.map((f) => `${f.title} (${f.phase}, ${f.file}): ${f.detail}`))}
+These commands must pass when you finish:
+${bulleted(allCommands)}`,
     { label: `fix round ${fixRound + 1}`, phase: 'Validate', agentType: 'stepwise-core:tdd-implementer', schema: FIX_SCHEMA },
   )
+}
+
+// A fix round can break what the phases left green: verify the whole plan once more.
+let finalFailures = await verify('Validate', allCommands)
+if (finalFailures.length > 0) {
+  await run(
+    `${SHARED}
+
+After validating the plan these verification commands fail. Fix the code so they pass, without weakening or skipping tests:
+${finalFailures.map((f) => `- ${f.command}\n${f.outputTail}`).join('\n')}`,
+    { label: 'fix final verification', phase: 'Validate', agentType: 'stepwise-core:tdd-implementer', schema: FIX_SCHEMA },
+  )
+  finalFailures = await verify('Validate', allCommands)
+}
+if (finalFailures.length > 0) {
+  const failing = new Set(finalFailures.map((f) => f.command))
+  await run(
+    `In ${planPath}, change "- [x]" back to "- [ ]" for every success criterion whose command is one of these, and change nothing else:
+${bulleted([...failing])}`,
+    { label: 'uncheck failing criteria', phase: 'Validate', schema: CHECKBOX_SCHEMA },
+  )
+}
+
+// Record accepted deviations in the plan without touching what was approved.
+let planNotes = 'none'
+if (report.planDrift.length > 0) {
+  const appended = await run(
+    `Append implementation notes to ${planPath}. Before editing, copy the file to a temporary location.
+Add the entries below at the very end of the file, under a "## Implementation notes" heading (create it if it is missing; skip entries it already lists). Each entry says what the plan said, what the code does instead, and why. Do not change any existing line.
+${bulleted(report.planDrift.map((d) => `${d.phase}. Plan: ${d.planSaid}. Code: ${d.codeDoes}. Why: ${d.why}`))}
+Then diff the copy against the file. Report appendedOnly true only if the diff adds lines at the end and changes nothing else; otherwise restore the copy and report false.`,
+    { label: 'implementation notes', phase: 'Validate', schema: APPEND_SCHEMA },
+  )
+  planNotes = appended.appendedOnly ? 'appended' : 'failed'
 }
 
 // ---------------------------------------------------------------------------
@@ -432,15 +488,26 @@ const pendingManual = plan.phases.flatMap((p) => [
   ...p.automatedCriteria.filter((c) => !c.command).map((c) => `Phase ${p.number}: ${c.text} (no command to run it)`),
 ])
 const describeFinding = (f) => `${f.title} (${f.phase}, ${f.file}): ${f.detail}`
+const describeDrift = (d) => `${d.phase}: the plan said ${d.planSaid}; the code ${d.codeDoes} (${d.why})`
 
 const sections = [
   `## implement-and-validate: ${plan.title}`,
   `### Phases\n${bulleted(plan.phases.map((p) => `Phase ${p.number}: ${p.name} — ${pending.includes(p) ? 'implemented in this run' : 'already done'}`))}`,
   `### Validation\n${unresolved.length === 0 ? 'No fixable findings left.' : `Unresolved after the fix rounds:\n${bulleted(unresolved.map(describeFinding))}`}`,
 ]
+if (finalFailures.length > 0) {
+  sections.push(`### Verification is red\nThese commands still fail, so their success criteria were unchecked in the plan:\n${finalFailures.map((f) => `- ${f.command}\n${f.outputTail}`).join('\n')}`)
+}
 if (needsHuman.length > 0) sections.push(`### Needs a human\n${bulleted(needsHuman.map(describeFinding))}`)
+if (report.planDrift.length > 0) {
+  const where = planNotes === 'appended'
+    ? 'Recorded under "## Implementation notes" at the end of the plan. To make one of them part of the design, use `/stepwise-core:iterate-plan`.'
+    : 'Could not append them to the plan without touching other lines, so the plan was left as it was.'
+  sections.push(`### Plan out of date\n${where}\n${bulleted(report.planDrift.map(describeDrift))}`)
+}
 if (pendingManual.length > 0) sections.push(`### Pending manual verification\n${bulleted(pendingManual)}`)
-if (bugsFound.length > 0) sections.push(`### Bugs found\n${bulleted(bugsFound)}`)
+if (bugsFixed.length > 0) sections.push(`### Bugs fixed\n${bulleted(unique(bugsFixed))}`)
+if (report.skippedBugTests.length > 0) sections.push(`### Bugs still documented as skipped tests\n${bulleted(report.skippedBugTests)}`)
 if (survivingMutants.length > 0) sections.push(`### Surviving mutants\n${bulleted(survivingMutants)}`)
 if (testImprovementsDeclined.length > 0) sections.push(`### Test improvements declined\n${bulleted(testImprovementsDeclined)}`)
 sections.push(`### Next steps\n- Review the changes: \`git diff\`\n- Commit them: \`/stepwise-git:commit\``)

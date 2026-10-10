@@ -107,7 +107,10 @@ Bucle de validación y valor devuelto.
 #### 1. Workflow
 **File**: `core/workflows/implement-and-validate.js`
 - Hasta 3 rondas de corrección: validar → si hay hallazgos `fixableByAgent`, `tdd-implementer` los corrige → validar de nuevo. Para si no quedan, si el conjunto se repite o si se agotan las rondas.
-- Resumen markdown: fases implementadas y ya hechas, hallazgos sin resolver, hallazgos que necesitan a una persona, bugs encontrados y cómo se trató cada uno, mutantes supervivientes, mejoras de tests descartadas, verificación manual pendiente (incluye criterios automáticos sin comando), siguiente paso `/stepwise-git:commit`.
+- La validación juzga el comportamiento y el contrato público, no la forma del plan (`validate-plan` y `plan-validator`): las desviaciones internas que mantienen o mejoran el comportamiento no son hallazgos, se devuelven como `planDrift`.
+- Tras el bucle, verificación final con los comandos de todas las fases (un intento de arreglo); si sigue roja, se desmarcan esos criterios.
+- `planDrift` se añade al final del plan bajo "## Implementation notes", sin editar nada de lo aprobado; un agente comprueba con un diff que solo se han añadido líneas al final y, si no, restaura la copia.
+- Resumen markdown: fases implementadas y ya hechas, hallazgos sin resolver, hallazgos que necesitan a una persona, bugs arreglados y tests `- BUG` que siguen en skip según la validación final, mutantes supervivientes, mejoras de tests descartadas, verificación manual pendiente (incluye criterios automáticos sin comando), siguiente paso `/stepwise-git:commit`.
 
 ### Success Criteria:
 - [x] Tests pasan: `make test`
