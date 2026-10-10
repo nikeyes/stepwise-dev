@@ -87,6 +87,22 @@ assert_file_exists "core/agents/codebase-analyzer.md" "codebase-analyzer agent"
 assert_file_exists "core/agents/codebase-pattern-finder.md" "codebase-pattern-finder agent"
 assert_file_exists "core/agents/thoughts-locator.md" "thoughts-locator agent"
 assert_file_exists "core/agents/thoughts-analyzer.md" "thoughts-analyzer agent"
+assert_file_exists "core/agents/tdd-implementer.md" "tdd-implementer agent"
+assert_file_exists "core/agents/bug-hunter.md" "bug-hunter agent"
+assert_file_exists "core/agents/mutation-hunter.md" "mutation-hunter agent"
+assert_file_exists "core/agents/test-reviewer.md" "test-reviewer agent"
+assert_file_exists "core/agents/plan-validator.md" "plan-validator agent"
+
+# Workflows
+WORKFLOW="core/workflows/implement-and-validate.js"
+assert_file_exists "$WORKFLOW" "implement-and-validate workflow"
+# Claude Code only registers /<plugin>:<name> when meta is the first statement.
+assert_equals "export const meta = {" "$(head -n 1 "$WORKFLOW" 2>/dev/null)" "workflow starts with its meta block"
+assert_contains "$WORKFLOW" "^  name: 'implement-and-validate',$" "workflow declares its name"
+# Every agentType the workflow spawns must ship in this plugin.
+while read -r agent_type; do
+  assert_file_exists "core/agents/$agent_type.md" "workflow agent $agent_type is defined"
+done < <(grep -o "agentType: 'stepwise-core:[a-z-]*'" "$WORKFLOW" | sed "s/.*stepwise-core:\(.*\)'/\1/" | sort -u)
 
 # Skill structure
 assert_dir_exists "core/skills/thoughts-management" "Skill directory exists"
@@ -201,6 +217,7 @@ assert_executable "codex/install.sh" "install.sh is executable"
 
 for agent in codebase-locator codebase-analyzer codebase-pattern-finder \
              thoughts-locator thoughts-analyzer \
+             tdd-implementer bug-hunter mutation-hunter test-reviewer plan-validator \
              web-search-researcher; do
   assert_file_exists "codex/agents/$agent.toml" "$agent.toml is generated"
   # An empty file would satisfy existence alone; require real generated content.

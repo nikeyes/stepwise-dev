@@ -42,6 +42,7 @@ The foundation plugin with the complete Research → Plan → Implement → Vali
 **Includes:**
 - A skill for each phase, plus practice skills (TDD, test quality, bug hunting, mutation testing, slicing). See [the four-phase workflow](#-the-four-phase-workflow) for when to use each one
 - Read-only agents for codebase exploration and thoughts management
+- The `implement-and-validate` workflow: implements a plan phase by phase and validates it, unattended (Claude Code only)
 
 [→ Read more](./core/README.md)
 
@@ -210,7 +211,7 @@ Use `grep -r thoughts/` to search across all documents.
 | **Before** (product side) | `/story-splitting` | Applied to the PRD / ticket / use case — **not** the code |
 | 🔍 Research | `/research-codebase` | `codebase-locator`, `codebase-analyzer`, `codebase-pattern-finder`, `web-search-researcher` |
 | 🗺️ Plan | `/create-plan`, `/iterate-plan` | `/hamburger-method`, `/small-safe-steps`, `/grill-me` (stress-test the plan) |
-| 🛠️ Implement | `/implement-plan`, `/commit` | `/tdd` (test-first development), `/test-desiderata` (test quality), `/bugmagnet <file>` (edge-case & bug hunt), `/mutation-testing` (would tests catch a bug?) |
+| 🛠️ Implement | `/implement-plan` (or `/implement-and-validate` to implement and validate unattended), `/commit` | `/tdd` (test-first development), `/test-desiderata` (test quality), `/bugmagnet <file>` (edge-case & bug hunt), `/mutation-testing` (would tests catch a bug?) |
 | ✅ Validate | `/validate-plan` | — |
 | 🌐 Any web lookup | _"search the web for..."_ | `web-search-researcher` fires automatically |
 

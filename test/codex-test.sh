@@ -25,6 +25,7 @@ trap 'rm -rf "$TMP_ROOT"' EXIT
 EXPECTED_SKILLS="$(find core/skills git/skills slides/plugins/frontend-slides/skills diagrams/skills \
   -mindepth 2 -maxdepth 2 -name SKILL.md -not -path '*-workspace/*' | wc -l | tr -d ' ')"
 EXPECTED_AGENTS="$(find core/agents web/agents -maxdepth 1 -name '*.md' | wc -l | tr -d ' ')"
+EXPECTED_READONLY_AGENTS="$(grep -LE '^tools:.*(: |, )(Write|Edit)(,|$)' core/agents/*.md web/agents/*.md | wc -l | tr -d ' ')"
 
 fresh_home() {
   local h
@@ -145,15 +146,17 @@ section "Test 7: Generated agent content"
 
 for agent in codebase-locator codebase-analyzer codebase-pattern-finder \
              thoughts-locator thoughts-analyzer \
+             tdd-implementer bug-hunter mutation-hunter test-reviewer plan-validator \
              web-search-researcher; do
   assert_contains "$OUT_1/$agent.toml" "^name = \"$agent\"$" "$agent.toml declares its name"
   assert_contains "$OUT_1/$agent.toml" "^developer_instructions = '''" \
     "$agent.toml carries developer_instructions"
 done
 
-# No agent has Write or Edit in its tools, so none may write to the workspace.
+# Only agents without Write or Edit in their tools are read-only; the workflow
+# agents that implement code or edit tests may write to the workspace.
 READONLY_COUNT="$(grep -l 'sandbox_mode = "read-only"' "$OUT_1"/*.toml | wc -l | tr -d ' ')"
-assert_equals "$EXPECTED_AGENTS" "$READONLY_COUNT" "every agent is read-only"
+assert_equals "$EXPECTED_READONLY_AGENTS" "$READONLY_COUNT" "only agents without Write or Edit are read-only"
 
 # Every agent declares `model: inherit`, which maps to pinning no model at all:
 # a Codex agent without a model key runs on whatever the session config says.
