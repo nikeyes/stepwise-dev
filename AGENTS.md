@@ -95,7 +95,7 @@ diagrams/              # stepwise-diagrams plugin (vendored via git subtree)
     └── ...            # references, assets, diagram type packs
 
 codex/                 # OpenAI Codex compatibility layer
-├── agents/*.toml      # 6 generated agent definitions
+├── agents/*.toml      # Generated, one per agent
 ├── transpile-agents.sh
 ├── install.sh
 └── uninstall.sh
@@ -276,7 +276,7 @@ For **skills/agents**:
 ## Codex compatibility
 
 The same `skills/` directories serve both Claude Code and Codex. The only generated
-artifacts are the six agent `.toml` files.
+artifacts are the agent `.toml` files.
 
 ```
 codex/

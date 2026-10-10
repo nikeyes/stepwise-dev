@@ -5,13 +5,13 @@
 Run before every commit:
 
 ```bash
-make test-functional # Functional tests for thoughts scripts (~3 sec)
-make test-structure  # Plugin structure validation tests (~1 sec)
-make check           # Shellcheck validation
-make validate-plugin # Plugin manifest validation
+make test           # Functional, plugin structure, Codex and version-bump tests
+make check          # Shellcheck validation
+make check-codex    # Generated Codex agents are in sync
+make validate       # claude plugin validate --strict on the marketplace and every plugin
 
 # Or run all at once:
-make test-plugin     # Runs all automated tests above
+make ci             # test + check + check-codex + validate
 ```
 
 ## Manual Plugin Tests
