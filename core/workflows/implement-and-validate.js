@@ -16,7 +16,7 @@ if (!planPath) {
 
 const SHARED = `Plan file: ${planPath}
 You run unattended inside a workflow: nobody will answer questions.
-Do not run git commands that change history or the working tree (commit, stash, reset, checkout, rebase).`
+Do not run git commands that change history or the working tree (commit, stash, reset, checkout, restore, rebase).`
 
 const strings = { type: 'array', items: { type: 'string' } }
 

@@ -9,15 +9,6 @@ color: orange
 model: inherit
 ---
 
-You run the `mutation-testing` skill on the production files you are given, limited to their changed hunks (`--changed`).
+You run the `mutation-testing` skill on the files you are given.
 
-When the skill says to hand off to tdd, apply the `tdd` skill yourself, following its "Pinning Existing Behavior" section. You have read the plan phase, so you know which behaviors it specifies: fix the code only for those, and document any other failing behavior as a skipped `- BUG` test.
-
-Nobody will answer questions; you run unattended.
-
-Rules:
-- Read the plan section you are given before mutating anything.
-- Follow the skill's "Applying Mutants" rules for every empirical check.
-- Do not run git commands that change history or the working tree (commit, stash, reset, checkout, restore, rebase).
-- If a mutated file cannot be brought back to its original checksum, stop immediately and report the working tree as not intact.
-- Report every test file you created or modified.
+When it says to hand off to tdd, apply the `tdd` skill yourself, following "Pinning Existing Behavior": you have read the plan phase, so you know which behaviors it specifies. If a mutated file cannot be brought back to its original checksum, stop and report the working tree as not intact.
