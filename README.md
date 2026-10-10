@@ -34,14 +34,14 @@ The faster AI generates code, the more these practices matter:
 
 ## 📦 Available Plugins
 
-This repository contains **5 independent plugins** that can be installed separately based on your needs:
+This repository contains **independent plugins** that can be installed separately based on your needs:
 
 ### 1. **stepwise-core** (Core Workflow)
 The foundation plugin with the complete Research → Plan → Implement → Validate cycle.
 
 **Includes:**
-- 13 skills (`research-codebase`, `create-plan`, `iterate-plan`, `implement-plan`, `validate-plan`, `thoughts-management`, `bugmagnet`, `hamburger-method`, `small-safe-steps`, `story-splitting`, `test-desiderata`, `tdd`, `grill-me`)
-- 5 specialized agents (codebase exploration and thoughts management)
+- A skill for each phase, plus practice skills (TDD, test quality, bug hunting, mutation testing, slicing). See [the four-phase workflow](#-the-four-phase-workflow) for when to use each one
+- Read-only agents for codebase exploration and thoughts management
 
 [→ Read more](./core/README.md)
 
@@ -49,7 +49,6 @@ The foundation plugin with the complete Research → Plan → Implement → Vali
 Clean git commit workflow without Claude attribution, plus rigorous PR comment review.
 
 **Includes:**
-- 2 skills (`commit`, `review-pr-comments`)
 - Smart staging and commit message generation
 - PR comment negotiation with individual inline replies
 
@@ -59,8 +58,7 @@ Clean git commit workflow without Claude attribution, plus rigorous PR comment r
 Web search and research capabilities for external context.
 
 **Includes:**
-- 1 specialized agent (`web-search-researcher`)
-- Deep web research with source citations
+- `web-search-researcher` agent: deep web research with source citations
 
 [→ Read more](./web/README.md)
 
@@ -68,13 +66,13 @@ Web search and research capabilities for external context.
 Generate beautiful HTML presentations from a coding agent. **Vendored** from [zarazhangrui/frontend-slides](https://github.com/zarazhangrui/frontend-slides) (MIT, author Zara Zhang).
 
 **Includes:**
-- 1 skill (`frontend-slides`) with a large template pack
+- `frontend-slides` skill with a large template pack
 
 ### 5. **stepwise-diagrams** (Editorial Diagrams)
-Create 38+ editorial diagram types (architecture, flowchart, sequence, ER, sankey, quadrant, radar, and more) as self-contained HTML/SVG. **Vendored** from [cathrynlavery/diagram-design](https://github.com/cathrynlavery/diagram-design) (MIT, author Cathryn Lavery).
+Create editorial diagrams (architecture, flowchart, sequence, ER, sankey, quadrant, radar, and more) as self-contained HTML/SVG. **Vendored** from [cathrynlavery/diagram-design](https://github.com/cathrynlavery/diagram-design) (MIT, author Cathryn Lavery).
 
 **Includes:**
-- 1 skill (`diagram-design`) with references, assets, and diagram type packs
+- `diagram-design` skill with references, assets, and diagram type packs
 
 ## 🚀 Installation
 
@@ -117,7 +115,9 @@ claude plugin install stepwise-diagrams@stepwise-dev
 
 ### Local Development (Testing Without Installing)
 
-Use `--bare` with `--plugin-dir` to load only your local plugin directories, skipping all installed/marketplace plugins:
+There are two ways to test your local plugin directories without reinstalling anything.
+
+**Option 1: `--bare` (quickest).** Loads only the directories you pass via `--plugin-dir` and skips all installed/marketplace plugins:
 
 ```bash
 claude --bare \
@@ -126,7 +126,24 @@ claude --bare \
     --plugin-dir /path/to/stepwise-dev/web
 ```
 
-`--bare` disables plugin sync (so installed plugins are ignored) but still loads the directories you pass via `--plugin-dir`. This means your local changes are tested in isolation without needing to reinstall anything.
+`--bare` disables plugin sync (so installed plugins are ignored) but still loads the directories you pass via `--plugin-dir`. Good for testing a single skill you invoke yourself.
+
+> **Limitation:** `--bare` runs in minimal mode, so the model only gets Bash, Read and Edit. Without the `Skill` tool, a skill can't invoke another one. A skill you type as `/skill-name` still runs, but its handoffs don't: `implement-plan` (delegates to tdd, bugmagnet, mutation-testing and test-desiderata), `create-plan` (calls `grill-me`) and `mutation-testing` (calls `tdd`). Use Option 2 for those.
+
+**Option 2: disable the installed copies.** A normal session with every tool, including `Skill`:
+
+```bash
+claude plugin disable stepwise-core@stepwise-dev
+claude plugin disable stepwise-git@stepwise-dev
+claude plugin disable stepwise-web@stepwise-dev
+
+claude --plugin-dir /path/to/stepwise-dev/core \
+       --plugin-dir /path/to/stepwise-dev/git \
+       --plugin-dir /path/to/stepwise-dev/web
+
+# When you're done
+claude plugin enable stepwise-core@stepwise-dev   # and the same for git and web
+```
 
 ## 🤖 Using It with Codex
 
@@ -143,8 +160,8 @@ The same skills also run under OpenAI Codex.
 
 This installs:
 
-- **17 skills** symlinked into `~/.agents/skills/` (13 from core, 2 from git, 1 from vendored slides, 1 from vendored diagrams) — Codex follows symlinks when scanning that directory, so edits in the repo take effect immediately
-- **6 agents** copied into `~/.codex/agents/` as TOML, generated from the agent markdown by `codex/transpile-agents.sh`
+- **Every skill** from core, git and the vendored slides and diagrams plugins, symlinked into `~/.agents/skills/`. Codex follows symlinks when scanning that directory, so edits in the repo take effect immediately
+- **Every agent** copied into `~/.codex/agents/` as TOML, generated from the agent markdown by `codex/transpile-agents.sh`
 
 Regenerate the agents after editing any `*/agents/*.md` with `make transpile-codex`; `make check-codex` fails if they're out of sync.
 
@@ -193,7 +210,7 @@ Use `grep -r thoughts/` to search across all documents.
 | **Before** (product side) | `/story-splitting` | Applied to the PRD / ticket / use case — **not** the code |
 | 🔍 Research | `/research-codebase` | `codebase-locator`, `codebase-analyzer`, `codebase-pattern-finder`, `web-search-researcher` |
 | 🗺️ Plan | `/create-plan`, `/iterate-plan` | `/hamburger-method`, `/small-safe-steps`, `/grill-me` (stress-test the plan) |
-| 🛠️ Implement | `/implement-plan`, `/commit` | `/tdd` (test-first development), `/test-desiderata` (test quality), `/bugmagnet <file>` (edge-case & bug hunt) |
+| 🛠️ Implement | `/implement-plan`, `/commit` | `/tdd` (test-first development), `/test-desiderata` (test quality), `/bugmagnet <file>` (edge-case & bug hunt), `/mutation-testing` (would tests catch a bug?) |
 | ✅ Validate | `/validate-plan` | — |
 | 🌐 Any web lookup | _"search the web for..."_ | `web-search-researcher` fires automatically |
 
@@ -219,7 +236,7 @@ Iterates with you 5+ times, creates detailed phases with verification steps. Use
 /stepwise-core:implement-plan @thoughts/shared/plans/2025-11-09-rate-limiting.md
 ```
 
-Executes one phase at a time, validates before proceeding. Use `/tdd` to drive the implementation test-first (red→green→refactor). While implementing, lean on `/test-desiderata` to keep test quality high and `/bugmagnet <file>` to surface edge cases on a specific module.
+Executes one phase at a time, validates before proceeding. Use `/tdd` to drive the implementation test-first (red→green→refactor). While implementing, lean on `/test-desiderata` to keep test quality high, `/bugmagnet <file>` to surface edge cases on a specific module, and `/mutation-testing` to check that the tests would actually catch a bug in the changed code.
 
 ### Phase 4: Validate (stepwise-core)
 
@@ -405,7 +422,7 @@ Derived from [HumanLayer's Claude Code workflow](https://github.com/humanlayer/h
 
 `stepwise-diagrams` is vendored verbatim from [cathrynlavery/diagram-design](https://github.com/cathrynlavery/diagram-design) (MIT, author Cathryn Lavery) under the `diagrams/` prefix, imported via `git subtree`.
 
-Several skills are derived from [Matt Pocock's skills](https://github.com/mattpocock/skills) (grill-me, tdd), [eferro's skill-factory](https://github.com/eferro/skill-factory) (hamburger-method, small-safe-steps, story-splitting, test-desiderata, and tdd/zombies reference) and [Gojko Adzic's BugMagnet](https://github.com/gojko/bugmagnet-ai-assistant). See [NOTICE](NOTICE) for detailed attribution.
+Several skills are derived from [Matt Pocock's skills](https://github.com/mattpocock/skills) (grill-me, tdd), [eferro's skill-factory](https://github.com/eferro/skill-factory) (hamburger-method, small-safe-steps, story-splitting, test-desiderata, mutation-testing, and tdd/zombies reference) and [Gojko Adzic's BugMagnet](https://github.com/gojko/bugmagnet-ai-assistant). See [NOTICE](NOTICE) for detailed attribution.
 
 **Major enhancements**:
 - Multi-plugin architecture for modular installation

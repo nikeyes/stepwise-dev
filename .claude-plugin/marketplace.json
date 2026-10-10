@@ -1,6 +1,6 @@
 {
   "name": "stepwise-dev",
-  "version": "2.0.2",
+  "version": "2.0.3",
   "owner": {
     "name": "Jorge Castro",
     "email": "nikeyes@gmail.com"
@@ -12,7 +12,7 @@
     {
       "name": "stepwise-core",
       "source": "./core",
-      "version": "1.5.4",
+      "version": "1.6.0",
       "description": "Core workflow for structured development: Research → Plan → Implement → Validate with thoughts/ management",
       "keywords": ["workflow", "research", "planning", "implementation", "validation", "thoughts"]
     },
@@ -26,7 +26,7 @@
     {
       "name": "stepwise-web",
       "source": "./web",
-      "version": "1.0.1",
+      "version": "1.0.2",
       "description": "Web search and research capabilities for external context",
       "keywords": ["web", "search", "research", "external"]
     },

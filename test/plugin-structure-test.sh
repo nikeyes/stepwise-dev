@@ -79,6 +79,7 @@ assert_file_exists "core/skills/hamburger-method/SKILL.md" "hamburger-method ski
 assert_file_exists "core/skills/small-safe-steps/SKILL.md" "small-safe-steps skill"
 assert_file_exists "core/skills/story-splitting/SKILL.md" "story-splitting skill"
 assert_file_exists "core/skills/test-desiderata/SKILL.md" "test-desiderata skill"
+assert_file_exists "core/skills/mutation-testing/SKILL.md" "mutation-testing skill"
 
 # Agents
 assert_file_exists "core/agents/codebase-locator.md" "codebase-locator agent"

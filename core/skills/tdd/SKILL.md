@@ -95,6 +95,15 @@ After all tests pass, look for [refactor candidates](references/refactoring.md):
 
 **Never refactor while RED.** Get to GREEN first.
 
+## Pinning Existing Behavior
+
+Sometimes you're handed behaviors the code already implements but no test pins down, for example by `/stepwise-core:mutation-testing`. In that case the loop changes:
+
+- Write one test per behavior, through the public interface, as usual.
+- **Expect GREEN on the first run.** Do not change production code to force a RED.
+- If a test fails, it's either a real bug or a wrong expectation. Fix the code only if the plan phase you're implementing specifies that behavior. Otherwise mark the test skipped with `- BUG` in its name, and add a comment with ROOT CAUSE, CODE LOCATION, PROPOSED FIX, and EXPECTED vs ACTUAL.
+- Apply refactor candidates in the Refactor step, with tests green before and after.
+
 ## Checklist Per Cycle
 
 ```

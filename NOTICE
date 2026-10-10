@@ -54,12 +54,14 @@ https://github.com/eferro/skill-factory
 - core/skills/small-safe-steps/ (from output_skills/practices/small-safe-steps)
 - core/skills/story-splitting/ (from output_skills/practices/story-splitting)
 - core/skills/test-desiderata/ (from output_skills/testing/test-desiderata)
+- core/skills/mutation-testing/ (from output_skills/testing/mutation-testing)
 - core/skills/tdd/references/zombies.md (from output_skills/testing/tdd/references/zombies.md)
 
 Note: the hamburger-method and story-splitting skills ultimately credit
 Gojko Adzic as the author of the underlying techniques; test-desiderata
-credits Kent Beck. The skill-factory repository is the upstream source
-from which these SKILL.md files were adapted.
+credits Kent Beck; mutation-testing derives from Paul Hammond's skill
+(see below). The skill-factory repository is the upstream source from
+which these SKILL.md files were adapted.
 
 ================================================================================
 
@@ -84,3 +86,16 @@ https://github.com/gojko/bugmagnet-ai-assistant
 - core/skills/bugmagnet/SKILL.md (adapted from commands/bugmagnet.md)
   - Wrapped as a Claude Code Agent Skill with frontmatter and attribution
   - Original workflow content preserved
+
+================================================================================
+
+The following component is derived, through eferro/skill-factory, from
+Paul Hammond's mutation-testing skill:
+Copyright (c) 2024 Paul Hammond
+Licensed under the MIT License
+https://github.com/citypaul/.dotfiles
+
+- core/skills/mutation-testing/ (from claude/.claude/skills/mutation-testing)
+  - Tool references rewritten for current mutmut, StrykerJS and PIT
+  - Java and Kotlin references added
+  - Workflow adapted to hand surviving mutants to the tdd skill

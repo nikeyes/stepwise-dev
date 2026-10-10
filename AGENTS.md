@@ -11,33 +11,34 @@ The workflow operates entirely locally without cloud dependencies and uses a `th
 
 ## Multi-Plugin Architecture
 
-This project is distributed as **5 independent Claude Code plugins** in a single marketplace:
+This project is distributed as **independent Claude Code plugins** in a single marketplace:
 
 ### Plugin 1: stepwise-core
 **Location**: `core/`
 **Components**:
-- 11 skills (research-codebase, create-plan, iterate-plan, implement-plan, validate-plan, thoughts-management, bugmagnet, grill-me, tdd, hamburger-method, small-safe-steps, story-splitting, test-desiderata)
-- 5 specialized agents (codebase-locator, codebase-analyzer, codebase-pattern-finder, thoughts-locator, thoughts-analyzer)
+- Workflow skills for each phase (research, plan, implement, validate) and `thoughts-management`
+- Practice skills the workflow delegates to or the user invokes: TDD, test quality, bug hunting, mutation testing, slicing, plan grilling
+- Read-only agents for codebase and `thoughts/` exploration
 
 ### Plugin 2: stepwise-git
 **Location**: `git/`
 **Components**:
-- 2 skills (commit, review-pr-comments)
+- Skills for commits without Claude attribution and for PR comment review
 
 ### Plugin 3: stepwise-web
 **Location**: `web/`
 **Components**:
-- 1 specialized agent (web-search-researcher)
+- A read-only web research agent
 
 ### Plugin 4: stepwise-slides
 **Location**: `slides/plugins/frontend-slides/` (vendored from `zarazhangrui/frontend-slides`, MIT)
 **Components**:
-- 1 skill (frontend-slides) with a large template pack
+- The `frontend-slides` skill with a large template pack
 
 ### Plugin 5: stepwise-diagrams
 **Location**: `diagrams/` (vendored from `cathrynlavery/diagram-design`, MIT)
 **Components**:
-- 1 skill (diagram-design) with 38+ editorial diagram types (architecture, flowchart, sequence, ER, sankey, etc.) as self-contained HTML/SVG
+- The `diagram-design` skill: editorial diagrams (architecture, flowchart, sequence, ER, sankey, etc.) as self-contained HTML/SVG
 
 **Installation**:
 ```bash
@@ -58,46 +59,25 @@ See README.md for detailed installation instructions.
 
 ```
 .claude-plugin/        # Marketplace configuration
-└── marketplace.json   # Marketplace listing all 4 plugins
+└── marketplace.json   # Marketplace listing every plugin
 
 core/                  # stepwise-core plugin
 ├── .claude-plugin/
 │   └── plugin.json
-├── agents/            # 5 specialized agents (markdown files)
-│   ├── codebase-locator.md
-│   ├── codebase-analyzer.md
-│   ├── codebase-pattern-finder.md
-│   ├── thoughts-locator.md
-│   └── thoughts-analyzer.md
-└── skills/            # 11 skills (SKILL.md directories)
-    ├── create-plan/SKILL.md
-    ├── iterate-plan/SKILL.md
-    ├── implement-plan/SKILL.md
-    ├── validate-plan/SKILL.md
-    ├── research-codebase/SKILL.md
-    ├── thoughts-management/
-    │   ├── SKILL.md
-    │   └── scripts/
-    │       ├── thoughts-init
-    │       └── thoughts-metadata
-    ├── bugmagnet/SKILL.md
-    ├── hamburger-method/SKILL.md
-    ├── small-safe-steps/SKILL.md
-    ├── story-splitting/SKILL.md
-    └── test-desiderata/SKILL.md
+├── agents/            # <agent>.md, one per agent
+└── skills/
+    ├── <skill>/SKILL.md
+    └── thoughts-management/scripts/   # thoughts-init, thoughts-metadata
 
 git/                   # stepwise-git plugin
 ├── .claude-plugin/
 │   └── plugin.json
-└── skills/            # 2 skills
-    ├── commit/SKILL.md
-    └── review-pr-comments/SKILL.md
+└── skills/<skill>/SKILL.md
 
 web/                   # stepwise-web plugin
 ├── .claude-plugin/
 │   └── plugin.json
-└── agents/            # 1 specialized agent
-    └── web-search-researcher.md
+└── agents/<agent>.md
 
 slides/                # stepwise-slides plugin (vendored via git subtree)
 ├── LICENSE            # Upstream MIT — preserved for attribution
@@ -115,7 +95,7 @@ diagrams/              # stepwise-diagrams plugin (vendored via git subtree)
     └── ...            # references, assets, diagram type packs
 
 codex/                 # OpenAI Codex compatibility layer
-├── agents/*.toml      # 6 generated agent definitions
+├── agents/*.toml      # Generated, one per agent
 ├── transpile-agents.sh
 ├── install.sh
 └── uninstall.sh
@@ -296,7 +276,7 @@ For **skills/agents**:
 ## Codex compatibility
 
 The same `skills/` directories serve both Claude Code and Codex. The only generated
-artifacts are the six agent `.toml` files.
+artifacts are the agent `.toml` files.
 
 ```
 codex/
