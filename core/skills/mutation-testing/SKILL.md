@@ -58,6 +58,7 @@ Never install a mutation tool or add its configuration. If `--tool` is passed an
 Empirical checks edit production code temporarily. Keep them safe:
 
 - Record `shasum <file>` before the edit; after reverting, the checksum must be identical. Don't compare `git diff`: it is empty for untracked files, so the check would pass with the mutant still in place.
+- Apply and revert with literal text replacements (the Edit tool or Python's `str.replace`), never with `sed` or other regex substitutions: characters like `[`, `.` or `*` in code turn the pattern into a regex that silently matches nothing, leaving the mutant in place.
 - Revert by undoing your own edit (the inverse replacement). Never use `git checkout`, `git restore` or `git stash` on files in scope: they discard the uncommitted work you are analyzing.
 - If the checksum after reverting is not identical, stop and report it. Do not apply more mutants or hand off to tdd.
 - Apply one mutant at a time and run only the tests that cover it.
