@@ -24,7 +24,7 @@ Check that the code does what an implementation plan asks.
 3. **Compare each phase with the code, at the level of behavior.** The plan was written before the code met reality; keep the code's solution when it does the job.
    - Does the system do what the phase asks, and is each behavior tested? Does the public contract match: endpoints, request and response shapes, error codes, signatures other code relies on?
    - Do checked items (`[x]`) match the code?
-   - A different internal approach, or tests the plan didn't list, is not a finding. Note internal deviations under "Plan out of date".
+   - A different internal approach, or tests the plan didn't list, is not a finding. Under "Plan out of date", note only the deviations that would mislead someone reading the plan, such as a different approach, data structure or interface detail. Leave out cosmetic changes and extra tests.
 
 4. **Assess test quality**: read the tests, don't just run them. Are assertions missing or trivial? Do they mock the thing they're supposed to test?
 

@@ -264,6 +264,8 @@ const commandsOf = (phase) => phase.automatedCriteria.filter((c) => c.command)
 const isDone = (phase) => commandsOf(phase).every((c) => c.checked)
 const bulleted = (items) => items.map((item) => `- ${item}`).join('\n')
 const fileName = (path) => path.split('/').pop()
+const clause = (text) => text.trim().replace(/\.+$/, '')
+const describeDrift = (d) => `${clause(d.phase)} — Plan: ${clause(d.planSaid)}. Code: ${clause(d.codeDoes)}. Why: ${clause(d.why)}.`
 
 // ---------------------------------------------------------------------------
 phase('Read plan')
@@ -474,7 +476,7 @@ if (report.planDrift.length > 0) {
   const appended = await run(
     `Append implementation notes to ${planPath}. Before editing, copy the file to a temporary location.
 Add the entries below at the very end of the file, under a "## Implementation notes" heading (create it if it is missing; skip entries it already lists). Each entry says what the plan said, what the code does instead, and why. Do not change any existing line.
-${bulleted(report.planDrift.map((d) => `${d.phase}. Plan: ${d.planSaid}. Code: ${d.codeDoes}. Why: ${d.why}`))}
+${bulleted(report.planDrift.map(describeDrift))}
 Then diff the copy against the file. Report appendedOnly true only if the diff adds lines at the end and changes nothing else; otherwise restore the copy and report false.`,
     { label: 'implementation notes', phase: 'Validate', schema: APPEND_SCHEMA },
   )
@@ -488,7 +490,6 @@ const pendingManual = plan.phases.flatMap((p) => [
   ...p.automatedCriteria.filter((c) => !c.command).map((c) => `Phase ${p.number}: ${c.text} (no command to run it)`),
 ])
 const describeFinding = (f) => `${f.title} (${f.phase}, ${f.file}): ${f.detail}`
-const describeDrift = (d) => `${d.phase}: the plan said ${d.planSaid}; the code ${d.codeDoes} (${d.why})`
 
 const sections = [
   `## implement-and-validate: ${plan.title}`,
