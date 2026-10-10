@@ -21,6 +21,11 @@ cd "$PROJECT_ROOT" || exit 1
 TMP_ROOT="$(mktemp -d)"
 trap 'rm -rf "$TMP_ROOT"' EXIT
 
+# Expected counts come from the repo itself, so adding a skill or agent needs no test edit.
+EXPECTED_SKILLS="$(find core/skills git/skills slides/plugins/frontend-slides/skills diagrams/skills \
+  -mindepth 2 -maxdepth 2 -name SKILL.md -not -path '*-workspace/*' | wc -l | tr -d ' ')"
+EXPECTED_AGENTS="$(find core/agents web/agents -maxdepth 1 -name '*.md' | wc -l | tr -d ' ')"
+
 fresh_home() {
   local h
   h="$(mktemp -d "$TMP_ROOT/home.XXXXXX")"
@@ -35,14 +40,14 @@ section "Test 1: Clean install"
 HOME_1="$(fresh_home)"
 INSTALL_OUT="$(HOME="$HOME_1" ./codex/install.sh 2>&1)"
 
-assert_output_contains "$INSTALL_OUT" "Installed 18 skills" "installs exactly 18 skills"
-assert_output_contains "$INSTALL_OUT" "Installed 6 agents" "installs exactly 6 agents"
+assert_output_contains "$INSTALL_OUT" "Installed $EXPECTED_SKILLS skills" "installs every skill in the repo"
+assert_output_contains "$INSTALL_OUT" "Installed $EXPECTED_AGENTS agents" "installs every agent in the repo"
 
 SKILL_COUNT="$(find "$HOME_1/.agents/skills" -maxdepth 1 -mindepth 1 | wc -l | tr -d ' ')"
-assert_equals "18" "$SKILL_COUNT" "18 entries land in ~/.agents/skills"
+assert_equals "$EXPECTED_SKILLS" "$SKILL_COUNT" "one entry per skill lands in ~/.agents/skills"
 
 AGENT_COUNT="$(find "$HOME_1/.codex/agents" -name '*.toml' | wc -l | tr -d ' ')"
-assert_equals "6" "$AGENT_COUNT" "6 agent TOMLs land in ~/.codex/agents"
+assert_equals "$EXPECTED_AGENTS" "$AGENT_COUNT" "one TOML per agent lands in ~/.codex/agents"
 
 # Codex scans for SKILL.md through the symlink, so the link must resolve.
 assert_file_exists "$HOME_1/.agents/skills/commit/SKILL.md" "SKILL.md resolves through the symlink"
@@ -75,7 +80,7 @@ else
 fi
 
 SKILL_COUNT_2="$(find "$HOME_1/.agents/skills" -maxdepth 1 -mindepth 1 | wc -l | tr -d ' ')"
-assert_equals "18" "$SKILL_COUNT_2" "re-install does not duplicate skills"
+assert_equals "$EXPECTED_SKILLS" "$SKILL_COUNT_2" "re-install does not duplicate skills"
 
 # ============================================================================
 # Test 4: REGRESSION - install refuses to clobber a real directory
@@ -128,10 +133,10 @@ touch "$OUT_1/removed-agent.toml"
 TRANSPILE_OUT="$(./codex/transpile-agents.sh "$OUT_1" 2>&1)"
 
 assert_file_not_exists "$OUT_1/removed-agent.toml" "stale .toml is removed on regeneration"
-assert_output_contains "$TRANSPILE_OUT" "Transpiled 6 agents" "count reflects agents actually written"
+assert_output_contains "$TRANSPILE_OUT" "Transpiled $EXPECTED_AGENTS agents" "count reflects agents actually written"
 
 GENERATED="$(find "$OUT_1" -name '*.toml' | wc -l | tr -d ' ')"
-assert_equals "6" "$GENERATED" "exactly 6 agents are generated"
+assert_equals "$EXPECTED_AGENTS" "$GENERATED" "one TOML is generated per agent"
 
 # ============================================================================
 # Test 7: Generated agents carry real content, not just a filename
@@ -148,7 +153,7 @@ done
 
 # No agent has Write or Edit in its tools, so none may write to the workspace.
 READONLY_COUNT="$(grep -l 'sandbox_mode = "read-only"' "$OUT_1"/*.toml | wc -l | tr -d ' ')"
-assert_equals "6" "$READONLY_COUNT" "all 6 agents are read-only"
+assert_equals "$EXPECTED_AGENTS" "$READONLY_COUNT" "every agent is read-only"
 
 # Every agent declares `model: inherit`, which maps to pinning no model at all:
 # a Codex agent without a model key runs on whatever the session config says.

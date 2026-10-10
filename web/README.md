@@ -4,7 +4,7 @@ Web search and research capabilities for gathering external context and informat
 
 ## What's Included
 
-### Agents (1)
+### Agents
 - `web-search-researcher` - Deep web research agent that searches and analyzes web content to answer questions
 
 ## Installation

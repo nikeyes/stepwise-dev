@@ -4,7 +4,7 @@ Core workflow plugin for structured development following the Research → Plan 
 
 ## What's Included
 
-### Skills (14)
+### Skills
 - `/stepwise-core:research-codebase` - Document codebase as-is with comprehensive research
 - `/stepwise-core:create-plan` - Create detailed implementation plans iteratively
 - `/stepwise-core:iterate-plan` - Update existing implementation plans
@@ -20,7 +20,7 @@ Core workflow plugin for structured development following the Research → Plan 
 - `grill-me` - Stress-test a plan through relentless questioning
 - `mutation-testing` - Check whether tests would catch small bugs in the code
 
-### Agents (5)
+### Agents
 - `codebase-locator` - Find WHERE code lives in the codebase
 - `codebase-analyzer` - Understand HOW code works
 - `codebase-pattern-finder` - Find similar patterns to model after

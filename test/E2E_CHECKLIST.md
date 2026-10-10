@@ -5,13 +5,13 @@
 Run before every commit:
 
 ```bash
-make test-functional # 33 functional tests for thoughts scripts (~3 sec)
-make test-structure  # 91 plugin structure validation tests (~1 sec)
+make test-functional # Functional tests for thoughts scripts (~3 sec)
+make test-structure  # Plugin structure validation tests (~1 sec)
 make check           # Shellcheck validation
 make validate-plugin # Plugin manifest validation
 
 # Or run all at once:
-make test-plugin     # Runs all automated tests above (124 total assertions)
+make test-plugin     # Runs all automated tests above
 ```
 
 ## Manual Plugin Tests

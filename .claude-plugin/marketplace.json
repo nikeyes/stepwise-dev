@@ -26,7 +26,7 @@
     {
       "name": "stepwise-web",
       "source": "./web",
-      "version": "1.0.1",
+      "version": "1.0.2",
       "description": "Web search and research capabilities for external context",
       "keywords": ["web", "search", "research", "external"]
     },

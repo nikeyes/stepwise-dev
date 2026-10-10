@@ -34,14 +34,14 @@ The faster AI generates code, the more these practices matter:
 
 ## 📦 Available Plugins
 
-This repository contains **5 independent plugins** that can be installed separately based on your needs:
+This repository contains **independent plugins** that can be installed separately based on your needs:
 
 ### 1. **stepwise-core** (Core Workflow)
 The foundation plugin with the complete Research → Plan → Implement → Validate cycle.
 
 **Includes:**
-- 14 skills (`research-codebase`, `create-plan`, `iterate-plan`, `implement-plan`, `validate-plan`, `thoughts-management`, `bugmagnet`, `hamburger-method`, `small-safe-steps`, `story-splitting`, `test-desiderata`, `tdd`, `grill-me`, `mutation-testing`)
-- 5 specialized agents (codebase exploration and thoughts management)
+- A skill for each phase, plus practice skills (TDD, test quality, bug hunting, mutation testing, slicing). See [the four-phase workflow](#-the-four-phase-workflow) for when to use each one
+- Read-only agents for codebase exploration and thoughts management
 
 [→ Read more](./core/README.md)
 
@@ -49,7 +49,6 @@ The foundation plugin with the complete Research → Plan → Implement → Vali
 Clean git commit workflow without Claude attribution, plus rigorous PR comment review.
 
 **Includes:**
-- 2 skills (`commit`, `review-pr-comments`)
 - Smart staging and commit message generation
 - PR comment negotiation with individual inline replies
 
@@ -59,8 +58,7 @@ Clean git commit workflow without Claude attribution, plus rigorous PR comment r
 Web search and research capabilities for external context.
 
 **Includes:**
-- 1 specialized agent (`web-search-researcher`)
-- Deep web research with source citations
+- `web-search-researcher` agent: deep web research with source citations
 
 [→ Read more](./web/README.md)
 
@@ -68,13 +66,13 @@ Web search and research capabilities for external context.
 Generate beautiful HTML presentations from a coding agent. **Vendored** from [zarazhangrui/frontend-slides](https://github.com/zarazhangrui/frontend-slides) (MIT, author Zara Zhang).
 
 **Includes:**
-- 1 skill (`frontend-slides`) with a large template pack
+- `frontend-slides` skill with a large template pack
 
 ### 5. **stepwise-diagrams** (Editorial Diagrams)
-Create 38+ editorial diagram types (architecture, flowchart, sequence, ER, sankey, quadrant, radar, and more) as self-contained HTML/SVG. **Vendored** from [cathrynlavery/diagram-design](https://github.com/cathrynlavery/diagram-design) (MIT, author Cathryn Lavery).
+Create editorial diagrams (architecture, flowchart, sequence, ER, sankey, quadrant, radar, and more) as self-contained HTML/SVG. **Vendored** from [cathrynlavery/diagram-design](https://github.com/cathrynlavery/diagram-design) (MIT, author Cathryn Lavery).
 
 **Includes:**
-- 1 skill (`diagram-design`) with references, assets, and diagram type packs
+- `diagram-design` skill with references, assets, and diagram type packs
 
 ## 🚀 Installation
 
@@ -162,8 +160,8 @@ The same skills also run under OpenAI Codex.
 
 This installs:
 
-- **17 skills** symlinked into `~/.agents/skills/` (13 from core, 2 from git, 1 from vendored slides, 1 from vendored diagrams) — Codex follows symlinks when scanning that directory, so edits in the repo take effect immediately
-- **6 agents** copied into `~/.codex/agents/` as TOML, generated from the agent markdown by `codex/transpile-agents.sh`
+- **Every skill** from core, git and the vendored slides and diagrams plugins, symlinked into `~/.agents/skills/`. Codex follows symlinks when scanning that directory, so edits in the repo take effect immediately
+- **Every agent** copied into `~/.codex/agents/` as TOML, generated from the agent markdown by `codex/transpile-agents.sh`
 
 Regenerate the agents after editing any `*/agents/*.md` with `make transpile-codex`; `make check-codex` fails if they're out of sync.
 
