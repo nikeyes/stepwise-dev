@@ -40,7 +40,7 @@ This repository contains **5 independent plugins** that can be installed separat
 The foundation plugin with the complete Research → Plan → Implement → Validate cycle.
 
 **Includes:**
-- 13 skills (`research-codebase`, `create-plan`, `iterate-plan`, `implement-plan`, `validate-plan`, `thoughts-management`, `bugmagnet`, `hamburger-method`, `small-safe-steps`, `story-splitting`, `test-desiderata`, `tdd`, `grill-me`)
+- 14 skills (`research-codebase`, `create-plan`, `iterate-plan`, `implement-plan`, `validate-plan`, `thoughts-management`, `bugmagnet`, `hamburger-method`, `small-safe-steps`, `story-splitting`, `test-desiderata`, `tdd`, `grill-me`, `mutation-testing`)
 - 5 specialized agents (codebase exploration and thoughts management)
 
 [→ Read more](./core/README.md)
@@ -117,16 +117,24 @@ claude plugin install stepwise-diagrams@stepwise-dev
 
 ### Local Development (Testing Without Installing)
 
-Use `--bare` with `--plugin-dir` to load only your local plugin directories, skipping all installed/marketplace plugins:
+Disable the installed copies, then load your local plugin directories with `--plugin-dir`:
 
 ```bash
-claude --bare \
-    --plugin-dir /path/to/stepwise-dev/core \
-    --plugin-dir /path/to/stepwise-dev/git \
-    --plugin-dir /path/to/stepwise-dev/web
+claude plugin disable stepwise-core@stepwise-dev
+claude plugin disable stepwise-git@stepwise-dev
+claude plugin disable stepwise-web@stepwise-dev
+
+claude --plugin-dir /path/to/stepwise-dev/core \
+       --plugin-dir /path/to/stepwise-dev/git \
+       --plugin-dir /path/to/stepwise-dev/web
+
+# When you're done
+claude plugin enable stepwise-core@stepwise-dev   # and the same for git and web
 ```
 
-`--bare` disables plugin sync (so installed plugins are ignored) but still loads the directories you pass via `--plugin-dir`. This means your local changes are tested in isolation without needing to reinstall anything.
+Your local changes are tested without reinstalling anything.
+
+> **Don't use `--bare` for this.** It also ignores installed plugins, but its minimal mode leaves the model with only Bash, Read and Edit. Without the `Skill` tool, a skill can't invoke another one, so `implement-plan`, `create-plan` (which calls `grill-me`) and `mutation-testing` (which calls `tdd`) stop working. A skill you type as `/skill-name` still runs, which hides the problem.
 
 ## 🤖 Using It with Codex
 
@@ -193,7 +201,7 @@ Use `grep -r thoughts/` to search across all documents.
 | **Before** (product side) | `/story-splitting` | Applied to the PRD / ticket / use case — **not** the code |
 | 🔍 Research | `/research-codebase` | `codebase-locator`, `codebase-analyzer`, `codebase-pattern-finder`, `web-search-researcher` |
 | 🗺️ Plan | `/create-plan`, `/iterate-plan` | `/hamburger-method`, `/small-safe-steps`, `/grill-me` (stress-test the plan) |
-| 🛠️ Implement | `/implement-plan`, `/commit` | `/tdd` (test-first development), `/test-desiderata` (test quality), `/bugmagnet <file>` (edge-case & bug hunt) |
+| 🛠️ Implement | `/implement-plan`, `/commit` | `/tdd` (test-first development), `/test-desiderata` (test quality), `/bugmagnet <file>` (edge-case & bug hunt), `/mutation-testing` (would tests catch a bug?) |
 | ✅ Validate | `/validate-plan` | — |
 | 🌐 Any web lookup | _"search the web for..."_ | `web-search-researcher` fires automatically |
 
@@ -219,7 +227,7 @@ Iterates with you 5+ times, creates detailed phases with verification steps. Use
 /stepwise-core:implement-plan @thoughts/shared/plans/2025-11-09-rate-limiting.md
 ```
 
-Executes one phase at a time, validates before proceeding. Use `/tdd` to drive the implementation test-first (red→green→refactor). While implementing, lean on `/test-desiderata` to keep test quality high and `/bugmagnet <file>` to surface edge cases on a specific module.
+Executes one phase at a time, validates before proceeding. Use `/tdd` to drive the implementation test-first (red→green→refactor). While implementing, lean on `/test-desiderata` to keep test quality high, `/bugmagnet <file>` to surface edge cases on a specific module, and `/mutation-testing` to check that the tests would actually catch a bug in the changed code.
 
 ### Phase 4: Validate (stepwise-core)
 
@@ -405,7 +413,7 @@ Derived from [HumanLayer's Claude Code workflow](https://github.com/humanlayer/h
 
 `stepwise-diagrams` is vendored verbatim from [cathrynlavery/diagram-design](https://github.com/cathrynlavery/diagram-design) (MIT, author Cathryn Lavery) under the `diagrams/` prefix, imported via `git subtree`.
 
-Several skills are derived from [Matt Pocock's skills](https://github.com/mattpocock/skills) (grill-me, tdd), [eferro's skill-factory](https://github.com/eferro/skill-factory) (hamburger-method, small-safe-steps, story-splitting, test-desiderata, and tdd/zombies reference) and [Gojko Adzic's BugMagnet](https://github.com/gojko/bugmagnet-ai-assistant). See [NOTICE](NOTICE) for detailed attribution.
+Several skills are derived from [Matt Pocock's skills](https://github.com/mattpocock/skills) (grill-me, tdd), [eferro's skill-factory](https://github.com/eferro/skill-factory) (hamburger-method, small-safe-steps, story-splitting, test-desiderata, mutation-testing, and tdd/zombies reference) and [Gojko Adzic's BugMagnet](https://github.com/gojko/bugmagnet-ai-assistant). See [NOTICE](NOTICE) for detailed attribution.
 
 **Major enhancements**:
 - Multi-plugin architecture for modular installation

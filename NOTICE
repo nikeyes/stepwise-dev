@@ -54,11 +54,15 @@ https://github.com/eferro/skill-factory
 - core/skills/small-safe-steps/ (from output_skills/practices/small-safe-steps)
 - core/skills/story-splitting/ (from output_skills/practices/story-splitting)
 - core/skills/test-desiderata/ (from output_skills/testing/test-desiderata)
+- core/skills/mutation-testing/ (from output_skills/testing/mutation-testing)
 - core/skills/tdd/references/zombies.md (from output_skills/testing/tdd/references/zombies.md)
 
 Note: the hamburger-method and story-splitting skills ultimately credit
 Gojko Adzic as the author of the underlying techniques; test-desiderata
-credits Kent Beck. The skill-factory repository is the upstream source
+credits Kent Beck. mutation-testing is based on Paul Hammond's
+mutation-testing skill (https://github.com/citypaul/.dotfiles); its tool
+references were rewritten for current mutmut, StrykerJS and PIT, and Java
+and Kotlin references were added. The skill-factory repository is the upstream source
 from which these SKILL.md files were adapted.
 
 ================================================================================

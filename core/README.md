@@ -4,7 +4,7 @@ Core workflow plugin for structured development following the Research → Plan 
 
 ## What's Included
 
-### Skills (11)
+### Skills (14)
 - `/stepwise-core:research-codebase` - Document codebase as-is with comprehensive research
 - `/stepwise-core:create-plan` - Create detailed implementation plans iteratively
 - `/stepwise-core:iterate-plan` - Update existing implementation plans
@@ -16,6 +16,9 @@ Core workflow plugin for structured development following the Research → Plan 
 - `small-safe-steps` - Break work into safe deployable increments
 - `story-splitting` - Detect and split oversized stories
 - `test-desiderata` - Analyze test quality using Kent Beck's framework
+- `tdd` - Test-driven development with red-green-refactor
+- `grill-me` - Stress-test a plan through relentless questioning
+- `mutation-testing` - Check whether tests would catch small bugs in the code
 
 ### Agents (5)
 - `codebase-locator` - Find WHERE code lives in the codebase

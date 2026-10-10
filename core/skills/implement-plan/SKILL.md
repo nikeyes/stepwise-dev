@@ -31,7 +31,7 @@ If no plan path provided, ask for one.
 Your job is to coordinate, not to implement on your own initiative:
 - Understand what each phase needs to accomplish
 - Delegate implementation to `/stepwise-core:tdd` — let it decide what to write and when
-- Delegate quality checks to `/stepwise-core:bugmagnet` and `/stepwise-core:test-desiderata`
+- Delegate quality checks to `/stepwise-core:bugmagnet`, `/stepwise-core:mutation-testing` and `/stepwise-core:test-desiderata`
 - Run verification commands and update progress
 
 You may edit files when a delegated skill instructs you to. What you must not do is decide on your own to write code, add tests, or modify source files.
@@ -67,13 +67,19 @@ TDD will read the files, write failing tests, implement, and refactor. Wait for 
 
 Then apply the findings you judge worthwhile, without asking the user, and move on to Step 3.
 
-### Step 3 — Delegate to Test Desiderata skill
+### Step 3 — Delegate to Mutation Testing skill
 
-**Do not analyze test quality yourself.** Invoke `/stepwise-core:test-desiderata` using the `Skill` tool on the test files for this phase.
+**Do not analyze mutants yourself.** Invoke `/stepwise-core:mutation-testing` using the `Skill` tool with `--changed` and the production files modified in this phase (e.g. `--changed src/todo_api/models.py`). It mutates only the changed hunks and hands any gaps to tdd itself.
 
-Then apply the improvements you judge worthwhile, without asking the user, and move on to Step 4.
+Include its "Still alive" and "Bugs found" sections in the final summary, then move on to Step 4.
 
-### Step 4 — Verify and Advance
+### Step 4 — Delegate to Test Desiderata skill
+
+**Do not analyze test quality yourself.** Invoke `/stepwise-core:test-desiderata` using the `Skill` tool on the test files for this phase, including any tests added in Step 3.
+
+Then apply the improvements you judge worthwhile, without asking the user, and move on to Step 5.
+
+### Step 5 — Verify and Advance
 
 - Run all automated success criteria checks (usually `make check test` covers everything)
 - Fix any issues before proceeding
@@ -122,6 +128,9 @@ When all phases are complete:
 
    Pending manual verification:
    - [Manual verification items from the plan, if any]
+
+   Mutation testing:
+   - [Surviving mutants and bugs reported per phase, or "No surviving mutants"]
 
    Next steps in the workflow:
    - Use `/stepwise-core:validate-plan thoughts/shared/plans/[filename].md` to verify completeness

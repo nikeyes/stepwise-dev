@@ -16,7 +16,7 @@ This project is distributed as **5 independent Claude Code plugins** in a single
 ### Plugin 1: stepwise-core
 **Location**: `core/`
 **Components**:
-- 11 skills (research-codebase, create-plan, iterate-plan, implement-plan, validate-plan, thoughts-management, bugmagnet, grill-me, tdd, hamburger-method, small-safe-steps, story-splitting, test-desiderata)
+- 14 skills (research-codebase, create-plan, iterate-plan, implement-plan, validate-plan, thoughts-management, bugmagnet, grill-me, tdd, hamburger-method, small-safe-steps, story-splitting, test-desiderata, mutation-testing)
 - 5 specialized agents (codebase-locator, codebase-analyzer, codebase-pattern-finder, thoughts-locator, thoughts-analyzer)
 
 ### Plugin 2: stepwise-git
@@ -69,7 +69,7 @@ core/                  # stepwise-core plugin
 │   ├── codebase-pattern-finder.md
 │   ├── thoughts-locator.md
 │   └── thoughts-analyzer.md
-└── skills/            # 11 skills (SKILL.md directories)
+└── skills/            # 14 skills (SKILL.md directories)
     ├── create-plan/SKILL.md
     ├── iterate-plan/SKILL.md
     ├── implement-plan/SKILL.md
@@ -84,7 +84,8 @@ core/                  # stepwise-core plugin
     ├── hamburger-method/SKILL.md
     ├── small-safe-steps/SKILL.md
     ├── story-splitting/SKILL.md
-    └── test-desiderata/SKILL.md
+    ├── test-desiderata/SKILL.md
+    └── mutation-testing/SKILL.md
 
 git/                   # stepwise-git plugin
 ├── .claude-plugin/
