@@ -250,7 +250,7 @@ After structure approval:
 
 ## Phase 2: [Descriptive Name]
 
-[Similar structure with both automated and manual success criteria...]
+[Same structure as Phase 1...]
 
 ---
 
@@ -264,9 +264,7 @@ After structure approval:
 - [End-to-end scenarios]
 
 ### Manual Testing Steps:
-1. [Specific step to verify feature]
-2. [Another verification step]
-3. [Edge case to test manually]
+[Only subjective checks that code cannot assert; omit this section otherwise]
 
 ## Performance Considerations
 
@@ -283,7 +281,7 @@ After structure approval:
 - Similar implementation: `[file:line]`
 ````
 
-### Step 6: Sync and Review
+### Step 6: Review
 
 1. **Present the draft plan location**:
    ```
@@ -350,7 +348,7 @@ After structure approval:
 
 6. **No Open Questions in Final Plan**:
    - If you encounter open questions during planning, STOP
-   - Research or ask for clarification immediately
+   - Research it, or take it back to grill-me (Step 3)
    - Do NOT write the plan with unresolved questions
    - The implementation plan must be complete and actionable
    - Every decision must be made before finalizing the plan
@@ -401,28 +399,6 @@ Example 2 - Web UI Feature (justified manual verification):
 - [ ] Button animation feels smooth (subjective)
 - [ ] Visual appearance matches mockup (aesthetic judgment)
 ```
-
-## Common Patterns
-
-### For Database Changes:
-- Start with schema/migration
-- Add store methods
-- Update business logic
-- Expose via API
-- Update clients
-
-### For New Features:
-- Research existing patterns first
-- Start with data model
-- Build backend logic
-- Add API endpoints
-- Implement UI last
-
-### For Refactoring:
-- Document current behavior
-- Plan incremental changes
-- Maintain backwards compatibility
-- Include migration strategy
 
 ## Sub-task Spawning Best Practices
 
