@@ -150,13 +150,9 @@ Get user confirmation before proceeding.
    - Use `make` commands for automated verification
    - Keep language clear and actionable
 
-### Step 5: Sync and Review
+### Step 5: Review
 
-1. **Sync the updated plan**:
-   - Use the thoughts-management Skill to sync the updated plan
-   - This ensures changes are properly indexed
-
-2. **Present the changes made**:
+1. **Present the changes made**:
    ```
    I've updated the plan at `thoughts/shared/plans/[filename].md`
 
@@ -171,9 +167,9 @@ Get user confirmation before proceeding.
    Would you like any further adjustments?
    ```
 
-3. **Be ready to iterate further** based on feedback
+2. **Be ready to iterate further** based on feedback
 
-4. **When iteration is complete**, inform the user:
+3. **When iteration is complete**, inform the user:
    ```
    Plan updated: `thoughts/shared/plans/[filename].md`
 
@@ -232,11 +228,10 @@ When updating success criteria, always maintain the two-category structure:
    - Specific files that should exist
    - Code compilation/type checking
 
-2. **Manual Verification** (requires human testing):
-   - UI/UX functionality
-   - Performance under real conditions
-   - Edge cases that are hard to automate
-   - User acceptance criteria
+2. **Manual Verification** (rarely needed):
+   - Visual appearance requiring aesthetic judgment
+   - Subjective UX ("does it feel responsive?")
+   - Anything code can assert belongs under Automated Verification
 
 ## Sub-task Spawning Best Practices
 
