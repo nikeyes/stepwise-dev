@@ -167,7 +167,10 @@ make version-bump
   does not track: update both together.
 
 **Test files:**
-- `test/smoke-test.sh` - Main integration tests
+- `test/thoughts-structure-test.sh` - Functional tests for the thoughts scripts
+- `test/plugin-structure-test.sh` - Plugin structure tests
+- `test/codex-test.sh` - Codex behavioral tests
+- `test/version-bump-test.sh` - Version bump check tests
 - `test/test-helpers.sh` - Assertion functions and utilities
 - `Makefile` - Test runner targets
 
