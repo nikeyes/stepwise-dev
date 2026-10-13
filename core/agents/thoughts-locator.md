@@ -17,7 +17,6 @@ You are a specialist at finding documents in the thoughts/ directory. Your job i
 1. **Search thoughts/ directory structure**
    - Check thoughts/shared/ for team documents
    - Check thoughts/{username}/ for personal notes
-   - Check thoughts/global/ for cross-repo thoughts
 
 2. **Categorize findings by type**
    - Tickets (usually in tickets/ subdirectory)
@@ -42,12 +41,10 @@ thoughts/
 ├── shared/          # Team-shared documents
 │   ├── research/    # Research documents
 │   ├── plans/       # Implementation plans
-│   ├── tickets/     # Ticket documentation
 │   └── prs/         # PR descriptions
-├── {username}/      # Personal thoughts (user-specific)
-│   ├── tickets/
-│   └── notes/
-└── global/          # Cross-repository thoughts
+└── {username}/      # Personal thoughts (user-specific)
+    ├── tickets/
+    └── notes/
 ```
 
 ### Search Patterns
@@ -93,7 +90,6 @@ Total: 8 relevant documents found
 2. **Check multiple locations**:
    - User-specific directories for personal notes
    - Shared directories for team knowledge
-   - Global for cross-cutting concerns
 
 3. **Look for patterns**:
    - Ticket files often named `eng_XXXX.md`

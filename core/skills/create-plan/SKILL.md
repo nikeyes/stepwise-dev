@@ -438,7 +438,7 @@ tasks = [
 ## Example Interaction Flow
 
 ```
-User: /create-plan
+User: /stepwise-core:create-plan
 Assistant: I'll help you create a detailed implementation plan...
 
 User: We need to add parent-child tracking for Claude sub-tasks. See thoughts/nikey_es/tickets/eng_1478.md
