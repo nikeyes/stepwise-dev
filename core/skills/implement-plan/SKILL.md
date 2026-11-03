@@ -117,6 +117,7 @@ When all phases are complete:
 
 2. **Review the whole change with a clean context**:
    - Invoke `/code-review medium` and `/security-review` using the `Skill` tool. They review every change of the plan at once, which the per-phase steps cannot do.
+   - If `/security-review` fails because `origin/HEAD` does not exist, do not change the git configuration. Report the security review as not run, with the fix: `git remote set-head origin -a`.
    - Decide each finding. Fix it by delegating to `/stepwise-core:tdd` with the finding's `file:line`, or dismiss it with a short reason. Do not leave a finding without a decision.
    - If anything changed, run the final verification again. Do not review a second time: one review pass per plan.
 
@@ -143,6 +144,7 @@ When all phases are complete:
    Review findings: [N from code-review, M from security-review]
    - [Each finding with file:line, and "fixed" or "dismissed: reason", or "None"]
    - [Mark any security finding that is not fixed as BLOCKING]
+   - [If the security review did not run, say so and why, with the fix]
 
    Next steps in the workflow:
    - Use `/stepwise-core:validate-plan thoughts/shared/plans/[filename].md` to verify completeness
