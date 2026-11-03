@@ -115,11 +115,16 @@ When all phases are complete:
    make check test  # Or project-specific command
    ```
 
-2. **Update the plan file**:
+2. **Review the whole change with a clean context**:
+   - Invoke `/code-review medium` and `/security-review` using the `Skill` tool. They review every change of the plan at once, which the per-phase steps cannot do.
+   - Decide each finding. Fix it by delegating to `/stepwise-core:tdd` with the finding's `file:line`, or dismiss it with a short reason. Do not leave a finding without a decision.
+   - If anything changed, run the final verification again. Do not review a second time: one review pass per plan.
+
+3. **Update the plan file**:
    - Ensure all checkboxes are marked
    - Note any deviations from the original plan
 
-3. **Inform the user**:
+4. **Inform the user**:
    ```
    Implementation complete for: [Plan Name]
 
@@ -134,6 +139,10 @@ When all phases are complete:
 
    Surviving mutants:
    - [Mutants still alive after mutation-testing, with the reason, or "None"]
+
+   Review findings: [N from code-review, M from security-review]
+   - [Each finding with file:line, and "fixed" or "dismissed: reason", or "None"]
+   - [Mark any security finding that is not fixed as BLOCKING]
 
    Next steps in the workflow:
    - Use `/stepwise-core:validate-plan thoughts/shared/plans/[filename].md` to verify completeness
