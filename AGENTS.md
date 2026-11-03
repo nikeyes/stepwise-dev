@@ -1,7 +1,7 @@
 # AGENTS.md
 
 This file is the source of truth for coding agents working in this repository.
-`CLAUDE.md` is a one-line pointer to it, so Claude Code and OpenAI Codex read the same guidance.
+`CLAUDE.md` is a one-line pointer to it.
 
 ## Repository Overview
 
@@ -96,12 +96,6 @@ diagrams/              # stepwise-diagrams plugin (vendored via git subtree)
     ├── SKILL.md
     └── ...            # references, assets, diagram type packs
 
-codex/                 # OpenAI Codex compatibility layer
-├── agents/*.toml      # Generated, one per agent
-├── transpile-agents.sh
-├── install.sh
-└── uninstall.sh
-
 scripts/               # Repo tooling used by CI
 ├── check-version-bumps.sh   # Enforces .claude/rules/versioning.md
 └── install-claude-code.sh   # Pinned, SHA256-verified Claude Code install
@@ -169,7 +163,6 @@ make version-bump
 **Test files:**
 - `test/thoughts-structure-test.sh` - Functional tests for the thoughts scripts
 - `test/plugin-structure-test.sh` - Plugin structure tests
-- `test/codex-test.sh` - Codex behavioral tests
 - `test/version-bump-test.sh` - Version bump check tests
 - `test/test-helpers.sh` - Assertion functions and utilities
 - `Makefile` - Test runner targets
@@ -223,7 +216,7 @@ Agents are specialized markdown files with:
 - Called via `Task` tool by skills
 
 ### Workflow Structure
-Workflows are JavaScript scripts in `core/workflows/` that the Claude Code runtime executes (Claude Code only; Codex has no equivalent):
+Workflows are JavaScript scripts in `core/workflows/` that the Claude Code runtime executes:
 - `export const meta` first, as a plain literal; `meta.name` becomes `/stepwise-core:<name>`
 - The script only orchestrates: every step is an `agent()` call, usually a `core/agents/` agent that preloads one skill via `skills:`
 - No automated tests for the script's logic: validate changes by running it on a real plan
@@ -287,57 +280,6 @@ For **skills/agents**:
 2. Test via plugin reload or development mode
 3. Validate in Claude Code
 4. Iterate
-
-## Codex compatibility
-
-The same `skills/` directories serve both Claude Code and Codex. The only generated
-artifacts are the agent `.toml` files. Workflows (`core/workflows/`) have no Codex
-equivalent: Codex has no Workflow tool, so it keeps using `implement-plan` and `validate-plan`.
-
-```
-codex/
-├── agents/*.toml          # GENERATED — do not edit by hand
-├── transpile-agents.sh    # core|web/agents/*.md -> codex/agents/*.toml
-├── install.sh             # symlinks skills + copies agents
-└── uninstall.sh           # removes only what install.sh created
-```
-
-### Install
-
-```bash
-make install-codex
-```
-
-Skills are symlinked into `~/.agents/skills/` (Codex follows symlinks when scanning)
-and agents are copied into `~/.codex/agents/`.
-
-### Conventions
-
-- **`${CLAUDE_PLUGIN_ROOT:-$HOME/.agents}`** — script paths in SKILL.md use this shell
-  default so the same line resolves under both harnesses. This *codifies* `$HOME/.agents/skills/`
-  as the Codex install location; it is a convention, not a detection, and `install.sh`
-  must keep honoring it.
-- **`agents/openai.yaml`** in a skill mirrors its `disable-model-invocation` for Codex:
-  `true` becomes `allow_implicit_invocation: false`, and `false` becomes `true`.
-  The test suite derives the list of skills needing one from the frontmatter, so a
-  skill that declares the key without a matching `openai.yaml` fails `make test`.
-- **`model: inherit`** transpiles to *no* `model` key in the TOML: a Codex agent without
-  one runs on the session's configured model, which is what `inherit` means. The
-  `haiku`/`sonnet`/`opus` mappings remain for an agent that deliberately pins a model.
-- Agents are regenerated with `make transpile-codex`. `make check-codex` (wired into
-  `make ci`) fails if a `.md` changed without regenerating, if a TOML is malformed, or
-  if a bare `${CLAUDE_PLUGIN_ROOT}` appears without its `:-` default.
-
-### Known limitations
-
-`research-codebase`, `create-plan` and `iterate-plan` use `$ARGUMENTS`, which Codex does
-not expand — under Codex, pass the input in the message itself.
-
-`model: inherit` in a SKILL.md frontmatter makes Codex log `ignoring invalid skill
-model annotation`, once per skill that declares it. Only the annotation is dropped,
-never the skill: it loads and runs on the session's model, which is what `inherit`
-asks for anyway. The key stays because Claude Code needs it.
-
 
 ## Vendored plugins
 
