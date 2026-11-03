@@ -208,47 +208,9 @@ if command -v jq >/dev/null 2>&1; then
 fi
 
 # ============================================================================
-# Test 7: Codex compatibility layer
+# Test 7: Root documentation
 # ============================================================================
-section "Test 7: codex/"
-
-assert_file_exists "codex/transpile-agents.sh" "transpile-agents.sh exists"
-assert_executable "codex/transpile-agents.sh" "transpile-agents.sh is executable"
-assert_file_exists "codex/install.sh" "install.sh exists"
-assert_executable "codex/install.sh" "install.sh is executable"
-
-for agent in codebase-locator codebase-analyzer codebase-pattern-finder \
-             thoughts-locator thoughts-analyzer \
-             tdd-implementer bug-hunter mutation-hunter test-reviewer plan-validator \
-             web-search-researcher; do
-  assert_file_exists "codex/agents/$agent.toml" "$agent.toml is generated"
-  # An empty file would satisfy existence alone; require real generated content.
-  assert_contains "codex/agents/$agent.toml" "^name = \"$agent\"$" "$agent.toml declares its name"
-  assert_contains "codex/agents/$agent.toml" "^developer_instructions" "$agent.toml has instructions"
-done
-
-# Every skill that declares an implicit-invocation policy for Claude Code must
-# carry the same policy for Codex, so both harnesses behave alike. The list is
-# derived from the frontmatter rather than hardcoded, so a skill whose
-# openai.yaml is missing or disagrees with its SKILL.md fails here.
-POLICY_SKILLS="$(grep -rl '^disable-model-invocation:' --include="SKILL.md" core git web | sort)"
-assert_not_empty "$POLICY_SKILLS" "found skills that declare an implicit-invocation policy"
-
-while IFS= read -r skill_md; do
-  skill="$(dirname "$skill_md")"
-  if grep -q '^disable-model-invocation: *true' "$skill_md"; then
-    codex_policy="allow_implicit_invocation: false"
-  else
-    codex_policy="allow_implicit_invocation: true"
-  fi
-  assert_contains "$skill/agents/openai.yaml" "$codex_policy" \
-    "$(basename "$skill") declares the same invocation policy for Codex"
-done <<< "$POLICY_SKILLS"
-
-# ============================================================================
-# Test 8: Root documentation
-# ============================================================================
-section "Test 8: Root documentation"
+section "Test 7: Root documentation"
 
 assert_file_exists "README.md" "README.md exists"
 assert_file_exists "AGENTS.md" "AGENTS.md exists"

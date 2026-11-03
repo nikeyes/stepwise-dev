@@ -1,7 +1,6 @@
 # Variables
 FUNCTIONAL_TEST := test/thoughts-structure-test.sh
 STRUCTURE_TEST := test/plugin-structure-test.sh
-CODEX_TEST := test/codex-test.sh
 VERSION_BUMP_TEST := test/version-bump-test.sh
 MARKETPLACE_MANIFEST := .claude-plugin/marketplace.json
 
@@ -16,7 +15,7 @@ GENERATE_REVIEW := $(SKILL_CREATOR_PATH)/eval-viewer/generate_review.py
 ITER ?= LAST
 
 # Phony targets
-.PHONY: help test test-verbose check check-codex validate version-bump ci install-codex uninstall-codex transpile-codex eval-list eval-view
+.PHONY: help test test-verbose check validate version-bump ci eval-list eval-view
 
 # Default target
 help:
@@ -27,13 +26,7 @@ help:
 	@echo "  make check              - Run shellcheck on all bash scripts"
 	@echo "  make validate           - Run claude plugin validate --strict on the marketplace and plugins"
 	@echo "  make version-bump       - Check version bumps against BASE_REF (default: origin/main)"
-	@echo "  make ci                 - Run full CI validation (test + check + check-codex + validate)"
-	@echo ""
-	@echo "Codex:"
-	@echo "  make install-codex      - Install skills and agents for OpenAI Codex"
-	@echo "  make uninstall-codex    - Remove what install-codex installed"
-	@echo "  make transpile-codex    - Regenerate codex/agents/*.toml from the agent markdown"
-	@echo "  make check-codex        - Verify Codex artifacts are in sync and valid"
+	@echo "  make ci                 - Run full CI validation (test + check + validate)"
 	@echo ""
 	@echo "Eval viewer:"
 	@echo "  make eval-list                                      - List skills with eval iterations"
@@ -52,8 +45,6 @@ test:
 	@$(FUNCTIONAL_TEST)
 	@echo "Running plugin structure tests..."
 	@$(STRUCTURE_TEST)
-	@echo "Running Codex behavioral tests..."
-	@$(CODEX_TEST)
 	@echo "Running version bump check tests..."
 	@$(VERSION_BUMP_TEST)
 	@echo ""
@@ -65,8 +56,6 @@ test-verbose:
 	@bash -x $(FUNCTIONAL_TEST)
 	@echo "Running plugin structure tests (verbose mode)..."
 	@bash -x $(STRUCTURE_TEST)
-	@echo "Running Codex behavioral tests (verbose mode)..."
-	@bash -x $(CODEX_TEST)
 	@echo "Running version bump check tests (verbose mode)..."
 	@bash -x $(VERSION_BUMP_TEST)
 
@@ -74,49 +63,11 @@ test-verbose:
 check:
 	@echo "Running shellcheck..."
 	@if command -v shellcheck >/dev/null 2>&1; then \
-		shellcheck core/skills/thoughts-management/scripts/* codex/*.sh scripts/*.sh test/*.sh && echo "✓ Shellcheck passed"; \
+		shellcheck core/skills/thoughts-management/scripts/* scripts/*.sh test/*.sh && echo "✓ Shellcheck passed"; \
 	else \
 		echo "  Install with: brew install shellcheck (macOS) or apt install shellcheck (Linux)"; \
 		$(call SKIP_OR_FAIL,shellcheck); \
 	fi
-
-# ============================================================================
-# Codex targets
-# ============================================================================
-
-install-codex:
-	@codex/install.sh
-
-uninstall-codex:
-	@codex/uninstall.sh
-
-transpile-codex:
-	@codex/transpile-agents.sh
-
-# Verify the Codex artifacts are in sync with their sources and internally consistent
-check-codex:
-	@echo "Checking codex/agents/*.toml are up to date..."
-	@tmp=$$(mktemp -d); \
-	codex/transpile-agents.sh "$$tmp" >/dev/null; \
-	if diff -r codex/agents "$$tmp" >/dev/null; then \
-		echo "✓ Generated agents in sync"; \
-	else \
-		echo "✗ codex/agents/*.toml is stale — run 'make transpile-codex'"; \
-		diff -r codex/agents "$$tmp" || true; \
-		rm -rf "$$tmp"; exit 1; \
-	fi; \
-	rm -rf "$$tmp"
-	@echo "Validating TOML syntax..."
-	@python3 -c "import tomllib, glob, sys; [tomllib.load(open(f, 'rb')) for f in glob.glob('codex/agents/*.toml')]" \
-		&& echo "✓ All agent TOML files parse"
-	@echo "Checking CLAUDE_PLUGIN_ROOT always has a fallback..."
-	@if grep -rn '\$${CLAUDE_PLUGIN_ROOT}' --include="SKILL.md" core git research web | grep -v workspace; then \
-		echo "✗ Found \$${CLAUDE_PLUGIN_ROOT} without a :- default"; exit 1; \
-	else \
-		echo "✓ No bare \$${CLAUDE_PLUGIN_ROOT}"; \
-	fi
-	@echo ""
-	@echo "✓ Codex checks passed"
 
 # ============================================================================
 # CI
@@ -141,8 +92,8 @@ validate:
 version-bump:
 	@scripts/check-version-bumps.sh
 
-# Full CI validation (test + check + codex + manifest validation)
-ci: test check check-codex validate
+# Full CI validation (test + check + manifest validation)
+ci: test check validate
 	@echo ""
 	@echo "✓ All CI checks passed"
 
