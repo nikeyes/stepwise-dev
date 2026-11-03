@@ -19,7 +19,6 @@ This project is distributed as **independent Claude Code plugins** in a single m
 - Workflow skills for each phase (research, plan, implement, validate) and `thoughts-management`
 - Practice skills the workflow delegates to or the user invokes: TDD, test quality, bug hunting, mutation testing, slicing, plan grilling
 - Read-only agents for codebase and `thoughts/` exploration
-- The `implement-and-validate` workflow and its agents, each preloading the skill it applies
 
 ### Plugin 2: stepwise-git
 **Location**: `git/`
@@ -66,7 +65,6 @@ core/                  # stepwise-core plugin
 ├── .claude-plugin/
 │   └── plugin.json
 ├── agents/            # <agent>.md, one per agent
-├── workflows/         # <workflow>.js, dynamic workflows (Claude Code only)
 └── skills/
     ├── <skill>/SKILL.md
     └── thoughts-management/scripts/   # thoughts-init, thoughts-metadata
@@ -214,16 +212,6 @@ Agents are specialized markdown files with:
 - Frontmatter: `name`, `description`, `tools`, `model`, `color`
 - Narrowly-scoped instructions (locate, analyze, or find patterns)
 - Called via `Task` tool by skills
-
-### Workflow Structure
-Workflows are JavaScript scripts in `core/workflows/` that the Claude Code runtime executes:
-- `export const meta` first, as a plain literal; `meta.name` becomes `/stepwise-core:<name>`
-- The script only orchestrates: every step is an `agent()` call, usually a `core/agents/` agent that preloads one skill via `skills:`
-- No automated tests for the script's logic: validate changes by running it on a real plan
-
-`implement-and-validate` duplicates the phase cycle of `implement-plan` (tdd → bugmagnet → mutation-testing → test-desiderata → verify → checkboxes) and reads the outputs of those skills and `validate-plan` through its schemas. Keep them in sync:
-- When you change the cycle in `core/skills/implement-plan/SKILL.md`, change `core/workflows/implement-and-validate.js` too, and vice versa.
-- When you change `tdd`, `bugmagnet`, `mutation-testing`, `test-desiderata` or `validate-plan`, run the workflow on a plan again to check it still works.
 
 ### Thoughts System & Skill
 The `thoughts-management` Skill provides directory initialization and metadata generation:
