@@ -1,6 +1,6 @@
 {
   "name": "stepwise-dev",
-  "version": "2.0.15",
+  "version": "2.0.16",
   "owner": {
     "name": "Jorge Castro",
     "email": "nikeyes@gmail.com"
@@ -12,14 +12,14 @@
     {
       "name": "stepwise-core",
       "source": "./core",
-      "version": "2.0.3",
+      "version": "2.0.4",
       "description": "Core workflow for structured development: Research → Plan → Implement → Validate with thoughts/ management",
       "keywords": ["workflow", "research", "planning", "implementation", "validation", "thoughts"]
     },
     {
       "name": "stepwise-git",
       "source": "./git",
-      "version": "2.0.1",
+      "version": "2.0.2",
       "description": "Git and GitHub workflow: unattended commits, pull requests, CI checks and PR comment review",
       "keywords": ["git", "commit", "pr", "code-review", "github", "version-control"]
     },
