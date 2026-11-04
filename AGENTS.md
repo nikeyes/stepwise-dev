@@ -9,144 +9,68 @@ This is a **workflow tooling project for Claude Code itself**, not a traditional
 
 The workflow operates entirely locally without cloud dependencies and uses a `thoughts/` directory system for persistent storage.
 
-## Multi-Plugin Architecture
+## Plugins
 
-This project is distributed as **independent Claude Code plugins** in a single marketplace:
+The repo is one marketplace with **independent Claude Code plugins**:
 
-### Plugin 1: stepwise-core
-**Location**: `core/`
-**Components**:
-- Workflow skills for each phase (research, plan, implement, validate) and `thoughts-management`
-- Practice skills the workflow delegates to or the user invokes: TDD, test quality, bug hunting, mutation testing, slicing, plan grilling
-- Read-only agents for codebase and `thoughts/` exploration
+| Plugin | Location | Contents |
+|---|---|---|
+| `stepwise-core` | `core/` | Workflow skills for each phase (research, plan, implement, validate) and `thoughts-management`; practice skills the workflow delegates to or the user invokes (TDD, test quality, bug hunting, mutation testing, slicing, plan grilling); read-only agents for codebase and `thoughts/` exploration |
+| `stepwise-git` | `git/` | Skills for unattended commits, pull requests with their CI checks, and PR comment review, plus `ship-pr` that chains them |
+| `stepwise-web` | `web/` | A read-only web research agent |
+| `stepwise-slides` | `slides/plugins/frontend-slides/` | Vendored `frontend-slides` skill (see [Vendored plugins](#vendored-plugins)) |
+| `stepwise-diagrams` | `diagrams/` | Vendored `diagram-design` skill (see [Vendored plugins](#vendored-plugins)) |
 
-### Plugin 2: stepwise-git
-**Location**: `git/`
-**Components**:
-- Skills for unattended commits, pull requests with their CI checks, and PR comment review, plus the `ship-pr` skill that chains them
-
-### Plugin 3: stepwise-web
-**Location**: `web/`
-**Components**:
-- A read-only web research agent
-
-### Plugin 4: stepwise-slides
-**Location**: `slides/plugins/frontend-slides/` (vendored from `zarazhangrui/frontend-slides`, MIT)
-**Components**:
-- The `frontend-slides` skill with a large template pack
-
-### Plugin 5: stepwise-diagrams
-**Location**: `diagrams/` (vendored from `cathrynlavery/diagram-design`, MIT)
-**Components**:
-- The `diagram-design` skill: editorial diagrams (architecture, flowchart, sequence, ER, sankey, etc.) as self-contained HTML/SVG
-
-**Installation**:
-```bash
-# Add marketplace
-claude plugin marketplace add git@github.com:nikeyes/stepwise-dev.git
-
-# Install all (or pick individual ones)
-claude plugin install stepwise-core@stepwise-dev
-claude plugin install stepwise-git@stepwise-dev
-claude plugin install stepwise-web@stepwise-dev
-claude plugin install stepwise-slides@stepwise-dev
-claude plugin install stepwise-diagrams@stepwise-dev
-```
-
-See README.md for detailed installation instructions.
+Installation steps are in README.md.
 
 ## Project Structure
 
 ```
-.claude-plugin/        # Marketplace configuration
-└── marketplace.json   # Marketplace listing every plugin
+.claude-plugin/marketplace.json   # Marketplace listing every plugin
 
-core/                  # stepwise-core plugin
-├── .claude-plugin/
-│   └── plugin.json
-├── agents/            # <agent>.md, one per agent
+core/                  # stepwise-core
+├── .claude-plugin/plugin.json
+├── agents/<agent>.md
 └── skills/
     ├── <skill>/SKILL.md
     └── thoughts-management/scripts/   # thoughts-init, thoughts-metadata
 
-git/                   # stepwise-git plugin
-├── .claude-plugin/
-│   └── plugin.json
+git/                   # stepwise-git
+├── .claude-plugin/plugin.json
 └── skills/<skill>/SKILL.md
 
-web/                   # stepwise-web plugin
-├── .claude-plugin/
-│   └── plugin.json
+web/                   # stepwise-web
+├── .claude-plugin/plugin.json
 └── agents/<agent>.md
 
-slides/                # stepwise-slides plugin (vendored via git subtree)
-├── LICENSE            # Upstream MIT — preserved for attribution
-└── plugins/frontend-slides/
-    ├── .claude-plugin/plugin.json
-    └── skills/frontend-slides/
-        ├── SKILL.md
-        └── ...        # template pack
-
-diagrams/              # stepwise-diagrams plugin (vendored via git subtree)
-├── LICENSE            # Upstream MIT — preserved for attribution
-├── .claude-plugin/plugin.json
-└── skills/diagram-design/
-    ├── SKILL.md
-    └── ...            # references, assets, diagram type packs
+slides/                # stepwise-slides (vendored via git subtree, do not edit)
+diagrams/              # stepwise-diagrams (vendored via git subtree, do not edit)
 
 scripts/               # Repo tooling used by CI
 ├── check-version-bumps.sh   # Enforces .claude/rules/versioning.md
 └── install-claude-code.sh   # Pinned, SHA256-verified Claude Code install
 
-test/                  # Automated bash tests (for development)
+test/                  # Automated bash tests
 ```
 
-## Installation & Testing Workflow
+## Testing
 
-### Installation
-```bash
-# Add marketplace and install plugins
-claude plugin marketplace add git@github.com:nikeyes/stepwise-dev.git
-claude plugin install stepwise-core@stepwise-dev
-claude plugin install stepwise-git@stepwise-dev
-claude plugin install stepwise-web@stepwise-dev
-claude plugin install stepwise-slides@stepwise-dev
-claude plugin install stepwise-diagrams@stepwise-dev
-# Restart Claude Code
-
-# That's it! All components are included in the respective plugins
-# No additional installation steps required
-```
-
-### Testing Changes
-
-This project has **two types of testing**:
-
-#### 1. Automated Smoke Tests (for bash scripts)
-
-Run automated tests for core bash functionality:
+### Automated tests
 
 ```bash
-# Quick smoke test (~2-3 seconds)
-make test
-
-# Verbose output with debug info
-make test-verbose
-
-# Shellcheck on all bash scripts
-make check
-
-# claude plugin validate --strict on the marketplace and every plugin
-make validate
-
-# Version bumps required by .claude/rules/versioning.md (compares against origin/main)
-make version-bump
+make test          # Smoke tests (~2-3 seconds)
+make test-verbose  # Same, with debug output
+make check         # Shellcheck on all bash scripts
+make validate      # claude plugin validate --strict on the marketplace and every plugin
+make version-bump  # Version bumps required by .claude/rules/versioning.md (against origin/main)
+make ci            # test + check + validate
 ```
 
-**What's covered:**
-- `core/skills/thoughts-management/scripts/thoughts-init` - Directory creation, README generation
-- `core/skills/thoughts-management/scripts/thoughts-metadata` - Metadata generation
-- `scripts/check-version-bumps.sh` - Version bump rules
+**Test files:**
+- `test/thoughts-structure-test.sh`: functional tests for `thoughts-init` and `thoughts-metadata`
+- `test/plugin-structure-test.sh`: plugin structure tests
+- `test/version-bump-test.sh`: tests for `scripts/check-version-bumps.sh`
+- `test/test-helpers.sh`: assertion functions
 
 **CI** (`.github/workflows/`):
 - `ci.yml` runs `make ci` on every push and PR. Under CI a missing tool
@@ -158,77 +82,44 @@ make version-bump
   `CLAUDE_CODE_VERSION` + `CLAUDE_INSTALLER_SHA256` in `ci.yml`, which Dependabot
   does not track: update both together.
 
-**Test files:**
-- `test/thoughts-structure-test.sh` - Functional tests for the thoughts scripts
-- `test/plugin-structure-test.sh` - Plugin structure tests
-- `test/version-bump-test.sh` - Version bump check tests
-- `test/test-helpers.sh` - Assertion functions and utilities
-- `Makefile` - Test runner targets
+### Manual testing (skills and agents)
 
-#### 2. Manual Testing (for skills/agents)
+Skills and agents have no automated tests. Validate them in Claude Code:
 
-Skills and agents require manual validation in Claude Code:
-
-1. **Test skills in Claude Code:**
-   - Skills are loaded via the plugins
-   - After modifying a skill file, restart Claude Code or use `/reload-plugins`
-   - Test by invoking: `/stepwise-core:research-codebase`, `/stepwise-git:commit`, etc.
-
-2. **Validate agents:**
-   - Agents spawn as sub-tasks when skills execute
-   - Test by running skills that use them (e.g., `/stepwise-core:research-codebase` spawns `codebase-locator`)
-   - Check agent behavior in Claude Code's task output
-
-3. **Test the thoughts-management Skill:**
-   - The Skill activates automatically when Claude needs to manage thoughts/
-   - Test by creating research documents or plans with stepwise-core
-   - Verify Claude calls the Skill to gather metadata
-
-### Iterative Development Cycle
-
-When modifying **skills/agents**:
-1. **Edit** the file in `core/skills/`, `core/agents/`, `git/skills/`, `web/agents/`, etc.
-2. **Test locally** via plugin development mode or by reinstalling the specific plugin
-3. **Validate** in a sample project
-4. **Iterate** based on results
-
-When modifying **scripts in a Skill**:
-1. **Edit** the file in the skill's `scripts/` directory
-2. **Reinstall** the plugin or test in development mode
-3. **Test** by triggering the Skill
-4. **Iterate** based on results
+1. Edit the file in the plugin directory (`core/skills/`, `core/agents/`, `git/skills/`, `web/agents/`, ...).
+2. Load your copy: `claude --plugin-dir <plugin-dir>` overrides the installed plugin, or run `/reload-plugins` after a reinstall.
+3. Invoke the skill in a sample project, e.g. `/stepwise-core:research-codebase` or `/stepwise-git:commit`.
+4. Check the agents it spawns in the task output (e.g. `research-codebase` spawns `codebase-locator`).
+5. For `thoughts-management`, create a research document or plan and check that Claude calls the skill for metadata.
 
 ## Architecture
 
-### Skill Structure
-Skills are directories with a `SKILL.md` entrypoint:
+### Skills
+A directory with a `SKILL.md` entrypoint:
 - Frontmatter: `name`, `description`, `model`, `disable-model-invocation`, `allowed-tools`, `argument-hint`
-- Instructions for Claude Code on how to behave
-- Workflow steps (spawn agents, read files, generate documents)
+- Instructions and workflow steps (spawn agents, read files, generate documents)
 - Optional supporting files (scripts, templates, references)
 
-### Agent Structure
-Agents are specialized markdown files with:
+### Agents
+A markdown file with:
 - Frontmatter: `name`, `description`, `tools`, `model`, `color`
-- Narrowly-scoped instructions (locate, analyze, or find patterns)
-- Called via `Task` tool by skills
+- Narrowly scoped instructions (locate, analyze, or find patterns)
+- Spawned by skills through the `Task` tool
 
-### Thoughts System & Skill
-The `thoughts-management` Skill provides directory initialization and metadata generation:
+### Thoughts system
+The `thoughts-management` skill initializes the directory and generates document metadata:
 ```
 thoughts/
-├── {username}/        # Personal notes (default: nikey_es)
+├── {username}/        # Personal notes (THOUGHTS_USER, default: nikey_es)
 │   ├── tickets/
 │   └── notes/
 └── shared/            # Team-shared documents
-    ├── research/      # Research documents
-    ├── plans/         # Implementation plans
-    └── prs/           # PR descriptions
+    ├── research/
+    ├── plans/
+    └── prs/
 ```
 
-Use `grep -r thoughts/` to search across all documents.
-
-### Workflow Philosophy
+### Workflow philosophy
 
 1. **Context management:** Never exceed 60% context
 2. **Phased work:** Research → Plan → Implement → Validate
@@ -236,85 +127,33 @@ Use `grep -r thoughts/` to search across all documents.
 4. **Parallel research:** Skills spawn multiple agents concurrently
 5. **Local persistence:** All documents saved to `thoughts/` for future reference
 
-## Configuration
+## Versioning
 
-**Username**: Set `export THOUGHTS_USER=your_name` (default: `nikey_es`)
-
-### Version Management
-
-**Plugin versions:**
-- Managed by Claude Code plugin system
-- Check with `claude plugin list`
-- Update marketplace and individual plugins:
-  - `claude plugin marketplace update stepwise-dev`
-  - `claude plugin update stepwise-core@stepwise-dev`
-  - `claude plugin update stepwise-git@stepwise-dev`
-  - `claude plugin update stepwise-web@stepwise-dev`
-
-**Scripts:**
-- Updated automatically when plugin updates
-- Part of the plugin package, no separate installation
-
-## Development Workflow
-
-For **scripts**:
-1. Edit file in the skill's `scripts/` directory
-2. Test using `make test` (runs automated tests)
-3. Test manually by triggering the Skill in Claude Code
-4. Iterate based on results
-
-For **skills/agents**:
-1. Edit file in the specific plugin directory (`core/skills/`, `git/skills/`, `web/agents/`, etc.)
-2. Test via plugin reload or development mode
-3. Validate in Claude Code
-4. Iterate
+Every change inside a plugin directory, or to `marketplace.json`, needs a version
+bump. The rules are in `.claude/rules/versioning.md`; `make validate` and
+`make version-bump` enforce them.
 
 ## Vendored plugins
 
-`stepwise-slides` is imported verbatim from
-[`zarazhangrui/frontend-slides`](https://github.com/zarazhangrui/frontend-slides)
-(MIT, author Zara Zhang) under the `slides/` prefix via `git subtree`. Upstream
-attribution is preserved via `slides/LICENSE`.
+Two plugins are imported verbatim via `git subtree`. Do **not** edit files under
+their prefix: every future `git subtree pull` must succeed without conflicts. If
+divergence is needed, wrap the upstream skill externally instead of patching in place.
 
-Do **not** edit files under `slides/`. Every future `git subtree pull` must
-succeed without conflicts; if divergence is needed, wrap the upstream skill
-externally instead of patching in place.
+| Prefix | Upstream | License |
+|---|---|---|
+| `slides/` | [`zarazhangrui/frontend-slides`](https://github.com/zarazhangrui/frontend-slides) | MIT, Zara Zhang (`slides/LICENSE`) |
+| `diagrams/` | [`cathrynlavery/diagram-design`](https://github.com/cathrynlavery/diagram-design) | MIT, Cathryn Lavery (`diagrams/LICENSE`) |
 
-Optional sync one-liner (run manually, on demand):
-
-```bash
-git subtree pull \
-  --prefix=slides \
-  https://github.com/zarazhangrui/frontend-slides.git \
-  main --squash
-```
-
-If the pull changes upstream's `plugin.json` version, mirror it into the
-`stepwise-slides` entry of `.claude-plugin/marketplace.json` and patch-bump the
-top-level marketplace `version` per `.claude/rules/versioning.md`
-(`make validate` fails until the entry matches).
-
-`stepwise-diagrams` is imported verbatim from
-[`cathrynlavery/diagram-design`](https://github.com/cathrynlavery/diagram-design)
-(MIT, author Cathryn Lavery) under the `diagrams/` prefix via `git subtree`.
-Upstream attribution is preserved via `diagrams/LICENSE`.
-
-Do **not** edit files under `diagrams/`. Same rule as above: every future
-`git subtree pull` must succeed without conflicts.
-
-Optional sync one-liner (run manually, on demand):
+Sync on demand:
 
 ```bash
-git subtree pull \
-  --prefix=diagrams \
-  https://github.com/cathrynlavery/diagram-design.git \
-  main --squash
+git subtree pull --prefix=slides https://github.com/zarazhangrui/frontend-slides.git main --squash
+git subtree pull --prefix=diagrams https://github.com/cathrynlavery/diagram-design.git main --squash
 ```
 
-If the pull changes upstream's `plugin.json` version, mirror it into the
-`stepwise-diagrams` entry of `.claude-plugin/marketplace.json` and patch-bump the
-top-level marketplace `version` per `.claude/rules/versioning.md`
-(`make validate` fails until the entry matches).
+If a pull changes upstream's `plugin.json` version, mirror it into the plugin's
+entry of `.claude-plugin/marketplace.json` and patch-bump the top-level marketplace
+`version` (`make validate` fails until the entry matches).
 
 ## Attribution
 
