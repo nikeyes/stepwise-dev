@@ -203,6 +203,59 @@ assert_file_exists ".gitignore" ".gitignore exists"
 assert_contains "README.md" "stepwise-dev" "README documents marketplace"
 
 # ============================================================================
+# Test 8: Cross references resolve
+# ============================================================================
+section "Test 8: Cross references resolve"
+
+# A reference to a renamed or deleted skill, agent or script still loads and
+# validates; it only fails when Claude follows it at run time.
+
+# Prints the directory of a plugin from its marketplace name, or nothing.
+plugin_dir() {
+  jq -r --arg name "$1" '.plugins[] | select(.name == $name) | .source' \
+    .claude-plugin/marketplace.json
+}
+
+if command -v jq >/dev/null 2>&1; then
+  # `stepwise-<plugin>:<name>` must name a skill or an agent of that plugin.
+  FAILED_BEFORE=$TESTS_FAILED
+  REFERENCES=$(grep -rhoE 'stepwise-[a-z]+:[A-Za-z0-9_-]+' core git web README.md AGENTS.md | sort -u)
+  for reference in $REFERENCES; do
+    dir=$(plugin_dir "${reference%%:*}")
+    name="${reference#*:}"
+    TESTS_RUN=$((TESTS_RUN + 1))
+    if [ -n "$dir" ] && { [ -f "$dir/skills/$name/SKILL.md" ] || [ -f "$dir/agents/$name.md" ]; }; then
+      TESTS_PASSED=$((TESTS_PASSED + 1))
+    else
+      TESTS_FAILED=$((TESTS_FAILED + 1))
+      echo -e "${RED}✗${NC} $reference names no skill or agent"
+    fi
+  done
+  if [ "$TESTS_FAILED" -eq "$FAILED_BEFORE" ]; then
+    echo -e "${GREEN}✓${NC} $(echo "$REFERENCES" | wc -l | tr -d ' ') skill and agent references resolve"
+  fi
+fi
+
+# `${CLAUDE_PLUGIN_ROOT}/<path>` in a plugin must exist inside that plugin.
+FAILED_BEFORE=$TESTS_FAILED
+PATHS=$(grep -roE '\$\{CLAUDE_PLUGIN_ROOT\}/[A-Za-z0-9_./-]+' core git web | sort -u)
+for match in $PATHS; do
+  dir="${match%%/*}"
+  path="${match#*\}/}"
+  path="${path%/}"
+  TESTS_RUN=$((TESTS_RUN + 1))
+  if [ -e "$dir/$path" ]; then
+    TESTS_PASSED=$((TESTS_PASSED + 1))
+  else
+    TESTS_FAILED=$((TESTS_FAILED + 1))
+    echo -e "${RED}✗${NC} ${match%%:*} uses missing \${CLAUDE_PLUGIN_ROOT}/$path"
+  fi
+done
+if [ "$TESTS_FAILED" -eq "$FAILED_BEFORE" ]; then
+  echo -e "${GREEN}✓${NC} $(echo "$PATHS" | wc -l | tr -d ' ') \${CLAUDE_PLUGIN_ROOT} paths exist"
+fi
+
+# ============================================================================
 # Summary
 # ============================================================================
 echo ""
