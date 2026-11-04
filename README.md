@@ -330,52 +330,6 @@ make version-bump  # Check required version bumps against origin/main
 make ci            # Run full CI validation
 ```
 
-### Skill Evaluation
-
-Each skill has an eval suite in its `<skill-name>-workspace/evals/` directory:
-
-```
-core/skills/bugmagnet-workspace/evals/
-├── evals.json              # Eval definitions (prompts, assertions, grading guide)
-├── files/                  # Test fixtures (source files the skill analyzes)
-├── iteration-1/            # Benchmark run results
-│   ├── benchmark.json      # Machine-readable: per-eval pass rates, timing, tokens
-│   ├── benchmark.md        # Human-readable summary table
-│   └── eval-1-name/        # Per-eval evidence
-│       └── eval_metadata.json
-├── iteration-2/
-└── ...
-```
-
-**Running evals:**
-
-```bash
-/skill-creator:skill-creator Run evals from <skill-name>-workspace/evals/evals.json
-```
-
-This runs each eval with-skill and without-skill, grades assertions, and writes results to a new `iteration-N/` directory.
-
-**Reading benchmark results:**
-
-Open `iteration-N/benchmark.md` for a quick summary table, or `benchmark.json` for detailed per-assertion evidence. Key metrics:
-
-- **pass_rate**: percentage of assertions passed (with_skill vs without_skill)
-- **delta**: the skill's added value over baseline — higher is better
-- **time_seconds / tokens**: cost of using the skill
-
-Compare across iterations to track skill improvements over time.
-
-**Viewing detailed eval reports:**
-
-```bash
-make eval-list                                # List skills with eval iterations
-make eval-view SKILL=test-desiderata          # View latest iteration
-make eval-view SKILL=test-desiderata ITER=1   # View specific iteration
-make eval-view SKILL=test-desiderata PREV=1   # Compare latest vs iteration-1
-```
-
-The viewer opens two tabs: **Outputs** (per-eval outputs, grading, and feedback) and **Benchmark** (aggregate pass rates, delta, timing, and token usage).
-
 ## 📚 Learn More
 
 - **Original Article**: [I mastered the Claude Code workflow](https://medium.com/@ashleyha/i-mastered-the-claude-code-workflow-145d25e502cf) by Ashley Ha

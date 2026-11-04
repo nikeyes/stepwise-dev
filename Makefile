@@ -9,13 +9,8 @@ MARKETPLACE_MANIFEST := .claude-plugin/marketplace.json
 SKIP_OR_FAIL = if [ -n "$$CI" ]; then echo "✗ $(1) not installed (required in CI)"; exit 1; fi; \
 	echo "⚠ $(1) not installed, skipping..."
 
-# Eval viewer
-SKILL_CREATOR_PATH ?= $(HOME)/.claude/plugins/marketplaces/claude-plugins-official/plugins/skill-creator/skills/skill-creator
-GENERATE_REVIEW := $(SKILL_CREATOR_PATH)/eval-viewer/generate_review.py
-ITER ?= LAST
-
 # Phony targets
-.PHONY: help test test-verbose check validate version-bump ci eval-list eval-view
+.PHONY: help test test-verbose check validate version-bump ci
 
 # Default target
 help:
@@ -27,12 +22,6 @@ help:
 	@echo "  make validate           - Run claude plugin validate --strict on the marketplace and plugins"
 	@echo "  make version-bump       - Check version bumps against BASE_REF (default: origin/main)"
 	@echo "  make ci                 - Run full CI validation (test + check + validate)"
-	@echo ""
-	@echo "Eval viewer:"
-	@echo "  make eval-list                                      - List skills with eval iterations"
-	@echo "  make eval-view SKILL=test-desiderata                - View latest iteration"
-	@echo "  make eval-view SKILL=test-desiderata ITER=1         - View specific iteration"
-	@echo "  make eval-view SKILL=test-desiderata PREV=1         - Compare latest vs iteration-1"
 	@echo ""
 
 # ============================================================================
@@ -96,34 +85,3 @@ version-bump:
 ci: test check validate
 	@echo ""
 	@echo "✓ All CI checks passed"
-
-# ============================================================================
-# Eval viewer targets
-# ============================================================================
-
-_check-skill:
-ifndef SKILL
-	$(error SKILL is required. Usage: make eval-view SKILL=test-desiderata)
-endif
-
-_check-viewer:
-	@test -f "$(GENERATE_REVIEW)" || (echo "Error: generate_review.py not found at $(GENERATE_REVIEW)" && echo "Set SKILL_CREATOR_PATH to your skill-creator directory" && exit 1)
-
-eval-list:
-	@for ws in */skills/*-workspace; do \
-		skill=$$(basename "$$ws" | sed 's/-workspace$$//'); \
-		iters=$$(ls -d "$$ws"/iteration-* 2>/dev/null | sort -V); \
-		if [ -n "$$iters" ]; then \
-			count=$$(echo "$$iters" | wc -l | tr -d ' '); \
-			last=$$(echo "$$iters" | tail -1 | xargs basename); \
-			echo "  $$skill  ($$count iterations, latest: $$last)"; \
-		fi; \
-	done
-
-eval-view: _check-skill _check-viewer
-	$(eval _WS := $(shell ls -d */skills/$(SKILL)-workspace 2>/dev/null | head -1))
-	$(eval _RESOLVED_ITER := $(if $(filter LAST,$(ITER)),$(shell ls -d $(_WS)/iteration-* 2>/dev/null | sort -V | tail -1 | xargs basename),iteration-$(ITER)))
-	@python "$(GENERATE_REVIEW)" "$(_WS)/$(_RESOLVED_ITER)" \
-		--skill-name "$(SKILL)" \
-		--benchmark "$(_WS)/$(_RESOLVED_ITER)/benchmark.json" \
-		$(if $(PREV),--previous-workspace "$(_WS)/iteration-$(PREV)")

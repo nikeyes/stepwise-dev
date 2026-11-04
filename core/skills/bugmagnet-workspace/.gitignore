@@ -1,6 +1,0 @@
-node_modules/
-__pycache__/
-.pytest_cache/
-*.pyc
-package-lock.json
-testrun/
