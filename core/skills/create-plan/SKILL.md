@@ -227,17 +227,27 @@ After structure approval:
 ### Overview
 [What this phase accomplishes]
 
-### Changes Required:
+### Behaviors (test list):
+- [Observable behavior that a test will assert, e.g. "rejects an empty title with 400 and code TITLE_REQUIRED"]
+- [Edge case or error behavior]
 
-#### 1. [Component/File Group]
-**File**: `path/to/file.ext`
-**Changes**: [Summary of changes]
+### Contracts:
+[Only the shapes other code or clients rely on: endpoints, request and response shapes, error codes, public signatures, schemas, configuration. Use `diff` for changes to existing shapes.]
 
-```[language]
-// Specific code to add/modify
+```diff
+ POST /todos
++  400 { code: "TITLE_REQUIRED" }
+```
+
+### Files:
+```diff
+ src/module/
++├── new_file.py        + owns [responsibility]
+ └── existing_file.py   ~ [short note on what changes]
 ```
 
 ### Success Criteria:
+- [ ] The FULL unit suite passes, not only the touched files (it runs the repo's guard tests): `make test-unit`
 - [ ] Migration applies cleanly: `make migrate`
 - [ ] Unit tests pass: `make test-component`
 - [ ] Type checking passes: `npm run typecheck`
@@ -352,6 +362,22 @@ After structure approval:
    - Do NOT write the plan with unresolved questions
    - The implementation plan must be complete and actionable
    - Every decision must be made before finalizing the plan
+
+## Plan Detail Level: No Code
+
+The plan says WHAT each phase must do and the contracts it must keep. It does not say HOW to write the code. `/stepwise-core:tdd` derives the code from the behaviors.
+
+- Do NOT write function bodies, implementation snippets or test code in the plan.
+- DO write behaviors as a test list: one observable behavior per line, each one a test that TDD can write.
+- DO write contracts: signatures that other code calls, endpoints, request and response shapes, error codes, schemas, configuration names and defaults.
+- Name files and their responsibility, not line numbers or step-by-step edits.
+- Exception: for a delicate algorithm, write short pseudocode, not code.
+- Every branch has a decided outcome. For each condition, error and race in the change, write what the code does in that branch (status, error code, state left behind). An implementer must never have to choose. If you add a safeguard that the ticket does not ask for (a lock, a guard in SQL, a retry), write the outcome of each new branch too.
+- Contracts include what operators and other systems read: log event names and the exact field that holds them, metric names, alarm keys, task names and payload fields. Copy the convention from existing code and cite it (file:line).
+- Find the repo's cross-cutting checks before you write the phases: lists, registries, baselines and guard tests that every new route, task, setting or table must join (for example an audit baseline, a task registry, a pause map, a data classification file). Search for the sibling of each new thing and list every file it is registered in. Each one becomes a line in Files.
+- Scope is closed. The plan lists every behavior to build; the implementer adds nothing else. If research suggests extra hardening, either put it in the plan with its reason and its branches, or put it in "What We're NOT Doing".
+- Spend the lines on decisions and contracts, not on retelling the code. Current State is the facts the plan depends on, with file:line, nothing more.
+- Without code, the plan must still settle the decisions that code would settle. Write each one in the plan with its reason: concurrency (threads, async, locks), shared state, and the lifecycle of resources (connections, files, clients: who opens them, who closes them, and when).
 
 ## Success Criteria Guidelines
 
