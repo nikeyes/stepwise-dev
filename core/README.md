@@ -7,6 +7,7 @@ Core workflow plugin for structured development following the Research → Plan 
 ### Skills
 - `/stepwise-core:research-codebase` - Document codebase as-is with comprehensive research
 - `/stepwise-core:create-plan` - Create detailed implementation plans iteratively
+- `/stepwise-core:create-plan-lite` - Experimental: create a short plan (under 80 lines) from a ticket or a description
 - `/stepwise-core:iterate-plan` - Update existing implementation plans
 - `/stepwise-core:implement-plan` - Execute plans phase by phase with validation
 - `/stepwise-core:validate-plan` - Validate implementation against plan
