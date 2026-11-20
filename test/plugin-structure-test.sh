@@ -67,6 +67,7 @@ assert_file_exists "core/README.md" "core/README.md exists"
 # Skills (workflow)
 assert_file_exists "core/skills/research-codebase/SKILL.md" "research-codebase skill"
 assert_file_exists "core/skills/create-plan/SKILL.md" "create-plan skill"
+assert_file_exists "core/skills/create-plan-lite/SKILL.md" "create-plan-lite skill"
 assert_file_exists "core/skills/iterate-plan/SKILL.md" "iterate-plan skill"
 assert_file_exists "core/skills/implement-plan/SKILL.md" "implement-plan skill"
 assert_file_exists "core/skills/validate-plan/SKILL.md" "validate-plan skill"
