@@ -21,7 +21,7 @@ Expert at detecting when work is too big and applying proven splitting heuristic
 **Do NOT use when:**
 - Story is already small and focused (< 1 day work)
 - Feature needs layered analysis without obvious split points (use hamburger-method instead)
-- User asks HOW to implement (use micro-steps-coach instead)
+- User asks HOW to implement (use small-safe-steps instead)
 
 ---
 
@@ -369,8 +369,7 @@ This skill works in sequence with other skills:
 **Typical workflow:**
 1. **story-splitting** (THIS SKILL): Detect linguistic red flags, split stories into smaller ones
 2. **hamburger-method**: For stories still large after splitting, apply layered analysis
-3. **complexity-review**: Review technical approach for each small story
-4. **micro-steps-coach**: Break each story into 1-3h implementation steps
+3. **small-safe-steps**: Break each story into verifiable implementation steps
 
 **Use this skill when:**
 - Story contains obvious red flags ("manage", "and", "or", "including")
@@ -386,7 +385,7 @@ This skill works in sequence with other skills:
 - Original: "Admin can manage users and roles"
 - Apply story-splitting → Split into: (1) "Create user", (2) "Edit user", (3) "Assign role"
 - Story #1 still feels large → Apply hamburger-method to identify layers + options
-- Choose simplest vertical slice → Apply micro-steps-coach to plan 1-3h steps
+- Choose simplest vertical slice → Apply small-safe-steps to plan verifiable steps
 
 ---
 
