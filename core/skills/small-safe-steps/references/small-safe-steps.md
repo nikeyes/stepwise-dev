@@ -8,13 +8,10 @@
    - Example 3: API Contract Change - Rename Field
    - Example 4: Service Migration - Email Provider Replacement
    - Example 5: Refactoring - Extract Service
-2. [Techniques by Work Type](#techniques-by-work-type)
-   - Performance Improvements
-   - Debugging Complex Issues
-   - Research/Spike Work
-3. [Complete Interaction Examples](#complete-interaction-examples)
-4. [Anti-Patterns](#anti-patterns)
-5. [Key Principles Recap](#key-principles-recap)
+2. [Common Patterns](#common-patterns)
+3. [Key Metrics to Monitor During Migration](#key-metrics-to-monitor-during-migration)
+4. [Rollback Procedures](#rollback-procedures)
+5. [Anti-Patterns to Avoid](#anti-patterns-to-avoid)
 
 ---
 
@@ -27,12 +24,12 @@
 #### Phase 1: EXPAND
 
 ```sql
--- Step 1: Add new column (1h)
+-- Step 1: Add new column
 ALTER TABLE users ADD COLUMN email_address VARCHAR(255);
 -- Deploy migration
 -- Verify: SELECT * FROM users LIMIT 1;
 
--- Step 2: Implement dual-write in application (2h)
+-- Step 2: Implement dual-write in application
 def update_user_email(user_id, email):
     db.execute(
         "UPDATE users SET email = ?, email_address = ? WHERE id = ?",
@@ -41,7 +38,7 @@ def update_user_email(user_id, email):
 -- Deploy application code
 -- Test: Update a user, verify both columns updated
 
--- Step 3: Backfill existing data (1h)
+-- Step 3: Backfill existing data
 UPDATE users SET email_address = email WHERE email_address IS NULL;
 -- Run in batches if large table
 -- Verify: SELECT COUNT(*) FROM users WHERE email_address IS NULL;
@@ -51,7 +48,7 @@ UPDATE users SET email_address = email WHERE email_address IS NULL;
 #### Phase 2: MIGRATE
 
 ```python
-# Step 1: Update readers to use new column (2h)
+# Step 1: Update readers to use new column
 # Before:
 def get_user_email(user_id):
     return db.query("SELECT email FROM users WHERE id = ?", user_id)
@@ -63,7 +60,7 @@ def get_user_email(user_id):
 # Deploy behind feature flag
 # Enable for 10% → 50% → 100%
 
-# Step 2: Update all queries (2-3h, may need multiple deploys)
+# Step 2: Update all queries
 # Search codebase for "SELECT email FROM users"
 # Replace with "SELECT email_address FROM users"
 # Deploy incrementally, verify each deploy
@@ -74,26 +71,24 @@ def get_user_email(user_id):
 #### Phase 3: CONTRACT
 
 ```python
-# Step 1: Stop dual-writing (1h)
+# Step 1: Stop dual-writing
 def update_user_email(user_id, email):
     db.execute(
         "UPDATE users SET email_address = ? WHERE id = ?",
         email, user_id
     )
-# Deploy, monitor for 1-2 weeks
+# Deploy, monitor across one relevant business cycle
 
-# Step 2: Verify old column unused (1h)
+# Step 2: Verify old column unused
 # Check logs, monitoring, slow query logs
 # Search codebase for any reference to old column
 
-# Step 3: Drop old column (30min)
+# Step 3: Drop old column
 ALTER TABLE users DROP COLUMN email;
 
-# Step 4: Clean up code (30min)
+# Step 4: Clean up code
 # Remove any commented code or feature flags
 ```
-
-**Total time:** ~12-15 hours spread over 2-3 weeks
 
 ---
 
@@ -109,11 +104,11 @@ After:  address = {"street": "123 Main St", "city": "Springfield", "state": "IL"
 #### Phase 1: EXPAND
 
 ```sql
--- Step 1: Add new column (1h)
+-- Step 1: Add new column
 ALTER TABLE users ADD COLUMN address_structured JSONB;
 -- PostgreSQL example
 
--- Step 2: Implement dual-write (2h)
+-- Step 2: Implement dual-write
 def update_address(user_id, address_obj):
     address_string = f"{address_obj['street']}, {address_obj['city']}, {address_obj['state']} {address_obj['zip']}"
     address_json = json.dumps(address_obj)
@@ -123,7 +118,7 @@ def update_address(user_id, address_obj):
         address_string, address_json, user_id
     )
 
--- Step 3: Parse existing addresses and backfill (3h - may need custom logic)
+-- Step 3: Parse existing addresses and backfill
 def parse_address(address_string):
     # Custom parsing logic or use library
     parts = address_string.split(", ")
@@ -144,7 +139,7 @@ for user in db.query("SELECT id, address FROM users WHERE address_structured IS 
 #### Phase 2: MIGRATE
 
 ```python
-# Step 1: Update readers (2h)
+# Step 1: Update readers
 # Before:
 def get_user_address(user_id):
     return db.query("SELECT address FROM users WHERE id = ?", user_id)
@@ -154,7 +149,7 @@ def get_user_address(user_id):
     result = db.query("SELECT address_structured FROM users WHERE id = ?", user_id)
     return json.loads(result)
 
-# Step 2: Update UI to display structured address (2h)
+# Step 2: Update UI to display structured address
 # Now can display fields separately:
 # {{ address.street }}
 # {{ address.city }}, {{ address.state }} {{ address.zip }}
@@ -165,14 +160,14 @@ def get_user_address(user_id):
 #### Phase 3: CONTRACT
 
 ```python
-# Step 1: Stop writing to old column (1h)
+# Step 1: Stop writing to old column
 def update_address(user_id, address_obj):
     db.execute(
         "UPDATE users SET address_structured = ? WHERE id = ?",
         json.dumps(address_obj), user_id
     )
 
-# Step 2: Drop old column (30min, after 1-2 weeks)
+# Step 2: Drop old column
 ALTER TABLE users DROP COLUMN address;
 ```
 
@@ -185,7 +180,7 @@ ALTER TABLE users DROP COLUMN address;
 #### Phase 1: EXPAND
 
 ```python
-# Step 1: Return both fields in API response (1h)
+# Step 1: Return both fields in API response
 @app.route('/api/users/<user_id>')
 def get_user(user_id):
     user = db.get_user(user_id)
@@ -197,12 +192,12 @@ def get_user(user_id):
     }
 # Deploy, both fields available
 
-# Step 2: Update API documentation (1h)
+# Step 2: Update API documentation
 # Mark userName as deprecated
 # Recommend using username
 # Set deprecation timeline: "userName will be removed in 3 months"
 
-# Step 3: Accept both fields in POST/PUT requests (2h)
+# Step 3: Accept both fields in POST/PUT requests
 @app.route('/api/users', methods=['POST'])
 def create_user():
     data = request.json
@@ -222,16 +217,16 @@ def create_user():
 #### Phase 2: MIGRATE
 
 ```
-# Step 1: Email API consumers (1h)
+# Step 1: Email API consumers
 # Notify all known API users
 # Provide migration guide
 # Give 2-month timeline
 
-# Step 2: Monitor usage of old field (passive)
+# Step 2: Monitor usage of old field
 # Add logging to track userName vs username usage
 # Log deprecation warnings
 
-# Step 3: After 2 months, check if userName still used (1h)
+# Step 3: After 2 months, check if userName still used
 # Review logs
 # Contact remaining users
 # Give final 1-month extension if needed
@@ -240,7 +235,7 @@ def create_user():
 #### Phase 3: CONTRACT
 
 ```python
-# Step 1: Stop returning userName in response (1h)
+# Step 1: Stop returning userName in response
 @app.route('/api/users/<user_id>')
 def get_user(user_id):
     user = db.get_user(user_id)
@@ -250,7 +245,7 @@ def get_user(user_id):
         "email": user.email
     }
 
-# Step 2: Stop accepting userName in requests (1h)
+# Step 2: Stop accepting userName in requests
 @app.route('/api/users', methods=['POST'])
 def create_user():
     data = request.json
@@ -262,10 +257,8 @@ def create_user():
     user = create_user(username=username)
     return {"id": user.id, "username": user.username}
 
-# Step 3: Remove deprecation notices from docs (30min)
+# Step 3: Remove deprecation notices from docs
 ```
-
-**Total time:** ~10-12 hours spread over 3 months
 
 ---
 
@@ -276,12 +269,12 @@ def create_user():
 #### Phase 1: EXPAND
 
 ```python
-# Step 1: Add AWS SES SDK (1h)
+# Step 1: Add AWS SES SDK
 # pip install boto3
 # Add AWS credentials to config
 # Deploy (not used yet)
 
-# Step 2: Create abstraction for email sending (2h)
+# Step 2: Create abstraction for email sending
 class EmailService:
     def __init__(self):
         self.sendgrid_client = SendGridAPIClient(api_key=SENDGRID_KEY)
@@ -306,11 +299,11 @@ class EmailService:
             }
         )
 
-# Step 3: Test AWS SES with internal emails (1h)
+# Step 3: Test AWS SES with internal emails
 # Send to team members only
 # Verify delivery
 
-# Step 4: Add feature flag for provider selection (1h)
+# Step 4: Add feature flag for provider selection
 @app.route('/send-notification')
 def send_notification():
     provider = feature_flags.get('email_provider', default='sendgrid')
@@ -320,26 +313,26 @@ def send_notification():
 #### Phase 2: MIGRATE
 
 ```python
-# Step 1: Enable AWS SES for 1% of emails (1h)
+# Step 1: Enable AWS SES for 1% of emails
 feature_flags.set('email_provider', 'aws_ses', percentage=1)
 # Monitor delivery rates, bounce rates
 
-# Step 2: Compare metrics (passive, 1 week)
+# Step 2: Compare metrics
 # SendGrid: 99.5% delivery, 0.2% bounce
 # AWS SES: 99.4% delivery, 0.3% bounce
 # Acceptable difference
 
-# Step 3: Increase to 10% (1h)
+# Step 3: Increase to 10%
 feature_flags.set('email_provider', 'aws_ses', percentage=10)
 # Monitor
 
-# Step 4: Increase to 50% (1h)
+# Step 4: Increase to 50%
 feature_flags.set('email_provider', 'aws_ses', percentage=50)
 # Monitor
 
-# Step 5: Enable for 100% (1h)
+# Step 5: Enable for 100%
 feature_flags.set('email_provider', 'aws_ses', percentage=100)
-# Monitor for 2 weeks
+# Monitor across one relevant business cycle
 
 # SendGrid still configured but unused
 ```
@@ -347,10 +340,10 @@ feature_flags.set('email_provider', 'aws_ses', percentage=100)
 #### Phase 3: CONTRACT
 
 ```python
-# Step 1: Remove SendGrid API key from config (30min)
-# After verifying no emails sent via SendGrid for 2 weeks
+# Step 1: Remove SendGrid API key from config
+# After verifying no emails sent via SendGrid across one relevant business cycle
 
-# Step 2: Remove SendGrid code (1h)
+# Step 2: Remove SendGrid code
 class EmailService:
     def __init__(self):
         self.ses_client = boto3.client('ses', region_name='us-east-1')
@@ -358,17 +351,15 @@ class EmailService:
     def send(self, to, subject, body):
         return self.ses_client.send_email(...)
 
-# Step 3: Remove feature flag (30min)
+# Step 3: Remove feature flag
 # Email provider is now always AWS SES
 
-# Step 4: Uninstall SendGrid SDK (30min)
+# Step 4: Uninstall SendGrid SDK
 # pip uninstall sendgrid
 # Remove from requirements.txt
 
 # Step 5: Cancel SendGrid subscription
 ```
-
-**Total time:** ~12-15 hours spread over 1 month
 
 ---
 
@@ -379,22 +370,22 @@ class EmailService:
 #### Phase 1: EXPAND
 
 ```python
-# Step 1: Create new auth service skeleton (3h)
+# Step 1: Create new auth service skeleton
 # New repository, basic Flask/FastAPI app
 # Deploy to staging
 
-# Step 2: Replicate auth logic in new service (3h)
+# Step 2: Replicate auth logic in new service
 # Copy user validation, JWT generation
 # Keep as exact copy of monolith logic
 
-# Step 3: Deploy auth service to production (1h)
+# Step 3: Deploy auth service to production
 # Not handling traffic yet
 
-# Step 4: Add proxy/router to support both (2h)
+# Step 4: Add proxy/router to support both
 # Monolith continues handling auth
 # Auth service ready but not used
 
-# Step 5: Implement dual-call for auth verification (2h)
+# Step 5: Implement dual-call for auth verification
 def verify_user_token(token):
     # Call both old (monolith) and new (auth service)
     old_result = monolith_verify(token)
@@ -411,33 +402,31 @@ def verify_user_token(token):
 #### Phase 2: MIGRATE
 
 ```python
-# Step 1: Route 1% of auth requests to new service (1h)
+# Step 1: Route 1% of auth requests to new service
 def verify_user_token(token):
     if feature_flags.enabled('auth_service', percentage=1):
         return auth_service_verify(token)
     return monolith_verify(token)
 
-# Step 2: Monitor and compare (passive, 1 week)
+# Step 2: Monitor and compare
 # Compare latency, error rates
 
-# Step 3: Increase to 10% → 50% → 100% (3h total)
+# Step 3: Increase to 10% → 50% → 100%
 # Each step: deploy, monitor, verify
 ```
 
 #### Phase 3: CONTRACT
 
 ```python
-# Step 1: Remove auth logic from monolith (2h)
+# Step 1: Remove auth logic from monolith
 # Delete old verify function
 # All calls now route to auth service
 
-# Step 2: Remove auth database tables from monolith (1h)
+# Step 2: Remove auth database tables from monolith
 # After verifying no queries to auth tables
 
-# Step 3: Remove feature flags (30min)
+# Step 3: Remove feature flags
 ```
-
-**Total time:** ~20-25 hours spread over 1-2 months
 
 ---
 
@@ -452,7 +441,6 @@ def verify_user_token(token):
 6. Drop old column
 
 **Phases:** 3 (Expand → Migrate → Contract)
-**Time:** 10-15 hours over 2-3 weeks
 
 ---
 
@@ -464,19 +452,17 @@ def verify_user_token(token):
 5. Remove old field after grace period
 
 **Phases:** 3 (Expand → Migrate → Contract)
-**Time:** 8-12 hours over 2-3 months
 
 ---
 
 ### Pattern: Service/Library Migration
 1. Add new service alongside old
 2. Abstract with provider selection
-3. Shadow traffic (dual-call, compare)
+3. Shadow reads only; for side effects compare intended payloads without sending
 4. Gradually route traffic (1% → 100%)
 5. Remove old service
 
 **Phases:** 3 (Expand → Migrate → Contract)
-**Time:** 15-20 hours over 1 month
 
 ---
 
@@ -489,7 +475,6 @@ def verify_user_token(token):
 6. Drop old column
 
 **Phases:** 3 (Expand → Migrate → Contract)
-**Time:** 10-18 hours over 2-4 weeks
 
 ---
 
@@ -531,7 +516,7 @@ def verify_user_token(token):
 **Rollback is harder:**
 - If old code removed, need to redeploy previous version
 - If old column dropped, need to restore from backup
-- **This is why we wait weeks before contracting**
+- **This is why we verify zero usage before contracting**
 
 ---
 
@@ -560,7 +545,7 @@ def verify_user_token(token):
 
 **Why:** Hidden dependencies, edge cases, monitoring gaps
 
-**Do:** Wait 1-2 weeks, verify zero usage, then remove
+**Do:** Verify zero usage across one relevant business cycle, then remove
 
 ---
 

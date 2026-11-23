@@ -1,6 +1,6 @@
 ---
 name: small-safe-steps
-description: Small Safe Steps (S3): breaks work into 1-3h increments with zero downtime. Use when asking "how do I implement/migrate/refactor", "what steps to do X", "plan safe migration", or handling risky DB/API changes. Applies expand-contract pattern for migrations, refactorings, schema changes.
+description: Small Safe Steps (S3): breaks work into independently verifiable steps with zero downtime, sizing commits, CI runs, PRs and deployments separately. Use when asking "how do I implement/migrate/refactor", "what steps to do X", "plan safe migration", or handling risky DB/API changes. Applies expand-contract pattern for migrations, refactorings, schema changes.
 allowed-tools:
   - Read
   - AskUserQuestion
@@ -12,7 +12,7 @@ STARTER_CHARACTER = 🪜⚡
 
 ## Mission
 
-Help you divide **ANY work** into the smallest, safest, most valuable steps possible — ideally **1-3 hours each**.
+Help you divide **ANY work** into the smallest, safest, most valuable steps possible — each with one observable outcome, one check and a cheap undo.
 
 **Core belief:** Risk grows faster than the size of the change.
 
@@ -32,8 +32,7 @@ Help you divide **ANY work** into the smallest, safest, most valuable steps poss
 
 **In workflow with other skills:**
 1. Use **story-splitting** → Break large story into smaller ones
-2. Use **complexity-review** → Simplify technical approach
-3. Use **small-safe-steps** (THIS SKILL) → Plan 1-3h implementation steps
+2. Use **small-safe-steps** (THIS SKILL) → Plan verifiable implementation steps
 
 ---
 
@@ -43,12 +42,11 @@ Help you divide **ANY work** into the smallest, safest, most valuable steps poss
 - Work feels too big or risky (refactoring, migrations, performance fixes)
 - Database schema changes, API changes, service replacements
 - User asks "how do I implement" after deciding what to build
-- Work will take more than 1 day
+- Work has more than one independent outcome or production transition
 
 **Do NOT use when:**
 - User is still deciding WHAT to build (use story-splitting or hamburger-method first)
-- Work is already small (< 3 hours)
-- User asks for architectural review (use complexity-review instead)
+- Work is already one verifiable step
 
 ---
 
@@ -122,25 +120,88 @@ Identify 3-5 major phases, each independently valuable:
 - Phase 2: Migrate (gradually switch to AWS SES)
 - Phase 3: Contract (remove SendGrid)
 
-### Step 4: Slice Each Phase into 1-3 Hour Steps
+### Step 4: Slice each phase into verifiable steps
 
-For **EACH phase**, force division into tiny steps.
+A step is the largest coherent change that has one observable outcome,
+can be checked independently, and can be undone cheaply.
+Do not size steps in hours or ask the agent for a time estimate.
 
-**Mandatory criteria for each step:**
-- ✅ Takes 1-3 hours maximum
-- ✅ Deployable to production (or creates verifiable artifact)
-- ✅ Reversible (can undo without pain)
-- ✅ Safe (preserves existing functionality)
-- ✅ Testable
+A step is ready when:
+1. Its outcome fits in one sentence: one behavior or one preserved invariant.
+2. A named local check proves it, seen failing first where applicable.
+3. Build and relevant tests are green afterwards.
+4. It can be committed and reverted on its own.
+5. A reviewer can understand its intent from the diff.
+6. A fresh agent could resume from the repo, plan and commits alone.
 
-**If a step fails these criteria, it's too big.**
+Split further when the step has two independent outcomes, couples unrelated
+modules, has weak or missing checks, unclear requirements, or two failed
+attempts.
+
+Merge with a neighbor when the split would create a commit that cannot be
+verified or reverted alone, or would add review and CI cost without
+isolating a separate risk.
+
+#### Put each risk at the cheapest boundary that contains it
+
+Boundaries, cheapest first: step/commit, PR, deployment or apply, release or flag.
+Before adding a boundary, name the failure it isolates and the signal that would
+stop the next action. No named failure and signal means no boundary.
+
+- A commit isolates a mistake you can detect locally.
+- A PR isolates one review decision.
+- A deployment or apply isolates a production transition.
+- A flag or cohort isolates user exposure.
+
+Risky work does not automatically need its own PR. If one PR can land inert and
+its production transitions run separately, keep one PR and several applies.
+Open another PR only when one of these is true:
+- It needs a different reviewer or approval decision.
+- Merging it triggers a production change that must be observed before the next merge.
+- It must land or roll back independently.
+- A reviewer could not reach one decision on the combined diff.
+
+#### Make every boundary undoable
+
+For every PR and production transition, state how to undo it and its point of
+no return, if it has one.
+
+- A PR may group transitions only if each can be undone separately, including
+  after only some of them have been applied. Otherwise split the PR.
+- If the repo squash merges, or you do not know, the PR is the revert unit, not the commit.
+- `git revert` is not an undo once production state has changed. Name the real
+  undo: flag off, previous image, re-apply, restore.
+- When something cannot be undone, say so. Put it as late as possible, behind
+  human approval and a verified recovery path.
+
+Do not push to discover failures a local command could reveal.
+Push when the slice is coherent, or when you need a signal unavailable locally.
+Every integration to trunk is verified by CI and leaves trunk deployable.
+
+Size PRs as one review decision. Around 100 changed lines is a healthy default;
+200-400 is a warning; above 1,000 needs an explicit reason. Exclude generated
+code, lockfiles, snapshots and verified deletions.
+
+Never combine in one deployment: schema with dependent code, backfill with
+read switch, reader support with write activation, deprecation with removal,
+or a destructive drop with anything else.
+
+Never dual-execute external side effects (payments, email, webhooks).
+Give each entity one owner path at a time and compare intended payloads.
+
+Base every wait on an observable condition: a full cycle of the affected process,
+enough traffic, or a named metric. Do not invent fixed durations. Respect decisions
+the user already made unless new evidence changes the risk.
+
+Report the plan by unit: steps, commits, pushes/CI runs, PRs, deployments and releases.
+For each PR beyond the first, state which rule above justifies it.
 
 ### Step 5: Identify Learning vs. Earning Steps
 
 Flag steps by type:
 
-**Learning steps** (time-boxed research/investigation):
-- Time-boxed: "Investigate X (max 2h)"
+**Learning steps** (bounded research/investigation):
+- Bounded by one named question: "Answer X"
 - Goal: Reduce uncertainty, inform decisions
 - Output: Document, decision, or data
 
@@ -157,14 +218,14 @@ Flag steps by type:
 
 Use this table to quickly identify risky changes and apply the correct pattern.
 
-| Change Type | Example | Expand-Contract Phases | Typical Duration |
-|-------------|---------|----------------------|------------------|
-| **Rename DB column** | `email` → `email_address` | 1. Add new column + dual-write<br>2. Switch reads to new<br>3. Drop old column | 2-3 weeks |
-| **Change data type** | String → JSON object | 1. Add new column + parse/backfill<br>2. Switch to new format<br>3. Drop old column | 2-4 weeks |
-| **API field rename** | `userName` → `username` | 1. Return both fields<br>2. Deprecate old, notify consumers<br>3. Remove old field | 2-3 months |
-| **Replace service** | SendGrid → AWS SES | 1. Add new service + dual-call<br>2. Route traffic % to new<br>3. Remove old service | 1 month |
-| **Replace library** | Lodash → Native JS | 1. Add new code alongside old<br>2. Migrate callers incrementally<br>3. Remove old library | 1-2 weeks |
-| **Refactor logic** | `calculate_v1` → `calculate_v2` | 1. Implement new alongside old<br>2. Compare outputs, migrate callers<br>3. Remove old function | 1-2 weeks |
+| Change Type | Example | Expand-Contract Phases |
+|-------------|---------|----------------------|
+| **Rename DB column** | `email` → `email_address` | 1. Add new column + dual-write<br>2. Switch reads to new<br>3. Drop old column |
+| **Change data type** | String → JSON object | 1. Add new column + parse/backfill<br>2. Switch to new format<br>3. Drop old column |
+| **API field rename** | `userName` → `username` | 1. Return both fields<br>2. Deprecate old, notify consumers<br>3. Remove old field |
+| **Replace service** | SendGrid → AWS SES | 1. Add new service behind one-owner routing<br>2. Route traffic % to new<br>3. Remove old service |
+| **Replace library** | Lodash → Native JS | 1. Add new code alongside old<br>2. Migrate callers incrementally<br>3. Remove old library |
+| **Refactor logic** | `calculate_v1` → `calculate_v2` | 1. Implement new alongside old<br>2. Compare outputs, migrate callers<br>3. Remove old function |
 
 **For detailed step-by-step examples, see [small-safe-steps.md](references/small-safe-steps.md).**
 
@@ -179,10 +240,10 @@ When you detect a **risky/breaking change**, use the **Expand-Contract pattern**
 **Goal:** System supports BOTH old and new
 
 **Pattern:**
-1. Add new implementation/column/field/service alongside the old (1-2h)
-2. Implement dual-write: write to BOTH old and new (2h)
-3. Deploy and verify both paths work in production (1h)
-4. (Optional) Backfill: migrate existing data to new format (1-3h)
+1. Add new implementation/column/field/service alongside the old
+2. For owned, reconcilable state, dual-write to old and new. For external side effects, route each entity to exactly one path
+3. Deploy and verify both paths work in production
+4. (Optional) Backfill: migrate existing data to new format
 
 **Key principle:** Zero users are affected yet. System continues working with old.
 
@@ -193,9 +254,9 @@ When you detect a **risky/breaking change**, use the **Expand-Contract pattern**
 **Goal:** Gradually migrate reads/usage from old to new
 
 **Pattern:**
-1. Update readers/consumers to use new path (2h)
-2. Deploy incrementally (feature flag, canary, percentage rollout) (1h)
-3. Monitor for errors, performance issues (passive)
+1. Update readers/consumers to use new path
+2. Deploy incrementally (feature flag, canary, percentage rollout)
+3. Monitor for errors, performance issues
 4. **Keep dual-write active** (safety net to rollback)
 
 **Key principle:** System now uses new, but still maintains old as backup.
@@ -207,12 +268,12 @@ When you detect a **risky/breaking change**, use the **Expand-Contract pattern**
 **Goal:** Clean up by removing old implementation
 
 **Pattern:**
-1. Stop writing to old path (1h)
-2. Deploy and monitor (verify old truly unused) (passive, 1-2 weeks)
-3. Remove old code/column/service (1h)
-4. Clean up migration/compatibility code (1h)
+1. Stop writing to old path
+2. Deploy and monitor (verify old truly unused)
+3. Remove old code/column/service
+4. Clean up migration/compatibility code
 
-**Key principle:** Only remove after old path has ZERO usage for days/weeks.
+**Key principle:** Only remove after old path has ZERO usage across one relevant business cycle.
 
 ---
 
@@ -226,7 +287,7 @@ When you detect a **risky/breaking change**, use the **Expand-Contract pattern**
 
 **✅ Before CONTRACT phase:**
 - [ ] Old path has ZERO usage (verified via logs/monitoring)
-- [ ] New path has been stable for days/weeks
+- [ ] New path has been stable across one relevant business cycle
 - [ ] No errors related to old path
 - [ ] Team agrees it's safe to remove
 
@@ -239,10 +300,10 @@ When you detect a **risky/breaking change**, use the **Expand-Contract pattern**
 | **Refactoring** | Expand-Contract | Add new → Dual-call → Migrate → Remove old | Compare outputs if possible |
 | **Performance** | Baseline → Fix → Verify | Measure → Identify → Implement → Measure again | Always measure before optimizing |
 | **Migration** | Expand-Contract | Add new → Route % → Remove old | Use feature flags for gradual rollout |
-| **Debugging** | Linear investigation | Reproduce → Log → Analyze → Fix → Verify | Time-box investigation steps |
-| **Research/Spike** | Time-boxed learning | Define questions → Evaluate options → Decide | Max 2h per option, document findings |
+| **Debugging** | Linear investigation | Reproduce → Log → Analyze → Fix → Verify | Bound each investigation step to one question |
+| **Research/Spike** | Bounded learning | Define questions → Evaluate options → Decide | One question per option, document findings |
 | **DB Schema** | Expand-Contract | Add column → Dual-write → Migrate reads → Drop old | Never drop columns immediately |
-| **API Changes** | Expand-Contract | Return both → Deprecate → Remove | Long migration period (months) |
+| **API Changes** | Expand-Contract | Return both → Deprecate → Remove | Remove only after observed consumer usage reaches zero |
 
 **For detailed examples of each pattern, see [small-safe-steps.md](references/small-safe-steps.md).**
 
@@ -257,7 +318,7 @@ Watch for these signs:
 - ❌ "This requires..."
 - ❌ "First we have to..."
 - ❌ Multiple verbs in the description ("implement and test and deploy")
-- ❌ Takes more than one day
+- ❌ Has more than one independent outcome
 - ❌ Can't be easily reversed
 - ❌ Affects multiple systems at once
 - ❌ "We need to coordinate with X team first"
@@ -268,8 +329,8 @@ Watch for these signs:
 
 ## Coaching Tone
 
-- **Be ruthless about 1-3 hour steps** (no exceptions)
-- **Challenge anything that feels larger**
+- **Be ruthless about one outcome, one check, one cheap undo per step**
+- **Challenge steps too large to verify, and steps too small to justify their own CI or review**
 - **Detect risky changes proactively** and suggest expand-contract
 - **Ask forcing questions:**
   - "What's the smallest thing we could deploy right now?"
@@ -291,22 +352,18 @@ This skill works in sequence with other skills:
 **Typical workflow:**
 1. **story-splitting**: Break down large user stories into smaller ones
 2. **hamburger-method**: Choose vertical slice to implement first
-3. **complexity-review**: Review and simplify technical approach
-4. **micro-steps-coach** (THIS SKILL): Break simplified approach into 1-3h steps
+3. **small-safe-steps** (THIS SKILL): Break the approach into verifiable steps
 
 **Use this skill when:**
 - User knows WHAT to build and asks HOW to implement it
-- After architectural decisions are made (complexity-review)
 - When planning execution of a story/feature/refactoring
 
 **Integration examples:**
-- Use **story-splitting** first → "Admin can create user" → Then use micro-steps-coach to plan the 1-3h steps
-- Use **hamburger-method** first → Choose slice (manual email notification) → Then use micro-steps-coach for implementation steps
-- Use **complexity-review** first → Simplify to PostgreSQL instead of Kafka → Then use micro-steps-coach for migration steps
+- Use **story-splitting** first → "Admin can create user" → Then use small-safe-steps to plan verifiable steps
+- Use **hamburger-method** first → Choose slice (manual email notification) → Then use small-safe-steps for implementation steps
 
 **Do NOT use this skill when:**
 - User hasn't decided what to build yet (use story-splitting first)
-- User is proposing complex architecture (use complexity-review first)
 
 ---
 
@@ -314,13 +371,14 @@ This skill works in sequence with other skills:
 
 After applying this skill, verify:
 
-- [ ] Every step takes 1-3 hours (no step exceeds this)
-- [ ] Every step is deployable to production (or creates verifiable artifact)
+- [ ] Every step has one observable outcome and a named check
+- [ ] Every integration to trunk leaves it deployable
 - [ ] Every step is reversible (can undo without major pain)
+- [ ] Every PR and production transition names its real undo and point of no return
 - [ ] Risky changes use expand-contract pattern (3 phases: Expand → Migrate → Contract)
-- [ ] I separated learning steps (time-boxed investigation) from earning steps (ship value)
-- [ ] Dual-write is active during ENTIRE migrate phase (not removed too early)
-- [ ] Contract phase only starts after old path has ZERO usage for 1-2 weeks
+- [ ] I separated learning steps (bounded investigation) from earning steps (ship value)
+- [ ] Owned-state dual-write stays active during migrate; external effects never run twice
+- [ ] Contract starts after zero usage across one relevant business cycle, with restore tested if data is deleted
 - [ ] Each phase is independently valuable (delivers some benefit)
 
 **If any checkbox fails, revisit the breakdown.**
@@ -339,8 +397,8 @@ After applying this skill, verify:
 1. **Risk grows faster than the size of the change**
    - Small steps = low risk = fast feedback
 
-2. **Every step must be deployable**
-   - If you can't deploy it, it's too big
+2. **Every step must be verifiable; every integration deployable**
+   - If you can't check it, it's too big
 
 3. **Every step must be reversible**
    - If you can't undo it easily, it's too risky
@@ -351,12 +409,12 @@ After applying this skill, verify:
 
 5. **Learning before earning**
    - Investigate before implementing
-   - Time-box research
+   - Bound research to one named question
    - Don't build without understanding
 
-6. **1-3 hours per step, no exceptions**
-   - If it's bigger, slice more
-   - If you can't slice it, you don't understand it yet
+6. **Size each unit by its own cost**
+   - Steps by verification, CI by coherent push, PRs by review decision, deployments by production transition
+   - Never use time estimates as the size
 
 ---
 
