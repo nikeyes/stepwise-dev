@@ -15,7 +15,7 @@ Plan the fewest steps that keep every change small, checked and undoable, with z
 ## Steps
 
 1. Clarify the end state and what breaks if it goes wrong. Keep the user's decisions unless new evidence changes the risk.
-2. Read the code and config the change touches. List how it can fail: data exposure, credentials, permissions, partial rollouts, stale state.
+2. Read the code and config the change touches. Note what each change can break in production, so every boundary isolates a named failure.
 3. Answer unknowns first, one question per learning step.
 4. If a contract breaks (schema, public API, data format, service swap), expand-contract: add the new path beside the old, move users gradually, then remove whatever still writes to, depends on or recreates the old path, and only then delete it. Wait until its usage is zero for longer than anything that can reach it lives (sessions, tokens, caches, queues, a business cycle).
 5. A step is the largest change with one observable outcome, a local check and a cheap undo. Never size by hours. If the work is one step, say so.
