@@ -41,4 +41,4 @@ Never deploy together: schema and dependent code, backfill and read switch, read
 
 Table of steps: outcome, check, unit (commit, PR, deployment), undo. Why each extra PR exists. Totals: steps, commits, CI runs, PRs, deployments, releases.
 
-Author: Eduardo Ferro. Source: https://www.eferro.net/
+Simplified by Jorge Castro from the original by Eduardo Ferro (expand-contract applied to micro-steps). Source: https://www.eferro.net/
